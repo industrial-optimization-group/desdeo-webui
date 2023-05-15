@@ -34,7 +34,7 @@ If it doesn't, your package manager is incompatible.)
 
 ### Cloning and installing
 
-To clone the repository and install the dependencies, please run
+Clone the repository and install the dependencies with
 
 ```
 git clone https://github.com/rmojala/desdeo-webui.git
@@ -42,7 +42,7 @@ cd desdeo-webui
 npm install
 ```
 
-You may then run the development server and direct your web browser
+You can then run the development server and direct your web browser
 at it by running
 
 ```
