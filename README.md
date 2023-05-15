@@ -1,5 +1,9 @@
 # desdeo-webui
 
+**This is a temporary repository for internal purposes.
+The project will later be moved to
+https://github.com/industrial-optimization-group .**
+
 This repository contains what is to become a new web-based user interface
 for the [DESDEO](https://desdeo.misitano.xyz/) framework.
 The project is in its infancy, so this README file is currently directed
@@ -54,7 +58,6 @@ npm run dev -- --open
 The project is configured with [TypeScript](https://www.typescriptlang.org/)
 enabled.
 You are encouraged to make use of it.
-
 To use TypeScript in a Svelte component, the start tag should be
 `<script lang="ts">`.
 
