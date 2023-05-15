@@ -49,10 +49,6 @@ at it by running
 npm run dev -- --open
 ```
 
-If you plan to contribute to the project, you should probably first
-fork the repository to your own [GitHub](https://github.com) account,
-and then use your fork in the above `git clone` command.
-
 ## TypeScript
 
 The project is configured with [TypeScript](https://www.typescriptlang.org/)
