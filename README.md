@@ -1,9 +1,5 @@
 # desdeo-webui
 
-**This is a temporary repository for internal purposes.
-The project will later be moved to
-https://github.com/industrial-optimization-group .**
-
 This repository contains what is to become a new web-based user interface
 for the [DESDEO](https://desdeo.misitano.xyz/) framework.
 The project is in its infancy, so this README file is currently directed
@@ -41,7 +37,7 @@ If it doesn't, your package manager is incompatible.)
 Clone the repository and install the dependencies with
 
 ```
-git clone https://github.com/rmojala/desdeo-webui.git
+git clone https://github.com/industrial-optimization-group/desdeo-webui.git
 cd desdeo-webui
 npm install
 ```
@@ -63,7 +59,7 @@ To use TypeScript in a Svelte component, the start tag should be
 
 ## Code formatting and linting
 
-To improve code maintainability, the project is configured with
+To support code maintainability, the project is configured with
 [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/) enabled.
 The ESLint configuration is the default one from the SvelteKit template.
 Prettier is configured to use vanilla formatting rules.
@@ -79,10 +75,19 @@ Please don't circumvent the hook.
 You should probably configure your editor to use Prettier and ESLint
 (see below for VS Code instructions).
 
-## Other tools
+## Documentation
+
+Svelte components should be documented using the format suggested at
+[How do I document my components?](https://svelte.dev/faq#how-do-i-document-my-components).
+
+## Tests
 
 The project is configured with [Playwright](https://playwright.dev)
 and [Vitest](https://vitest.dev) enabled.
+See also [How do I test Svelte apps?](https://svelte.dev/faq#how-do-i-test-svelte-apps).
+
+## Other tools
+
 [Husky](https://typicode.github.io/husky/#/) is used for managing
 Git hooks, and [lint-staged](https://github.com/okonet/lint-staged)
 is used in a pre-commit hook.
@@ -98,7 +103,17 @@ for more.
 
 ## Version control and contributing
 
-TODO
+The project doesn't enforce any particular style for commit messages,
+but please try to roughly follow the format suggested at
+[A note about Git commit messages](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
+
+We will be using branch-based (as opposed to fork-based) collaboration
+(see [Favor branching over forking](https://docs.github.com/en/repositories/creating-and-managing-repositories/best-practices-for-repositories#use-git-large-file-storage)).
+
+Please familiarize yourself with [GitHub documentation](https://docs.github.com/en),
+especially the topics under the label "Collaborative coding".
+
+More will be written later.
 
 ## Setting up VS Code
 
