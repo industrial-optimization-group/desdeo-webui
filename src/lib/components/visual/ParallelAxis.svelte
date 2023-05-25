@@ -18,26 +18,30 @@
   //     data: string[];
   // })[]
 
+  let series: echarts.ParallelSeriesOption[] = [];
+  let nameAxis: object[] = [];
+  let selectedLineStyle = {
+    width: 5,
+    opacity: 1,
+  };
+
   onMount(() => {
     const chart = echarts.init(
       document.getElementById("chart") as HTMLCanvasElement
     );
-    let valueSeries: {
-      type: string;
-      data: number[][];
-    }[] = [];
 
-    console.log(values);
     values.forEach((valueSet) => {
-      console.log(valueSet);
-      let valueObj = {
+      let valueObj: echarts.ParallelSeriesOption = {
         type: "parallel",
         data: [valueSet],
+        emphasis: {
+          lineStyle: selectedLineStyle,
+        },
       };
-      valueSeries.push(valueObj);
+      series.push(valueObj);
     });
 
-    let nameAxis = [];
+    // let nameAxis = [];
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
       let nameObj = {
@@ -47,17 +51,13 @@
       nameAxis.push(nameObj);
     }
 
-    console.log("valueseries:");
-    console.log(valueSeries);
-
     let option: echarts.EChartsOption = {
       title: {
         text: title,
       },
       parallelAxis: nameAxis,
-      series: valueSeries,
+      series: series,
     };
-
     chart.setOption(option);
   });
 </script>
