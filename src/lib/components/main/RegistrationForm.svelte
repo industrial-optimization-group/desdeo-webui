@@ -10,9 +10,24 @@
     Register a <span class="underline">Free</span> Account
   </div>
   <form class="flex w-72 flex-col gap-4">
-    <input type="text" bind:value={username} placeholder="Username" />
-    <input type="password" bind:value={password} placeholder="Password" />
-    <input type="password" bind:value={retyped} placeholder="Retype password" />
+    <input
+      class="input"
+      type="text"
+      bind:value={username}
+      placeholder="Username"
+    />
+    <input
+      class="input"
+      type="password"
+      bind:value={password}
+      placeholder="Password"
+    />
+    <input
+      class="input"
+      type="password"
+      bind:value={retyped}
+      placeholder="Retype password"
+    />
     <button class="btn variant-filled-primary mt-2 uppercase">Register</button>
   </form>
   <div class="flex flex-col items-center">

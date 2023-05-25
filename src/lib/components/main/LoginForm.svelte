@@ -6,8 +6,18 @@
 <div class="flex flex-col items-center gap-8">
   <div class="mb-6 text-2xl">Log in to Your Account</div>
   <form class="flex w-72 flex-col gap-4">
-    <input type="text" bind:value={username} placeholder="Username" />
-    <input type="password" bind:value={password} placeholder="Password" />
+    <input
+      class="input"
+      type="text"
+      bind:value={username}
+      placeholder="Username"
+    />
+    <input
+      class="input"
+      type="password"
+      bind:value={password}
+      placeholder="Password"
+    />
     <button class="btn variant-filled-primary mt-2 uppercase">Log in</button>
   </form>
   <div class="flex flex-col items-center">
