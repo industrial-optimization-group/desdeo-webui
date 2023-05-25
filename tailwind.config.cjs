@@ -13,6 +13,7 @@ const config = {
     extend: {},
   },
   plugins: [
+    require("@tailwindcss/forms"),
     /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     ...require("@skeletonlabs/skeleton/tailwind/skeleton.cjs")(),
   ],
