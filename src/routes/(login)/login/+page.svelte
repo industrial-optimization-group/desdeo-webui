@@ -3,15 +3,15 @@
   import logo from "$lib/assets/logo.png";
 </script>
 
-<div class="grid grid-cols-[1fr_auto] h-screen">
+<div class="grid h-screen grid-cols-[1fr_auto]">
   <div class="m-8 max-w-xl">
     <div class="flex items-center gap-2">
       <img src={logo} alt="" />
       <span class="text-xl font-bold">DESDEO</span>
     </div>
-    <div class="flex items-center h-full">
+    <div class="flex h-full items-center">
       <div>
-        <h1 class="text-5xl font-bold mb-12 leading-snug">
+        <h1 class="mb-12 text-5xl font-bold leading-snug">
           Enabling Better<br />Decision Making
         </h1>
         <p>
@@ -26,9 +26,9 @@
     </div>
   </div>
 
-  <div class="px-20 py-8 flex flex-col justify-center bg-white">
+  <div class="flex flex-col justify-center bg-white px-20 py-8">
     <div class="flex flex-col items-center gap-8">
-      <div class="text-2xl mb-6">Log in to Your Account</div>
+      <div class="mb-6 text-2xl">Log in to Your Account</div>
       <LoginForm />
       <div class="flex flex-col items-center">
         <span
