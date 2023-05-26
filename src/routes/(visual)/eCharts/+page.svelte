@@ -1,4 +1,6 @@
 <script lang="ts">
+  // import Example from "$lib/components/visual/Example.svelte";
+  import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
 
   // let data = [
@@ -33,3 +35,9 @@
 <div>
   <ParallelAxis {title} {names} {values} />
 </div>
+<div>
+  <HorizontalAxisPlot />
+</div>
+<!-- <div>
+  <Example></Example>
+</div> -->
