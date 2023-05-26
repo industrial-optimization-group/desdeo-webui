@@ -6,6 +6,7 @@
   // export let data: (string | number)[][];
   export let names: string[];
   export let values: number[][];
+  export let solution: number[];
   //   export let dimensions: ({
   //     dim: number;
   //     name: string;
@@ -52,6 +53,10 @@
     }
 
     let option: echarts.EChartsOption = {
+      tooltip: {
+        trigger: "item",
+        // valueFormatter: value => value
+      },
       title: {
         text: title,
       },
@@ -59,6 +64,11 @@
       series: series,
     };
     chart.setOption(option);
+
+    chart.on("click", (params) => {
+      solution = params.data;
+      // solution = solution
+    });
   });
 </script>
 
