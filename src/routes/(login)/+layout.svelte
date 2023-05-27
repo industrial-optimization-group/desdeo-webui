@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  <div class="flex flex-col justify-center bg-white px-20 py-8">
+  <div class="flex flex-col justify-center bg-white px-28 py-8">
     <slot />
   </div>
 </div>
