@@ -69,7 +69,7 @@ export function login(username: string, password: string) {
     });
 }
 
-export function invalidate_access_token() {
+function invalidate_access_token() {
   return with_access_token()
     .post("/logout/access")
     .then(() => {
