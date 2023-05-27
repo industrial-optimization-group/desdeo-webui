@@ -36,9 +36,15 @@ function with_refresh_token() {
   });
 }
 
-// Overwrites current tokens without invalidating them.
-// The caller is responsible for invalidating old tokens
-// with the logout function.
+/**
+ * Attempts to log in with the given credentials.
+ *
+ * If the login is successful, overwrites the current values of the access
+ * token, the refresh token and the username. The caller is responsible for
+ * invalidating the old tokens before calling this function.
+ *
+ * @returns The message returned by the server.
+ */
 export function login(username: string, password: string) {
   return instance()
     .post("/login", {
@@ -48,11 +54,17 @@ export function login(username: string, password: string) {
     .then((response) => {
       set_access_token(response.data.access_token);
       set_refresh_token(response.data.refresh_token);
-      // Ideally the backend would return the username,
-      // but we'll use the submitted username as a replacement
+
+      //
+      // Ideally the server would return the username,
+      // but we'll use the submitted username as a replacement.
+      // (We don't parse the username from the message
+      // because the message could change.)
+      //
       username_store.set(username);
+
       return {
-        message: response.data.message,
+        message: <string>response.data.message,
       };
     });
 }
