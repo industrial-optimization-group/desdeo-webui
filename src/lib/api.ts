@@ -12,7 +12,7 @@ import {
 
 const baseURL = "http://localhost:5000";
 
-function instance() {
+function without_token() {
   return axios.create({ baseURL });
 }
 
@@ -46,7 +46,7 @@ function with_refresh_token() {
  * @returns The message returned by the server.
  */
 export function login(username: string, password: string) {
-  return instance()
+  return without_token()
     .post("/login", {
       username,
       password,
