@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { logged_in } from "$lib/stores.js";
+  import { logged_in, username } from "$lib/stores.js";
   import { logout } from "$lib/api.js";
   import { goto } from "$app/navigation";
 
@@ -12,7 +12,7 @@
 
 <div class="flex gap-1">
   {#if $logged_in}
-    <span>Logged in</span>
+    <span>Logged in as <span class="font-bold">{$username}</span></span>
     <span>/</span>
     <span><button class="anchor" on:click={handleLogout}>Log out</button></span>
   {:else}

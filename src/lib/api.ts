@@ -1,4 +1,6 @@
 import axios from "axios";
+import { username as username_store } from "$lib/stores.js";
+
 import {
   get_access_token,
   set_access_token,
@@ -46,11 +48,11 @@ export function login(username: string, password: string) {
     .then((response) => {
       set_access_token(response.data.access_token);
       set_refresh_token(response.data.refresh_token);
+      // Ideally the backend would return the username,
+      // but we'll use the submitted username as a replacement
+      username_store.set(username);
       return {
         message: response.data.message,
-        // Ideally the backend would return the username,
-        // but we'll use the submitted username as a replacement
-        username: username,
       };
     });
 }
