@@ -30,12 +30,12 @@
   //   },
   // ];
   let title = "test Title";
-  let solution: number[] = [];
+  let solutions: number[][] = [[]];
 </script>
 
 <div>
-  <p>Current solution: {solution}</p>
-  <ParallelAxis {title} {names} {values} bind:solution />
+  <p>Current solution: {solutions}</p>
+  <ParallelAxis {title} {names} {values} bind:solutions />
 </div>
 <div>
   <HorizontalAxisPlot />

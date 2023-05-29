@@ -19,7 +19,7 @@
   // export let data: (string | number)[][];
   export let names: string[];
   export let values: number[][];
-  export let solution: number[];
+  export let solutions: number[][];
   //   export let dimensions: ({
   //     dim: number;
   //     name: string;
@@ -47,6 +47,15 @@
     values.forEach((valueSet) => {
       let valueObj: echarts.ParallelSeriesOption = {
         type: "parallel",
+        selectedMode: "series",
+        select: {
+          disabled: false,
+          // itemStyle: {
+          //   borderWidth: 5,
+          //   borderColor: "red",
+          //   opacity: 1,
+          // },
+        },
         data: [valueSet],
         emphasis: {
           lineStyle: selectedLineStyle,
@@ -82,13 +91,36 @@
      * This function updates the selected solution to the clicked data point and
      * highlights the corresponding series on the chart.
      */
-    chart.on("click", (params) => {
-      solution = params.data;
-      chart.dispatchAction({
-        type: "highlight",
-        seriesIndex: params.componentIndex,
-      });
+    chart.on("selectchanged", (params) => {
+      let selectedSeriesIndex = params.fromActionPayload.seriesIndex;
+      console.log(params);
+      if (params.fromAction == "select") {
+        solutions.push(chart.getOption().series[selectedSeriesIndex].data[0]);
+        solutions = solutions;
+        chart.dispatchAction({
+          type: "highlight",
+          seriesIndex: selectedSeriesIndex,
+        });
+      } else {
+        solutions.pop(chart.getOption().series[selectedSeriesIndex].data[0]);
+        solutions = solutions;
+        chart.dispatchAction({
+          type: "downplay",
+          seriesIndex: selectedSeriesIndex,
+        });
+      }
     });
+    chart.on("highlight", (params) => {
+      // solution = params.;
+      console.log(params);
+    });
+    // chart.on("click", (params) => {
+    //   solution = params.data;
+    //   chart.dispatchAction({
+    //     type: "highlight",
+    //     seriesIndex: params.componentIndex,
+    //   });
+    // });
   });
 </script>
 
