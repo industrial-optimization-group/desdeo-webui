@@ -68,6 +68,11 @@
     chart.on("click", (params) => {
       solution = params.data;
       // solution = solution
+      chart.dispatchAction({
+        type: "highlight",
+        seriesIndex: params.componentIndex,
+        // componentIndex:
+      });
     });
   });
 </script>
