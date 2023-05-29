@@ -30,11 +30,16 @@
   //   },
   // ];
   let title = "test Title";
-  let solutions: number[][] = [[]];
+  let solutions: number[][] = [];
 </script>
 
 <div>
-  <p>Current solution: {solutions}</p>
+  <p>
+    Current solutions:
+    {#each solutions as solution}
+      <p>{solution}</p>
+    {/each}
+  </p>
   <ParallelAxis {title} {names} {values} bind:solutions />
 </div>
 <div>

@@ -34,9 +34,14 @@
 
   let series: echarts.ParallelSeriesOption[] = [];
   let nameAxis: object[] = [];
+
   let selectedLineStyle = {
-    width: 5,
+    width: 7,
     opacity: 1,
+  };
+  let lineStyle = {
+    width: 3.5,
+    opacity: 0.6,
   };
 
   onMount(() => {
@@ -44,19 +49,16 @@
       document.getElementById("chart") as HTMLCanvasElement
     );
 
+    // Creates the lines on the chart as a series component.
     values.forEach((valueSet) => {
       let valueObj: echarts.ParallelSeriesOption = {
         type: "parallel",
-        selectedMode: "series",
+        selectedMode: "multiple",
         select: {
           disabled: false,
-          // itemStyle: {
-          //   borderWidth: 5,
-          //   borderColor: "red",
-          //   opacity: 1,
-          // },
         },
         data: [valueSet],
+        lineStyle: lineStyle,
         emphasis: {
           lineStyle: selectedLineStyle,
         },
@@ -64,7 +66,7 @@
       series.push(valueObj);
     });
 
-    // let nameAxis = [];
+    //  Creates the names for the axes as a parallelAxis component.
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
       let nameObj = {
@@ -74,11 +76,8 @@
       nameAxis.push(nameObj);
     }
 
+    // Create the option object for the whole chart.
     let option: echarts.EChartsOption = {
-      tooltip: {
-        trigger: "item",
-        // valueFormatter: value => value
-      },
       title: {
         text: title,
       },
@@ -89,38 +88,32 @@
 
     /**
      * This function updates the selected solution to the clicked data point and
-     * highlights the corresponding series on the chart.
+     * highlights the corresponding series (solution) on the chart.
      */
     chart.on("selectchanged", (params) => {
       let selectedSeriesIndex = params.fromActionPayload.seriesIndex;
+      const selectedNumbers =
+        chart.getOption().series[selectedSeriesIndex].data[0];
       console.log(params);
       if (params.fromAction == "select") {
-        solutions.push(chart.getOption().series[selectedSeriesIndex].data[0]);
-        solutions = solutions;
+        solutions.push(selectedNumbers);
         chart.dispatchAction({
           type: "highlight",
           seriesIndex: selectedSeriesIndex,
         });
       } else {
-        solutions.pop(chart.getOption().series[selectedSeriesIndex].data[0]);
-        solutions = solutions;
+        // Find the index in the solutions array of the solution that was deselected and remove it from the array.
+        let solutionIndex = solutions.findIndex(
+          (element) => element.toString() == selectedNumbers.toString()
+        );
+        solutions.splice(solutionIndex, 1);
         chart.dispatchAction({
           type: "downplay",
           seriesIndex: selectedSeriesIndex,
         });
       }
+      solutions = solutions;
     });
-    chart.on("highlight", (params) => {
-      // solution = params.;
-      console.log(params);
-    });
-    // chart.on("click", (params) => {
-    //   solution = params.data;
-    //   chart.dispatchAction({
-    //     type: "highlight",
-    //     seriesIndex: params.componentIndex,
-    //   });
-    // });
   });
 </script>
 
