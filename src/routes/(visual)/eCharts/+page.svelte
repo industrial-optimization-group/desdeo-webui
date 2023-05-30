@@ -2,6 +2,7 @@
   // import Example from "$lib/components/visual/Example.svelte";
   import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
+  import RadarChart from "$lib/components/visual/RadarChart.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -43,8 +44,13 @@
   <ParallelAxis {title} {names} {values} bind:solutions />
 </div>
 <div>
-  <HorizontalAxisPlot />
+  <RadarChart {names} {values} />
 </div>
+<div>
+  <HorizontalAxisPlot />
+  <RadarChart {names} {values} />
+</div>
+
 <!-- <div>
   <Example></Example>
 </div> -->

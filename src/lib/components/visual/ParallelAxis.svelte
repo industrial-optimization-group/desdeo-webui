@@ -121,7 +121,7 @@
 
 <style>
   #chart {
-    width: 70vw;
-    height: 70vh;
+    width: 40vw;
+    height: 40vh;
   }
 </style>
