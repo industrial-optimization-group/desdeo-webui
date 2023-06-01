@@ -3,11 +3,17 @@
 -->
 
 <script lang="ts">
-  import * as echarts from "echarts";
+  import type * as echarts from "echarts";
   import { onMount } from "svelte";
+  // import { onDestroy } from "svelte";
+  import { chartStore } from "./chartStore";
+  import { createChart } from "./chartStore";
 
   export let names: string[];
   export let values: number[][];
+
+  // let testContent = "test content"
+  let charts = $chartStore;
 
   let indObjects: { name: string }[] = [];
   names.forEach((name) => {
@@ -19,9 +25,9 @@
   }
 
   onMount(() => {
-    const chart = echarts.init(
-      document.getElementById("RadarChart") as HTMLCanvasElement
-    );
+    // const chart = echarts.init(
+    //   document.getElementById("RadarChart") as HTMLCanvasElement
+    // );
 
     const option = {
       title: {
@@ -64,6 +70,7 @@
       ],
     };
 
+    let chart: echarts.EChartsType = createChart("RadarChart", option);
     // Add a click event listener to the chart
     chart.on("click", (params) => {
       // Check if a series is selected
@@ -80,10 +87,17 @@
     chart.on("selectchanged", (params) => {
       console.log(params);
     });
-    chart.setOption(option);
+    // chart.setOption(option);
+
+    // charts.push(chart);
+    // charts = charts;
+    // console.log(charts);
   });
 </script>
 
+{#if chartStore}
+  <p>{charts}</p>
+{/if}
 <div id="RadarChart" />
 
 <style>
