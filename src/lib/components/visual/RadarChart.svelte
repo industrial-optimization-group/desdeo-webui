@@ -11,7 +11,7 @@
 
   export let names: string[];
   export let values: number[][];
-
+  export let id: string;
   // let testContent = "test content"
   let charts = $chartStore;
 
@@ -25,18 +25,11 @@
   }
 
   onMount(() => {
-    // const chart = echarts.init(
-    //   document.getElementById("RadarChart") as HTMLCanvasElement
-    // );
-
     const option = {
       title: {
         text: "Radar Chart",
       },
       tooltip: {},
-      // legend: {
-      //     data: ["Sales"]
-      // },
       radar: {
         shape: "circle",
         indicator: indObjects,
@@ -52,9 +45,7 @@
               opacity: 0.75,
             },
           },
-          // name: "Sales",
           type: "radar",
-          // areaStyle: {color: "blue", opacity: 0.35},
           emphasis: {
             // areaStyle: {
             //     color: "blue",
@@ -70,7 +61,7 @@
       ],
     };
 
-    let chart: echarts.EChartsType = createChart("RadarChart", option);
+    let chart: echarts.EChartsType = createChart(id, option);
     // Add a click event listener to the chart
     chart.on("click", (params) => {
       // Check if a series is selected
@@ -87,22 +78,11 @@
     chart.on("selectchanged", (params) => {
       console.log(params);
     });
-    // chart.setOption(option);
-
-    // charts.push(chart);
-    // charts = charts;
-    // console.log(charts);
   });
 </script>
 
 {#if chartStore}
   <p>{charts}</p>
 {/if}
-<div id="RadarChart" />
 
-<style>
-  #RadarChart {
-    width: 100vw;
-    height: 70vh;
-  }
-</style>
+<div {id} style="width: 100vh; height: 50vh;" />

@@ -41,14 +41,14 @@
       <p>{solution}</p>
     {/each}
   </p>
-  <ParallelAxis {title} {names} {values} bind:solutions />
+  <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions />
 </div>
 <div>
-  <RadarChart {names} {values} />
+  <RadarChart id="radarChart" {names} {values} />
 </div>
 <div>
   <HorizontalAxisPlot />
-  <RadarChart {names} {values} />
+  <RadarChart id="radarChart2" {names} {values} />
 </div>
 
 <!-- <div>

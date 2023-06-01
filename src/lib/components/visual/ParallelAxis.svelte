@@ -12,14 +12,17 @@
   
 -->
 <script lang="ts">
-  import * as echarts from "echarts";
+  import type * as echarts from "echarts";
   import { onMount } from "svelte";
+  import { chartStore } from "./chartStore";
+  import { createChart } from "./chartStore";
 
   export let title: string;
   // export let data: (string | number)[][];
   export let names: string[];
   export let values: number[][];
   export let solutions: number[][];
+  export let id: string;
   //   export let dimensions: ({
   //     dim: number;
   //     name: string;
@@ -45,10 +48,6 @@
   };
 
   onMount(() => {
-    const chart = echarts.init(
-      document.getElementById("chart") as HTMLCanvasElement
-    );
-
     // Creates the lines on the chart as a series component.
     values.forEach((valueSet) => {
       let valueObj: echarts.ParallelSeriesOption = {
@@ -84,11 +83,11 @@
       parallelAxis: nameAxis,
       series: series,
     };
-    chart.setOption(option);
 
+    let chart: echarts.EChartsType = createChart(id, option);
     /**
-     * This function updates the selected solution to the clicked data point and
-     * highlights the corresponding series (solution) on the chart.
+     * This event listener updates the selected solution to the clicked data
+     * point and highlights the corresponding series (solution) on the chart.
      */
     chart.on("selectchanged", (params) => {
       let selectedSeriesIndex = params.fromActionPayload.seriesIndex;
@@ -114,14 +113,8 @@
       }
       solutions = solutions;
     });
+    console.log($chartStore);
   });
 </script>
 
-<div id="chart" />
-
-<style>
-  #chart {
-    width: 100vw;
-    height: 40vh;
-  }
-</style>
+<div {id} style="width: 100vh; height: 40vh;" />
