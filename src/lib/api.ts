@@ -1,6 +1,5 @@
 import axios from "axios";
-import { derived, writable, get } from "svelte/store";
-import { username as username_store } from "$lib/stores.js";
+import { derived, writable, get, readonly } from "svelte/store";
 
 // The API URL
 const baseURL = "http://localhost:5000";
@@ -9,41 +8,58 @@ const baseURL = "http://localhost:5000";
 type Token = string | undefined;
 
 //
-// The tokens are saved in Svelte stores because these are readily
+// The state is stored in Svelte stores because these are readily
 // available and have useful features. We provide functions to
-// set and get the tokens to hide the implementation details from
+// read and write the state to hide the implementation details from
 // the rest of the module. The intention is to make it easy to replace
 // the implementation.
 //
-const access_token = writable<Token>(undefined);
-const refresh_token = writable<Token>(undefined);
+const state = {
+  access_token: writable<Token>(undefined),
+  refresh_token: writable<Token>(undefined),
+  username: writable<string | undefined>(undefined),
+};
 
 function set_access_token(token: Token) {
   if (token === "") {
     throw new Error("Invalid token (empty string)");
   }
-  access_token.set(token);
+  state.access_token.set(token);
 }
 
 function get_access_token() {
-  return get(access_token);
+  return get(state.access_token);
 }
 
 function set_refresh_token(token: Token) {
   if (token === "") {
     throw new Error("Invalid token (empty string)");
   }
-  refresh_token.set(token);
+  state.refresh_token.set(token);
 }
 
 function get_refresh_token() {
-  return get(refresh_token);
+  return get(state.refresh_token);
 }
 
-/** Represents the current login status. */
-export const logged_in = derived(refresh_token, ($refresh_token) => {
+function set_username(username: string | undefined) {
+  if (username === "") {
+    throw new Error("Invalid username (empty string)");
+  }
+  state.username.set(username);
+}
+
+// function get_username() {
+//   return get(state.username);
+// }
+
+/** The current login status. */
+export const logged_in = derived(state.refresh_token, ($refresh_token) => {
   return $refresh_token !== undefined;
 });
+
+/** The current username. */
+export const username = readonly(state.username);
 
 function without_token() {
   return axios.create({ baseURL });
@@ -89,12 +105,12 @@ export function login(username: string, password: string) {
       set_refresh_token(response.data.refresh_token);
 
       //
-      // Ideally the server would return the username,
-      // but we'll use the submitted username as a replacement.
-      // (We don't parse the username from the message
-      // because the message could change.)
+      // Ideally the server would return the username, but we'll use
+      // the submitted username as a replacement. (It's not good
+      // to parse the username from the message because the message
+      // could change.)
       //
-      username_store.set(username);
+      set_username(username);
 
       return {
         message: <string>response.data.message,
