@@ -20,7 +20,7 @@ const refresh_token = writable<Token>(undefined);
 
 function set_access_token(token: Token) {
   if (token === "") {
-    throw new Error("Invalid token");
+    throw new Error("Invalid token (empty string)");
   }
   access_token.set(token);
 }
@@ -31,7 +31,7 @@ function get_access_token() {
 
 function set_refresh_token(token: Token) {
   if (token === "") {
-    throw new Error("Invalid token");
+    throw new Error("Invalid token (empty string)");
   }
   refresh_token.set(token);
 }
