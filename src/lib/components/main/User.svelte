@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { logged_in, username } from "$lib/stores.js";
-  import { logout } from "$lib/api.js";
+  import { logged_in, logout } from "$lib/api";
+  import { username } from "$lib/stores";
   import { goto } from "$app/navigation";
 
   function handleLogout() {

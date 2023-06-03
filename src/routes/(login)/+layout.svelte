@@ -2,10 +2,12 @@
   import { setContext } from "svelte";
   import { writable } from "svelte/store";
 
-  // The "login" context is used to share the current values
+  //
+  // The `login` context is used to share the current values
   // of the username and password inputs between the login form
   // and the registration form. The point is to preserve
   // these values if the user switches from one form to the other.
+  //
   setContext("login", {
     username: writable(""),
     password: writable(""),
