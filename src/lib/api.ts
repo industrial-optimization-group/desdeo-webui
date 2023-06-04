@@ -61,6 +61,10 @@ export const logged_in = derived(state.refresh_token, ($refresh_token) => {
 /** The current username. */
 export const username = readonly(state.username);
 
+//
+// End of state-related section
+//
+
 function without_token() {
   return axios.create({ baseURL });
 }
@@ -118,22 +122,87 @@ export function login(username: string, password: string) {
     });
 }
 
-function invalidate_access_token() {
-  return with_access_token()
-    .post("/logout/access")
-    .then(() => {
-      set_access_token(undefined);
-      return Promise.resolve();
-    });
+/**
+ * Invalidates and clears the tokens and clears the username.
+ *
+ * Attempts to invalidate the access and refresh tokens and clears them and the
+ * username from the state. Note that the invalidation could fail, for example
+ * because the server is unreachable.
+ *
+ * If `ignore_errors` is `true` (default), ignores all errors silently and
+ * clears the tokens and username anyway. Note that this makes it impossible to
+ * reattempt the invalidation later. If `ignore_errors` is `false`, a possible
+ * error is propagated to the caller and only the (possibly) successfully
+ * invalidated token is cleared.
+ *
+ * Does effectively nothing if not logged in.
+ *
+ * @param ignore_errors
+ */
+export async function logout(ignore_errors = true) {
+  //
+  // We're invalidating the tokens sequentially rather than in parallel so that
+  // possible error situations can be handled correctlu. The refresh token is
+  // invalidated first because it can be used to get a new access token.
+  //
+  await invalidate_refresh_token(ignore_errors);
+  await invalidate_access_token(ignore_errors);
+
+  set_username(undefined);
 }
 
-function invalidate_refresh_token() {
-  return with_refresh_token()
-    .post("/logout/refresh")
-    .then(() => {
-      set_refresh_token(undefined);
-      return Promise.resolve();
-    });
+/**
+ * Invalidates the current access token and clears it from the state.
+ *
+ * See {@link logout} for comments about possible failure.
+ *
+ * If `ignore_errors` is `true` (default), ignores all errors silently and
+ * clears the token If `ignore_errors` is `false`, a possible error is
+ * propagated to the caller and the token is not cleared.
+ *
+ * Does nothing if an access token doesn't exist.
+ *
+ * @param ignore_errors
+ */
+async function invalidate_access_token(ignore_errors = true) {
+  if (get_access_token() === undefined) {
+    return;
+  }
+  try {
+    await with_access_token().post("/logout/access");
+  } catch (error) {
+    if (!ignore_errors) {
+      throw error;
+    }
+  }
+  set_access_token(undefined);
+}
+
+/**
+ * Invalidates the current refresh token and clears it from the state.
+ *
+ * See {@link logout} for comments about possible failure.
+ *
+ * If `ignore_errors` is `true` (default), ignores all errors silently and
+ * clears the token. If `ignore_errors` is `false`, a possible error is
+ * propagated to the caller and the token is not cleared.
+ *
+ * Does nothing if a refresh token doesn't exist.
+ *
+ * @param ignore_errors
+ */
+async function invalidate_refresh_token(ignore_errors = true) {
+  if (get_refresh_token() === undefined) {
+    return;
+  }
+  try {
+    await with_refresh_token().post("/logout/refresh");
+  } catch (error) {
+    if (!ignore_errors) {
+      throw error;
+    }
+  }
+  set_refresh_token(undefined);
 }
 
 export function refresh_access_token() {
@@ -141,12 +210,5 @@ export function refresh_access_token() {
     .post("/token/refresh")
     .then((response) => {
       set_access_token(response.data.access_token);
-      return Promise.resolve();
     });
-}
-
-export function logout() {
-  return invalidate_refresh_token().then(() => {
-    return invalidate_access_token();
-  });
 }
