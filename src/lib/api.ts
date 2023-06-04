@@ -157,7 +157,7 @@ export async function logout(ignore_errors = true) {
  * See {@link logout} for comments about possible failure.
  *
  * If `ignore_errors` is `true` (default), ignores all errors silently and
- * clears the token If `ignore_errors` is `false`, a possible error is
+ * clears the token. If `ignore_errors` is `false`, a possible error is
  * propagated to the caller and the token is not cleared.
  *
  * Does nothing if an access token doesn't exist.
