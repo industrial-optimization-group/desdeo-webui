@@ -213,6 +213,17 @@ export function refresh_access_token() {
     });
 }
 
+/**
+ * Register a new user account and log in.
+ *
+ * Note that currently the server doesn't validate the username or password in
+ * any way. This means that the empty string and strings containing whitespace
+ * are accepted as usernames and passwords by the server.
+ *
+ * The new user account is automatically logged in by the server.
+ *
+ * @returns The message returned by the server.
+ */
 export function register_account(username: string, password: string) {
   return without_token()
     .post("/registration", {
