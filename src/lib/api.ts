@@ -142,7 +142,7 @@ export function login(username: string, password: string) {
 export async function logout(ignore_errors = true) {
   //
   // We're invalidating the tokens sequentially rather than in parallel so that
-  // possible error situations can be handled correctlu. The refresh token is
+  // possible error situations can be handled correctly. The refresh token is
   // invalidated first because it can be used to get a new access token.
   //
   await invalidate_refresh_token(ignore_errors);
@@ -210,5 +210,29 @@ export function refresh_access_token() {
     .post("/token/refresh")
     .then((response) => {
       set_access_token(response.data.access_token);
+    });
+}
+
+export function register_account(username: string, password: string) {
+  return without_token()
+    .post("/registration", {
+      username,
+      password,
+    })
+    .then((response) => {
+      set_access_token(response.data.access_token);
+      set_refresh_token(response.data.refresh_token);
+
+      //
+      // Ideally the server would return the username, but we'll use
+      // the submitted username as a replacement. (It's not good
+      // to parse the username from the message because the message
+      // could change.)
+      //
+      set_username(username);
+
+      return {
+        message: <string>response.data.message,
+      };
     });
 }

@@ -1,8 +1,31 @@
 <script lang="ts">
+  import { register_account } from "$lib/api";
+  import { goto } from "$app/navigation";
+
   export let username = "";
   export let password = "";
 
   let retyped = "";
+
+  let registration_error = false;
+  let other_error = false;
+
+  function handleRegistration() {
+    registration_error = false;
+    other_error = false;
+
+    register_account(username, password)
+      .then(() => {
+        goto("/");
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          registration_error = true;
+        } else {
+          other_error = true;
+        }
+      });
+  }
 </script>
 
 <div class="flex flex-col items-center gap-8">
@@ -28,8 +51,20 @@
       bind:value={retyped}
       placeholder="Retype password"
     />
-    <button class="btn variant-filled-primary mt-2 uppercase">Register</button>
+    <button
+      class="btn variant-filled-primary mt-2 uppercase"
+      on:click={handleRegistration}>Register</button
+    >
   </form>
+  {#if registration_error}
+    <div class="text-center text-error-500">
+      Registration attempt failed. The username is invalid or is already taken.
+    </div>
+  {:else if other_error}
+    <div class="text-center text-error-500">
+      An unknown error occurred. Please try again later.
+    </div>
+  {/if}
   <div class="flex flex-col items-center">
     <span>Already have an account? </span>
     <span
