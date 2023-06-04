@@ -42,6 +42,9 @@
     />
     <button
       class="btn variant-filled-primary mt-2 uppercase"
+      disabled={!(() => {
+        return username.length > 0 && password.length > 0;
+      })()}
       on:click={handleLogin}>Log in</button
     >
   </form>
