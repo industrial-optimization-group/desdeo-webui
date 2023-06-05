@@ -3,6 +3,7 @@
   import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   import RadarChart from "$lib/components/visual/RadarChart.svelte";
+  import { solutionsStore } from "$lib/components/visual/chartStore";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -31,17 +32,18 @@
   //   },
   // ];
   let title = "test Title";
-  let solutions: number[][] = [];
+  // let solutions = $solutions;
 </script>
 
 <div>
   <p>
     Current solutions:
-    {#each solutions as solution}
+    {#each $solutionsStore as solution}
       <p>{solution}</p>
     {/each}
   </p>
-  <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions />
+  <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
+  <ParallelAxis id="parallelAxis" {title} {names} {values} />
 </div>
 <div>
   <RadarChart id="radarChart" {names} {values} />

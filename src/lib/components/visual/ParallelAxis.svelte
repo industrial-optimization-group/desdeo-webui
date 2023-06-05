@@ -12,7 +12,7 @@
   
 -->
 <script lang="ts">
-  import type * as echarts from "echarts";
+  // import type * as echarts from "echarts";
   import { onMount } from "svelte";
   import { chartStore } from "./chartStore";
   import { createChart } from "./chartStore";
@@ -21,7 +21,7 @@
   // export let data: (string | number)[][];
   export let names: string[];
   export let values: number[][];
-  export let solutions: number[][];
+  // export let solutions: number[][];
   export let id: string;
   //   export let dimensions: ({
   //     dim: number;
@@ -35,7 +35,7 @@
   //     data: string[];
   // })[]
 
-  let series: echarts.ParallelSeriesOption[] = [];
+  // let series: echarts.ParallelSeriesOption[] = [];
   let nameAxis: object[] = [];
 
   let selectedLineStyle = {
@@ -49,21 +49,25 @@
 
   onMount(() => {
     // Creates the lines on the chart as a series component.
-    values.forEach((valueSet) => {
-      let valueObj: echarts.ParallelSeriesOption = {
-        type: "parallel",
-        selectedMode: "multiple",
-        select: {
-          disabled: false,
-        },
-        data: [valueSet],
-        lineStyle: lineStyle,
-        emphasis: {
-          lineStyle: selectedLineStyle,
-        },
-      };
-      series.push(valueObj);
-    });
+    // values.forEach((valueSet) => {
+    //   let valueObj: echarts.ParallelSeriesOption = {
+    //     type: "parallel",
+    //     selectedMode: "multiple",
+    //     select: {
+    //       disabled: false,
+    //     },
+    //     data: [valueSet],
+    //     lineStyle: lineStyle,
+    //     emphasis: {
+    //       lineStyle: selectedLineStyle,
+    //     },
+    //   };
+    //   series.push(valueObj);
+    // });
+    let seriesData: { value: number[]; name: string }[] = [];
+    for (let i = 0; i < values.length; i++) {
+      seriesData.push({ value: values[i], name: "Solution " + (i + 1) });
+    }
 
     //  Creates the names for the axes as a parallelAxis component.
     for (let i = 0; i < names.length; i++) {
@@ -76,43 +80,66 @@
     }
 
     // Create the option object for the whole chart.
-    let option: echarts.EChartsOption = {
+    const option = {
       title: {
         text: title,
       },
+      tooltip: {
+        formatter: function (params) {
+          let result = params.name + "<br>";
+          for (let i = 0; i < params.data.value.length; i++) {
+            result += params.data.value[i] + "<br>";
+          }
+          return result;
+        },
+      },
       parallelAxis: nameAxis,
-      series: series,
+      series: [
+        {
+          type: "parallel",
+          selectedMode: "multiple",
+          select: {
+            disabled: false,
+          },
+          lineStyle: lineStyle,
+          emphasis: {
+            lineStyle: selectedLineStyle,
+          },
+          data: seriesData,
+        },
+      ],
     };
 
-    let chart: echarts.EChartsType = createChart(id, option);
+    // let chart: echarts.EChartsType = createChart(id, option);
+    createChart(id, option);
     /**
      * This event listener updates the selected solution to the clicked data
      * point and highlights the corresponding series (solution) on the chart.
      */
-    chart.on("selectchanged", (params) => {
-      let selectedSeriesIndex = params.fromActionPayload.seriesIndex;
-      const selectedNumbers =
-        chart.getOption().series[selectedSeriesIndex].data[0];
-      console.log(params);
-      if (params.fromAction == "select") {
-        solutions.push(selectedNumbers);
-        chart.dispatchAction({
-          type: "highlight",
-          seriesIndex: selectedSeriesIndex,
-        });
-      } else {
-        // Find the index in the solutions array of the solution that was deselected and remove it from the array.
-        let solutionIndex = solutions.findIndex(
-          (element) => element.toString() == selectedNumbers.toString()
-        );
-        solutions.splice(solutionIndex, 1);
-        chart.dispatchAction({
-          type: "downplay",
-          seriesIndex: selectedSeriesIndex,
-        });
-      }
-      solutions = solutions;
-    });
+    // chart.on("selectchanged", (params) => {
+    //   let selectedDataIndex = params.fromActionPayload.dataIndexInside;
+    //   const selectedNumbers =
+    //     chart.getOption().series[0].data[selectedDataIndex].value;
+    //   console.log(params);
+    //   if (params.fromAction == "select") {
+    //     solutions.push(selectedNumbers);
+    //     chart.dispatchAction({
+    //       type: "highlight",
+    //       dataIndex: selectedDataIndex,
+    //     });
+    //   } else {
+    //     // Find the index in the solutions array of the solution that was deselected and remove it from the array.
+    //     let solutionIndex = solutions.findIndex(
+    //       (element) => element.toString() == selectedNumbers.toString()
+    //     );
+    //     solutions.splice(solutionIndex, 1);
+    //     chart.dispatchAction({
+    //       type: "downplay",
+    //       dataIndex: selectedDataIndex,
+    //     });
+    //   }
+    //   solutions = solutions;
+    // });
     console.log($chartStore);
   });
 </script>
