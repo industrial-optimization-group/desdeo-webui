@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-  import type * as echarts from "echarts";
+  // import type * as echarts from "echarts";
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
   import { chartStore } from "./chartStore";
@@ -61,23 +61,24 @@
       ],
     };
 
-    let chart: echarts.EChartsType = createChart(id, option);
+    createChart(id, option);
+    // let chart: echarts.EChartsType = createChart(id, option);
     // Add a click event listener to the chart
-    chart.on("click", (params) => {
-      // Check if a series is selected
-      // if (params.seriesIndex >= 0) {
-      // Get the index of the selected series
-      const selectedSeriesIndex = params.seriesIndex;
-      // Toggle the selection of the selected series
-      chart.dispatchAction({
-        type: "toggleSelect",
-        seriesIndex: selectedSeriesIndex,
-      });
-      // }
-    });
-    chart.on("selectchanged", (params) => {
-      console.log(params);
-    });
+    // chart.on("click", (params) => {
+    //   // Check if a series is selected
+    //   // if (params.seriesIndex >= 0) {
+    //   // Get the index of the selected series
+    //   const selectedSeriesIndex = params.seriesIndex;
+    //   // Toggle the selection of the selected series
+    //   chart.dispatchAction({
+    //     type: "toggleSelect",
+    //     seriesIndex: selectedSeriesIndex,
+    //   });
+    //   // }
+    // });
+    // chart.on("selectchanged", (params) => {
+    //   console.log(params);
+    // });
   });
 </script>
 
