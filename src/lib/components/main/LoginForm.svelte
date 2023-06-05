@@ -25,9 +25,9 @@
   }
 </script>
 
-<div class="flex max-w-min flex-col items-center gap-8">
-  <div class="mb-6 text-2xl">Log in to Your Account</div>
-  <form class="flex w-72 flex-col gap-4">
+<div class="flex flex-col items-center gap-10">
+  <div class="mb-6 text-3xl">Log in to Your Account</div>
+  <form class="mx-24 flex w-72 flex-col gap-4">
     <input
       class="input"
       type="text"
@@ -48,6 +48,7 @@
       on:click={handleLogin}>Log in</button
     >
   </form>
+
   {#if auth_error}
     <div class="text-center text-error-500">
       Login attempt failed. Please check your username and password.
@@ -57,9 +58,15 @@
       An error occurred. Please try again later.
     </div>
   {/if}
+
   <div class="flex flex-col items-center">
-    <span>Don't have an account?</span>
-    <span><a href="/register" class="anchor">Register a free account</a></span>
-    <span>or <a href="/TODO" class="anchor">explore DESDEO as a guest</a></span>
+    <span class="whitespace-nowrap"
+      >Don't have an account? <a href="/register" class="anchor"
+        >Register a free account</a
+      ></span
+    >
+    <span class="whitespace-nowrap"
+      >or <a href="/TODO" class="anchor">explore DESDEO as a guest</a></span
+    >
   </div>
 </div>

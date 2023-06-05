@@ -28,11 +28,12 @@
   }
 </script>
 
-<div class="flex flex-col items-center gap-8">
-  <div class="mb-6 text-2xl">
+<div class="flex flex-col items-center gap-10">
+  <div class="mb-6 text-3xl">
     Register a <span class="underline">Free</span> Account
   </div>
-  <form class="flex w-72 flex-col gap-4">
+
+  <form class="mx-24 flex w-72 flex-col gap-4">
     <input
       class="input"
       type="text"
@@ -63,6 +64,7 @@
       on:click={handleRegistration}>Register</button
     >
   </form>
+
   {#if registration_error}
     <div class="text-center text-error-500">
       Registration attempt failed. The username is invalid or is already taken.
@@ -72,10 +74,15 @@
       An unknown error occurred. Please try again later.
     </div>
   {/if}
+
   <div class="flex flex-col items-center">
-    <span>Already have an account? </span>
-    <span
-      ><a href="login" class="anchor">Log in</a> or
+    <span class="whitespace-nowrap"
+      >Already have an account? <a href="login" class="anchor"
+        >Log in to your account</a
+      ></span
+    >
+    <span class="whitespace-nowrap"
+      >or
       <a href="/TODO" class="anchor">explore DESDEO as a guest</a></span
     >
   </div>
