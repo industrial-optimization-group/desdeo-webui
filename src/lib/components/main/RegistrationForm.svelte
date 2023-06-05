@@ -47,6 +47,8 @@
     />
     <input
       class="input"
+      class:input-error={password.length > 0 && retyped !== password}
+      class:input-success={password.length > 0 && retyped === password}
       type="password"
       bind:value={retyped}
       placeholder="Retype password"
