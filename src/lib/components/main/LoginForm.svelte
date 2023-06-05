@@ -50,12 +50,14 @@
   </form>
 
   {#if auth_error}
-    <div class="text-center text-error-500">
-      Login attempt failed. Please check your username and password.
+    <div class="flex w-3/4 flex-col items-center text-error-500">
+      <span>Login attempt failed.</span>
+      <span>Please check your username and password.</span>
     </div>
   {:else if other_error}
-    <div class="text-center text-error-500">
-      An error occurred. Please try again later.
+    <div class="flex w-3/4 flex-col items-center text-error-500">
+      <span>An unknown error occurred.</span>
+      <span>Please try again later.</span>
     </div>
   {/if}
 

@@ -19,7 +19,7 @@
         goto("/");
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 400) {
           registration_error = true;
         } else {
           other_error = true;
@@ -66,12 +66,14 @@
   </form>
 
   {#if registration_error}
-    <div class="text-center text-error-500">
-      Registration attempt failed. The username is invalid or is already taken.
+    <div class="flex w-3/4 flex-col items-center text-error-500">
+      <span>Registration attempt failed.</span>
+      <span>The username is already taken or invalid.</span>
     </div>
   {:else if other_error}
-    <div class="text-center text-error-500">
-      An unknown error occurred. Please try again later.
+    <div class="flex w-3/4 flex-col items-center text-error-500">
+      <span>An unknown error occurred.</span>
+      <span>Please try again later.</span>
     </div>
   {/if}
 
