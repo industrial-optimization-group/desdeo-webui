@@ -37,7 +37,7 @@
       series: [
         {
           symbol: "none",
-          selectedMode: "",
+          selectedMode: "multiple",
           select: {
             disabled: false,
             itemStyle: {
