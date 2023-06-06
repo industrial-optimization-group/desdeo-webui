@@ -37,14 +37,14 @@
       series: [
         {
           symbol: "none",
-          selectedMode: "multiple",
-          select: {
-            disabled: false,
-            itemStyle: {
-              color: "blue",
-              opacity: 0.75,
-            },
-          },
+          // selectedMode: "multiple",
+          // select: {
+          //   disabled: false,
+          //   itemStyle: {
+          //     color: "blue",
+          //     opacity: 0.75,
+          //   },
+          // },
           type: "radar",
           emphasis: {
             // areaStyle: {

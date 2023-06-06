@@ -97,10 +97,10 @@
       series: [
         {
           type: "parallel",
-          selectedMode: "multiple",
-          select: {
-            disabled: false,
-          },
+          // selectedMode: "multiple",
+          // select: {
+          //   disabled: false,
+          // },
           lineStyle: lineStyle,
           emphasis: {
             lineStyle: selectedLineStyle,
