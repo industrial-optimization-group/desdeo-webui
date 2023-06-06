@@ -63,8 +63,8 @@
 
   <div class="flex flex-col items-center">
     <span class="whitespace-nowrap"
-      >Don't have an account? <a href="/register" class="anchor"
-        >Register a free account</a
+      >Don't have an account? <a href="/create_account" class="anchor"
+        >Create a free account</a
       ></span
     >
     <span class="whitespace-nowrap"

@@ -30,7 +30,7 @@
 
 <div class="flex flex-col items-center gap-10">
   <div class="mb-6 text-3xl">
-    Register a <span class="underline">Free</span> Account
+    Create a <span class="underline">Free</span> Account
   </div>
 
   <form class="mx-24 flex w-72 flex-col gap-4">
@@ -61,13 +61,13 @@
           username.length > 0 && password.length > 0 && password === retyped
         );
       })()}
-      on:click={handleRegistration}>Register</button
+      on:click={handleRegistration}>Create account</button
     >
   </form>
 
   {#if registration_error}
     <div class="flex w-3/4 flex-col items-center text-error-500">
-      <span>Registration attempt failed.</span>
+      <span>Account creation failed.</span>
       <span>The username is already in use or invalid.</span>
     </div>
   {:else if other_error}
