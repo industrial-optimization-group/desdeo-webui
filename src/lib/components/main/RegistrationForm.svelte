@@ -52,7 +52,7 @@
       class:input-success={password.length > 0 && retyped === password}
       type="password"
       bind:value={retyped}
-      placeholder="Retype password"
+      placeholder="Confirm password"
     />
     <button
       class="btn variant-filled-primary mt-2 uppercase"
@@ -68,7 +68,7 @@
   {#if registration_error}
     <div class="flex w-3/4 flex-col items-center text-error-500">
       <span>Registration attempt failed.</span>
-      <span>The username is already taken or invalid.</span>
+      <span>The username is already in use or invalid.</span>
     </div>
   {:else if other_error}
     <div class="flex w-3/4 flex-col items-center text-error-500">
