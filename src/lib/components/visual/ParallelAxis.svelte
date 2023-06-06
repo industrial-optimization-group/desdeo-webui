@@ -14,15 +14,16 @@
 <script lang="ts">
   // import type * as echarts from "echarts";
   import { onMount } from "svelte";
-  import { chartStore } from "./chartStore";
+  // import { chartStore } from "./chartStore";
   import { createChart } from "./chartStore";
 
   export let title: string;
-  // export let data: (string | number)[][];
   export let names: string[];
   export let values: number[][];
-  // export let solutions: number[][];
   export let id: string;
+
+  // export let data: (string | number)[][];
+  // export let solutions: number[][];
   //   export let dimensions: ({
   //     dim: number;
   //     name: string;
@@ -48,22 +49,7 @@
   };
 
   onMount(() => {
-    // Creates the lines on the chart as a series component.
-    // values.forEach((valueSet) => {
-    //   let valueObj: echarts.ParallelSeriesOption = {
-    //     type: "parallel",
-    //     selectedMode: "multiple",
-    //     select: {
-    //       disabled: false,
-    //     },
-    //     data: [valueSet],
-    //     lineStyle: lineStyle,
-    //     emphasis: {
-    //       lineStyle: selectedLineStyle,
-    //     },
-    //   };
-    //   series.push(valueObj);
-    // });
+    // Creates the lines on the chart as series data.
     let seriesData: { value: number[]; name: string }[] = [];
     for (let i = 0; i < values.length; i++) {
       seriesData.push({ value: values[i], name: "Solution " + (i + 1) });
@@ -97,10 +83,6 @@
       series: [
         {
           type: "parallel",
-          // selectedMode: "multiple",
-          // select: {
-          //   disabled: false,
-          // },
           lineStyle: lineStyle,
           emphasis: {
             lineStyle: selectedLineStyle,
@@ -112,35 +94,6 @@
 
     // let chart: echarts.EChartsType = createChart(id, option);
     createChart(id, option);
-    /**
-     * This event listener updates the selected solution to the clicked data
-     * point and highlights the corresponding series (solution) on the chart.
-     */
-    // chart.on("selectchanged", (params) => {
-    //   let selectedDataIndex = params.fromActionPayload.dataIndexInside;
-    //   const selectedNumbers =
-    //     chart.getOption().series[0].data[selectedDataIndex].value;
-    //   console.log(params);
-    //   if (params.fromAction == "select") {
-    //     solutions.push(selectedNumbers);
-    //     chart.dispatchAction({
-    //       type: "highlight",
-    //       dataIndex: selectedDataIndex,
-    //     });
-    //   } else {
-    //     // Find the index in the solutions array of the solution that was deselected and remove it from the array.
-    //     let solutionIndex = solutions.findIndex(
-    //       (element) => element.toString() == selectedNumbers.toString()
-    //     );
-    //     solutions.splice(solutionIndex, 1);
-    //     chart.dispatchAction({
-    //       type: "downplay",
-    //       dataIndex: selectedDataIndex,
-    //     });
-    //   }
-    //   solutions = solutions;
-    // });
-    console.log($chartStore);
   });
 </script>
 
