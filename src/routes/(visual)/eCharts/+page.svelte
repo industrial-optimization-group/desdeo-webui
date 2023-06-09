@@ -4,6 +4,7 @@
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   import RadarChart from "$lib/components/visual/RadarChart.svelte";
   import { solutionsStore } from "$lib/components/visual/chartStore";
+  import PetalChart from "$lib/components/visual/petalChart.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -45,12 +46,13 @@
   <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
   <ParallelAxis id="parallelAxis" {title} {names} {values} />
 </div>
+<div><PetalChart id="petalChart" title="Petal chart" {names} {values} /></div>
 <div>
-  <RadarChart id="radarChart" {names} {values} />
+  <RadarChart id="radarChart" title="Radar Chart" {names} {values} />
 </div>
 <div>
   <HorizontalAxisPlot />
-  <RadarChart id="radarChart2" {names} {values} />
+  <RadarChart id="radarChart2" title="Radar chart" {names} {values} />
 </div>
 
 <!-- <div>

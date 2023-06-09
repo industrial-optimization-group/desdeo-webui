@@ -9,6 +9,7 @@
   // import { chartStore } from "./chartStore";
   import { createChart } from "./chartStore";
 
+  export let title: string;
   export let names: string[];
   export let values: number[][];
   export let id: string;
@@ -27,7 +28,7 @@
     // Create the option object for the whole chart.
     const option = {
       title: {
-        text: "Radar Chart",
+        text: title,
       },
       tooltip: {},
       radar: {
