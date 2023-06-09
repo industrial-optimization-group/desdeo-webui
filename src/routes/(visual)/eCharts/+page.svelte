@@ -36,25 +36,34 @@
   // let solutions = $solutions;
 </script>
 
-<div>
-  <p>
-    Current solutions:
-    {#each $solutionsStore as solution}
-      <p>{solution}</p>
-    {/each}
-  </p>
-  <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
-  <ParallelAxis id="parallelAxis" {title} {names} {values} />
-</div>
-<div><PetalChart id="petalChart" title="Petal chart" {names} {values} /></div>
-<div>
-  <RadarChart id="radarChart" title="Radar Chart" {names} {values} />
-</div>
-<div>
-  <HorizontalAxisPlot />
-  <RadarChart id="radarChart2" title="Radar chart" {names} {values} />
+<div class="container">
+  <div>
+    <p>
+      Current solutions:
+      {#each $solutionsStore as solution}
+        <p>{solution}</p>
+      {/each}
+    </p>
+    <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
+    <ParallelAxis id="parallelAxis" {title} {names} {values} />
+  </div>
+  <div><PetalChart id="petalChart" title="Petal chart" {names} {values} /></div>
+  <div>
+    <RadarChart id="radarChart" title="Radar Chart" {names} {values} />
+  </div>
+  <div>
+    <HorizontalAxisPlot />
+    <RadarChart id="radarChart2" title="Radar chart" {names} {values} />
+  </div>
 </div>
 
 <!-- <div>
   <Example></Example>
 </div> -->
+<style>
+  .container {
+    max-height: max-content;
+    min-width: max-content;
+    overflow: scroll;
+  }
+</style>
