@@ -15,10 +15,12 @@
   export let id: string;
   // let charts = $chartStore;
 
+  // Create the indicator objects for the radar chart.
   let indObjects: { name: string }[] = [];
   names.forEach((name) => {
     indObjects.push({ name: name });
   });
+  // Create the series data for the radar chart.
   let seriesData: { value: number[]; name: string }[] = [];
   for (let i = 0; i < values.length; i++) {
     seriesData.push({ value: values[i], name: "Solution " + (i + 1) });

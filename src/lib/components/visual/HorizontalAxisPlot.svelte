@@ -1,18 +1,16 @@
+<!--
+  @component
+      @description Makes a horizontal axis plot using the ECharts library.
+-->
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
 
-  // const rivinNimi = ["testi"];
-  // const kolumniNimet = [1, 2, 3, 4, 5, 6, 7];
   onMount(() => {
     const chart = echarts.init(
       document.getElementById("HorizontalAxisPlot") as HTMLCanvasElement
     );
     let option: echarts.EChartOption = {
-      // tooltip:{
-      //   trigger: 'axis',
-      // },
-      // backgroundColor: "white",
       xAxis: {
         id: "xAxis",
         type: "value",
@@ -51,38 +49,9 @@
         },
       ],
     };
-
-    // let option: echarts.EChartOption = {
-
-    //   title: [{
-    //     text: rivinNimi[0],
-    //   }],
-    //   tooltip: {
-    //     trigger: 'axis',
-    //     axisPointer: {
-    //       type: "line",
-    //       snap: false,
-    //     }
-    //   },
-    //   singleAxis: {
-    //     name: "test",
-    //     type: 'value',
-    //     data: kolumniNimet
-    //   },
-    //   series: [{
-    //     // singleAxisIndex: 0,
-    //     name: 'scatter',
-    //     type: 'line',
-    //     coordinateSystem: 'cartesian',
-    //     symbolSize: 20,
-    // data: [1.1231313,2],
-    //     // coordinateSystem: 'cartesian',
-    //     // coordinateSystem: 'cartesian2d',
-    //   }],
-    // }
-
     chart.setOption(option);
 
+    // Add event listener which adds and updates the line on the graph.
     chart.getZr().on("click", function (params) {
       // var pointInPixel = [params.offsetX, params.offsetY];
       // var pointInGrid = chart.convertFromPixel("grid", pointInPixel);

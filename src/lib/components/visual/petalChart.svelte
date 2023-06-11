@@ -18,7 +18,7 @@
   let newSeriesObjects = [];
   let subTexts = [{ text: title }];
 
-  // Change values of "values" to be positive with map function.
+  // Change values of "values" to be positive with the map function.
   let valuesPositive = values.map((row) => row.map((value) => Math.abs(value)));
 
   // Transpose values matrix.

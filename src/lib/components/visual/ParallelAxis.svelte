@@ -1,14 +1,10 @@
 <!--@component
   Creates a parallel axis chart using the ECharts library. As input, it takes a
-  title, the names of the axes, and the values for each axis. It outputs the
-  selected solution, which is an array of numbers, where each number is the
-  value of the axis at that index. The selected solution is highlighted on the
-  chart.
-
+  title, the names of the axes, and the values for each axis. 
+  
   @param {string} title - The title of the chart.
   @param {string[]} names - The names of the axes.
   @param {number[][]} values - The values for each axis.
-  @param {number[]} solution - The selected solution.
   
 -->
 <script lang="ts">
