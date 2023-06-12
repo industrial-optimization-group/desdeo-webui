@@ -1,5 +1,6 @@
 <script lang="ts">
   import { drawerStore } from "@skeletonlabs/skeleton";
+  import NewWindowIcon from "$lib/assets/icons/NewWindow.svelte";
 
   function handleClick() {
     drawerStore.open();
@@ -27,7 +28,10 @@
       href="https://ieeexplore.ieee.org/document/9591595"
       target="_blank"
     >
-      <span>Open access</span>
+      <div class="flex items-center gap-1">
+        <NewWindowIcon />
+        <span>Open access</span>
+      </div>
     </a>
     {#if show_bibtex_button}
       <button class="anchor" on:click={handleClick}>Show BibTeX</button>
