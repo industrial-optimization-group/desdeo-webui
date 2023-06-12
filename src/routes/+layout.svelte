@@ -2,15 +2,22 @@
   import "@skeletonlabs/skeleton/themes/theme-hamlindigo.css";
   import "@skeletonlabs/skeleton/styles/skeleton.css";
   import "../app.postcss";
-  import { Drawer } from "@skeletonlabs/skeleton";
+  import { Drawer, drawerStore } from "@skeletonlabs/skeleton";
   import Citation from "$lib/components/main/Citation.svelte";
   import CitationDownload from "$lib/components/main/CitationDownload.svelte";
+
+  function closeDrawer() {
+    drawerStore.close();
+  }
 </script>
 
 <Drawer position="bottom">
-  <div class="h-full max-w-screen-xl p-4">
-    <div class="mb-4 font-bold">Citing DESDEO</div>
-    <div class="grid grid-cols-2">
+  <div class="h-full p-4">
+    <div class="mb-4 flex justify-between">
+      <span class="font-bold">Citing DESDEO</span>
+      <button class="anchor" on:click={closeDrawer}>Close</button>
+    </div>
+    <div class="grid max-w-screen-xl grid-cols-2">
       <!--
         TODO: Use the theme system instead a hardcoded color?
       -->
