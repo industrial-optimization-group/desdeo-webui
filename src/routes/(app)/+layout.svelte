@@ -4,7 +4,7 @@
   import Navigation from "$lib/components/main/Navigation.svelte";
 </script>
 
-<AppShell slotPageContent="p-2" slotPageHeader="shadow">
+<AppShell slotPageContent="p-20 pt-10" slotPageHeader="shadow">
   <!-- (header) -->
   <svelte:fragment slot="sidebarLeft">
     <Navigation />
