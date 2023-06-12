@@ -5,6 +5,7 @@
   import RadarChart from "$lib/components/visual/RadarChart.svelte";
   import { solutionsStore } from "$lib/components/visual/chartStore";
   import PetalChart from "$lib/components/visual/petalChart.svelte";
+  import type { SolutionData } from "$lib/components/visual/types";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -13,13 +14,13 @@
   //   [22, 125, 20, "Excellent"],
   // ];
 
-  let names = ["Social", "Economic", "Environmental"];
-  let values = [
-    [-1.4563, -0.89456, -2.6478],
-    [-1.1653, -1.02342, -2.234],
-    [-1.003, -0.73453, -2.0785],
-    [-0.003, -0.453, -2.015],
-  ];
+  // let names = ["Social", "Economic", "Environmental"];
+  // let values = [
+  //   [-1.4563, -0.89456, -2.6478],
+  //   [-1.1653, -1.02342, -2.234],
+  //   [-1.003, -0.73453, -2.0785],
+  //   [-0.003, -0.453, -2.015],
+  // ];
 
   // let dimensions = [
   //   { dim: 0, name: "grrr" },
@@ -34,6 +35,38 @@
   // ];
   let title = "test Title";
   // let solutions = $solutions;
+  let exampleData: SolutionData = {
+    names: ["Objective1", "Objective2", "Objective3"],
+    values: [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ],
+    value_ranges: [
+      [0, 10],
+      [0, 10],
+      [0, 10],
+    ],
+    tags: [["Tag1", "Tag2"], ["Tag3"], ["Tag4", "Tag5", "Tag6"]],
+    uncertainty: [
+      [
+        [0.9, 1.1],
+        [1.9, 2.1],
+        [2.9, 3.1],
+      ],
+      [
+        [3.9, 4.1],
+        [4.9, 5.1],
+        [5.9, 6.1],
+      ],
+      [
+        [6.9, 7.1],
+        [7.9, 8.1],
+        [8.9, 9.1],
+      ],
+    ],
+    minimize: [true, false, true],
+  };
 </script>
 
 <div class="container">
@@ -45,15 +78,17 @@
       {/each}
     </p>
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
-    <ParallelAxis id="parallelAxis" {title} {names} {values} />
+    <ParallelAxis id="parallelAxis" {title} data={exampleData} />
   </div>
-  <div><PetalChart id="petalChart" title="Petal chart" {names} {values} /></div>
   <div>
-    <RadarChart id="radarChart" title="Radar Chart" {names} {values} />
+    <PetalChart id="petalChart" title="Petal chart" data={exampleData} />
+  </div>
+  <div>
+    <RadarChart id="radarChart" title="Radar Chart" data={exampleData} />
   </div>
   <div>
     <HorizontalAxisPlot />
-    <RadarChart id="radarChart2" title="Radar chart" {names} {values} />
+    <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->
   </div>
 </div>
 
@@ -61,8 +96,10 @@
   <Example></Example>
 </div> -->
 <style>
+  /* A scrollable div where height is the height of the screen*/
+
   .container {
-    max-height: max-content;
+    height: 100vh;
     min-width: max-content;
     overflow: scroll;
   }

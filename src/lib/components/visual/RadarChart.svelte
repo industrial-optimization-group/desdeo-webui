@@ -8,12 +8,14 @@
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
   import { createChart } from "./chartStore";
+  import type { SolutionData } from "./types";
 
-  export let title: string;
-  export let names: string[];
-  export let values: number[][];
   export let id: string;
-  // let charts = $chartStore;
+  export let title: string;
+  export let data: SolutionData;
+
+  const names: string[] = data.names;
+  const values: number[][] = data.values;
 
   // Create the indicator objects for the radar chart.
   let indObjects: { name: string }[] = [];

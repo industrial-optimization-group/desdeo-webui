@@ -2,47 +2,34 @@
   Creates a parallel axis chart using the ECharts library. As input, it takes a
   title, the names of the axes, and the values for each axis. 
   
+  @param {string} id - The id of the div element that will contain the chart.
   @param {string} title - The title of the chart.
-  @param {string[]} names - The names of the axes.
-  @param {number[][]} values - The values for each axis.
-  
+  @param {SolutionData} data - The data for the chart.
 -->
 <script lang="ts">
   // import type * as echarts from "echarts";
   import { onMount } from "svelte";
   // import { chartStore } from "./chartStore";
   import { createChart } from "./chartStore";
+  import type { SolutionData } from "./types";
 
-  export let title: string;
-  export let names: string[];
-  export let values: number[][];
   export let id: string;
+  export let title: string;
+  export let data: SolutionData;
 
-  // export let data: (string | number)[][];
-  // export let solutions: number[][];
-  //   export let dimensions: ({
-  //     dim: number;
-  //     name: string;
-  //     type?: undefined;
-  //     data?: undefined;
-  // } | {
-  //     dim: number;
-  //     name: string;
-  //     type: string;
-  //     data: string[];
-  // })[]
+  const names: string[] = data.names;
+  const values: number[][] = data.values;
 
-  // let series: echarts.ParallelSeriesOption[] = [];
-  let nameAxis: object[] = [];
-
-  let selectedLineStyle = {
+  const selectedLineStyle = {
     width: 7,
     opacity: 1,
   };
-  let lineStyle = {
+  const lineStyle = {
     width: 3.5,
     opacity: 0.6,
   };
+
+  console.log(data);
 
   onMount(() => {
     // Creates the lines on the chart as series data.
@@ -52,6 +39,7 @@
     }
 
     //  Creates the names for the axes as a parallelAxis component.
+    let nameAxis: object[] = [];
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
       let nameObj = {

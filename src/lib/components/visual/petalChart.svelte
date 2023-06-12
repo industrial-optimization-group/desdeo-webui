@@ -8,11 +8,15 @@
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
   import { createChart } from "./chartStore";
+  import type { SolutionData } from "./types";
 
-  export let title: string;
-  export let names: string[];
-  export let values: number[][];
   export let id: string;
+  export let title: string;
+  export let data: SolutionData;
+
+  const names: string[] = data.names;
+  const values: number[][] = data.values;
+
   // let charts = $chartStore;
 
   let newSeriesObjects = [];
