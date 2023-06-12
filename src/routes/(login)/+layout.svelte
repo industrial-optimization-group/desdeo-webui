@@ -2,6 +2,8 @@
   import { writable } from "svelte/store";
   import { setContext } from "svelte";
   import type { LoginContext } from "./types";
+  import logo from "$lib/assets/logo.png";
+  import Citation from "$lib/components/main/Citation.svelte";
 
   //
   // The `login` context is used to share the current values of the username
@@ -13,8 +15,6 @@
     username: writable(""),
     password: writable(""),
   });
-
-  import logo from "$lib/assets/logo.png";
 </script>
 
 <div class="grid h-screen grid-cols-[1fr_auto]">
@@ -28,14 +28,7 @@
         <h1 class="mb-12 text-5xl font-bold leading-snug">
           Enabling Better<br />Decision Making
         </h1>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur.
-        </p>
+        <Citation show_bibtex_button={true} />
       </div>
     </div>
   </div>

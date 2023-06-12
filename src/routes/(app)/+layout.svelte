@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { AppShell } from "@skeletonlabs/skeleton";
   import Header from "$lib/components/main/Header.svelte";
   import Navigation from "$lib/components/main/Navigation.svelte";
