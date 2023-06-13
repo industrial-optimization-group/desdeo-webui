@@ -31,8 +31,58 @@ const selectedIndices: number[] = [];
  * @param chart The chart to add the event listener to
  */
 
-//TODO: Is the return necessary?
 function handleSelection(chart: ECharts): void {
+  function addEffectToCharts(
+    effect: string,
+    charts: ECharts[],
+    dataIndex: number
+  ) {
+    charts.forEach((c) => {
+      // If chart has multiple series, downplay all series. This is the case for example for the petal chart.
+      const hasMultipleSeries =
+        c.getOption().series.length > 1
+          ? [...Array(c.getOption().series.length).keys()]
+          : false;
+      if (hasMultipleSeries) {
+        c.dispatchAction({
+          type: effect,
+          seriesIndex: hasMultipleSeries,
+          dataIndex: dataIndex,
+        });
+      } else {
+        c.dispatchAction({
+          type: effect,
+          seriesIndex: 0,
+          dataIndex: dataIndex,
+        });
+      }
+    });
+    return charts;
+  }
+
+  // Highlight the data point when the mouse hovers over it
+  chart.on("mouseover", (params) => {
+    const dataIndex = params.dataIndex;
+    // Highlight the data point in every chart in chartStore
+    chartStore.update((charts) => {
+      return addEffectToCharts("highlight", charts, dataIndex);
+    });
+  });
+
+  // Downplay the data point when the mouse leaves it
+  chart.on("mouseout", (params) => {
+    const dataIndex = params.dataIndex;
+    // Downplay the data point only if it is not selected
+    if (selectedIndices.indexOf(dataIndex) == -1) {
+      // Downplay the data point in every chart in chartStore
+      chartStore.update((charts) => {
+        return addEffectToCharts("downplay", charts, dataIndex);
+      });
+    }
+  });
+
+  // Select the data point when it is clicked
+
   chart.on("click", (params) => {
     const dataIndex = params.dataIndex;
     const indexOfselected = selectedIndices.indexOf(dataIndex);
@@ -42,27 +92,7 @@ function handleSelection(chart: ECharts): void {
       selectedIndices.splice(indexOfselected, 1);
       // For each chart in the chartStore, dispatch an action to downplay the selected data point
       chartStore.update((charts) => {
-        charts.forEach((c) => {
-          // If chart has multiple series, downplay all series. This is the case for example for the petal chart.
-          const hasMultipleSeries =
-            c.getOption().series.length > 1
-              ? [...Array(c.getOption().series.length).keys()]
-              : false;
-          if (hasMultipleSeries) {
-            c.dispatchAction({
-              type: "downplay",
-              seriesIndex: hasMultipleSeries,
-              dataIndex: dataIndex,
-            });
-          } else {
-            c.dispatchAction({
-              type: "downplay",
-              seriesIndex: 0,
-              dataIndex: dataIndex,
-            });
-          }
-        });
-        return charts;
+        return addEffectToCharts("downplay", charts, dataIndex);
       });
     }
     // If the data point is not selected, add it to the selectedIndices array and highlight it
@@ -70,27 +100,7 @@ function handleSelection(chart: ECharts): void {
       selectedIndices.push(dataIndex);
       // For each chart in the chartStore, dispatch an action to highlight the selected data point
       chartStore.update((charts) => {
-        charts.forEach((c) => {
-          // If chart has multiple series, highlight all series. This is the case for example for the petal chart.
-          const hasMultipleSeries =
-            c.getOption().series.length > 1
-              ? [...Array(c.getOption().series.length).keys()]
-              : false;
-          if (hasMultipleSeries) {
-            c.dispatchAction({
-              type: "highlight",
-              seriesIndex: hasMultipleSeries,
-              dataIndex: dataIndex,
-            });
-          } else {
-            c.dispatchAction({
-              type: "highlight",
-              seriesIndex: 0,
-              dataIndex: dataIndex,
-            });
-          }
-        });
-        return charts;
+        return addEffectToCharts("highlight", charts, dataIndex);
       });
     }
   });
