@@ -36,29 +36,59 @@ function handleSelection(chart: ECharts): void {
   chart.on("click", (params) => {
     const dataIndex = params.dataIndex;
     const indexOfselected = selectedIndices.indexOf(dataIndex);
+
+    // If the data point is already selected, remove it from the selectedIndices array and downplay it
     if (indexOfselected != -1) {
       selectedIndices.splice(indexOfselected, 1);
       // For each chart in the chartStore, dispatch an action to downplay the selected data point
       chartStore.update((charts) => {
         charts.forEach((c) => {
-          c.dispatchAction({
-            type: "downplay",
-            seriesIndex: 0,
-            dataIndex: dataIndex,
-          });
+          // If chart has multiple series, downplay all series. This is the case for example for the petal chart.
+          const hasMultipleSeries =
+            c.getOption().series.length > 1
+              ? [...Array(c.getOption().series.length).keys()]
+              : false;
+          if (hasMultipleSeries) {
+            c.dispatchAction({
+              type: "downplay",
+              seriesIndex: hasMultipleSeries,
+              dataIndex: dataIndex,
+            });
+          } else {
+            c.dispatchAction({
+              type: "downplay",
+              seriesIndex: 0,
+              dataIndex: dataIndex,
+            });
+          }
         });
         return charts;
       });
-    } else {
+    }
+    // If the data point is not selected, add it to the selectedIndices array and highlight it
+    else {
       selectedIndices.push(dataIndex);
       // For each chart in the chartStore, dispatch an action to highlight the selected data point
       chartStore.update((charts) => {
         charts.forEach((c) => {
-          c.dispatchAction({
-            type: "highlight",
-            seriesIndex: 0,
-            dataIndex: dataIndex,
-          });
+          // If chart has multiple series, highlight all series. This is the case for example for the petal chart.
+          const hasMultipleSeries =
+            c.getOption().series.length > 1
+              ? [...Array(c.getOption().series.length).keys()]
+              : false;
+          if (hasMultipleSeries) {
+            c.dispatchAction({
+              type: "highlight",
+              seriesIndex: hasMultipleSeries,
+              dataIndex: dataIndex,
+            });
+          } else {
+            c.dispatchAction({
+              type: "highlight",
+              seriesIndex: 0,
+              dataIndex: dataIndex,
+            });
+          }
         });
         return charts;
       });
