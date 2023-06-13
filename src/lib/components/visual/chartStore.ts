@@ -5,7 +5,7 @@ import type { EChartOption, ECharts } from "echarts";
 import { writable } from "svelte/store";
 
 export const chartStore = writable<ECharts[]>([]);
-export const solutionsStore = writable<number[][]>([]);
+export const selectedSolutions = writable([]);
 
 /**
  * Creates a chart and adds it to the chartStore.
@@ -25,6 +25,7 @@ export function createChart(id: string, option: EChartOption) {
 }
 
 const selectedIndices: number[] = [];
+const selectedSolutionsArray = [];
 /**
  * Adds an event listener to the chart to handle the selection of data points.
  *
@@ -90,6 +91,7 @@ function handleSelection(chart: ECharts): void {
     // If the data point is already selected, remove it from the selectedIndices array and downplay it
     if (indexOfselected != -1) {
       selectedIndices.splice(indexOfselected, 1);
+      selectedSolutionsArray.splice(indexOfselected, 1);
       // For each chart in the chartStore, dispatch an action to downplay the selected data point
       chartStore.update((charts) => {
         return addEffectToCharts("downplay", charts, dataIndex);
@@ -98,10 +100,18 @@ function handleSelection(chart: ECharts): void {
     // If the data point is not selected, add it to the selectedIndices array and highlight it
     else {
       selectedIndices.push(dataIndex);
+      //TODO: When selecting from pie, should also show all objective values, not only the pie charts own
+      console.log(chart.getOption().series);
+      selectedSolutionsArray.push(params.data);
       // For each chart in the chartStore, dispatch an action to highlight the selected data point
       chartStore.update((charts) => {
         return addEffectToCharts("highlight", charts, dataIndex);
       });
     }
+    selectedSolutions.update((solutions) => {
+      solutions = selectedSolutionsArray;
+      console.log(solutions);
+      return solutions;
+    });
   });
 }
