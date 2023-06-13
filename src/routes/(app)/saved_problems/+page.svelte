@@ -13,7 +13,7 @@
   <!-- Tab Panels --->
   <svelte:fragment slot="panel">
     {#if tabSet === 0}
-      <SavedProblems />
+      <SavedProblems class="max-w-screen-md" />
     {:else if tabSet === 1}
       TODO
     {/if}

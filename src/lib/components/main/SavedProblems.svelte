@@ -68,15 +68,20 @@
     },
   ];
 
-  import { Table } from "@skeletonlabs/skeleton";
-  import type { TableSource } from "@skeletonlabs/skeleton";
+  import Paginator from "./Paginator.svelte";
+  import { Table, type TableSource } from "@skeletonlabs/skeleton";
   import { tableMapperValues } from "@skeletonlabs/skeleton";
 
-  const tableSimple: TableSource = {
-    // A list of heading labels.
+  const items_per_page = 10;
+  let start: number;
+  let endExclusive: number;
+  let tableSimple: TableSource;
+
+  $: paginatedProblems = problems.slice(start, endExclusive);
+
+  $: tableSimple = {
     head: ["Name", "Problem type"],
-    // The data visibly shown in your table body UI.
-    body: tableMapperValues(problems, ["name", "problem_type"]),
+    body: tableMapperValues(paginatedProblems, ["name", "problem_type"]),
     // Optional: The data returned when interactive is enabled and a row is clicked.
     // meta: tableMapperValues(sourceData, [
     //   "position",
@@ -89,4 +94,14 @@
   };
 </script>
 
-<Table class="max-w-screen-md" source={tableSimple} interactive={true} />
+<div class={$$props.class}>
+  <dev class="flex justify-end">
+    <Paginator
+      total_items={problems.length}
+      {items_per_page}
+      bind:start
+      bind:endExclusive
+    />
+  </dev>
+  <Table source={tableSimple} interactive={true} />
+</div>
