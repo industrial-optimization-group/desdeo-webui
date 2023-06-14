@@ -37,14 +37,47 @@
       const value = row[j];
       petals.push({ value: value, name: "solution " + (j + 1) });
     }
-    newSeriesObjects.push({
-      name: names[i],
-      type: "pie",
-      radius: 70,
-      roseType: "area",
-      center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-      data: petals,
-    });
+    newSeriesObjects.push(
+      {
+        name: names[i],
+        type: "pie",
+        radius: 70,
+        roseType: "area",
+        itemStyle: {
+          // borderWidth: 3,
+          // borderColor: 'gray'
+        },
+        center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
+        data: petals,
+      },
+      // A circle for showing the lines between petals and border line.
+      {
+        type: "pie",
+        radius: 70,
+        tooltip: {
+          show: false,
+        },
+        roseType: "area",
+        itemStyle: {
+          borderWidth: 1,
+          borderColor: "gray",
+          color: "transparent",
+        },
+        center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
+        // To be on top of the petals.
+        z: 10,
+        label: {
+          show: false,
+        },
+        data: [...Array(petals.length).fill(1)],
+        // showEmptyCircle: true,
+        // emptyCircleStyle: {
+        //   borderWidth: 3,
+        //   borderColor: '#235894'
+        // },
+      }
+    );
+
     subTexts.push({
       subtext: names[i],
       left: ((i + 0.5) / valuesTransposed.length) * 100 + "%",
@@ -58,6 +91,7 @@
     const option = {
       title: subTexts,
       tooltip: {},
+      aria: {},
       series: newSeriesObjects,
     };
     // let chart: echarts.EChartsType = createChart(id, option);

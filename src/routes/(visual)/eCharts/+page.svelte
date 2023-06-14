@@ -3,7 +3,7 @@
   import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   import RadarChart from "$lib/components/visual/RadarChart.svelte";
-  import { solutionsStore } from "$lib/components/visual/chartStore";
+  import { selectedSolutions } from "$lib/components/visual/chartStore";
   import PetalChart from "$lib/components/visual/petalChart.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
 
@@ -33,8 +33,6 @@
   //     data: ["Excellent", "Good", "OK", "Bad"],
   //   },
   // ];
-  let title = "test Title";
-  // let solutions = $solutions;
   let exampleData: SolutionData = {
     names: ["Objective1", "Objective2", "Objective3"],
     values: [
@@ -73,12 +71,16 @@
   <div>
     <p>
       Current solutions:
-      {#each $solutionsStore as solution}
-        <p>{solution}</p>
+      {#each $selectedSolutions as solution}
+        <p>{solution.name}: {solution.value}</p>
       {/each}
     </p>
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
-    <ParallelAxis id="parallelAxis" {title} data={exampleData} />
+    <ParallelAxis
+      id="parallelAxis"
+      title="Parallel Axis chart"
+      data={exampleData}
+    />
   </div>
   <div>
     <PetalChart id="petalChart" title="Petal chart" data={exampleData} />
