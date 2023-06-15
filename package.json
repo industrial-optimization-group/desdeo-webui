@@ -10,16 +10,16 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test:unit": "vitest",
-    "lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "format": "prettier --plugin-search-dir . --write .",
+    "lint": "prettier --check . && eslint .",
+    "format": "prettier --write .",
     "prepare": "husky install"
   },
   "lint-staged": {
     "*": [
-      "prettier --plugin-search-dir . --check"
+      "prettier --check"
     ],
     "*.{js,ts,svelte}": [
-      "prettier --plugin-search-dir . --check",
+      "prettier --check",
       "eslint --max-warnings 0"
     ]
   },
