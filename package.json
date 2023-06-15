@@ -10,7 +10,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test:unit": "vitest",
-    "lint": "prettier --check . && eslint .",
+    "lint": "prettier --check . && eslint --ext .js,.ts,.svelte src/",
     "format": "prettier --write .",
     "prepare": "husky install"
   },
