@@ -64,8 +64,9 @@
           color: "transparent",
         },
         center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-        // To be on top of the petals.
-        z: 10,
+        // To be under the petals when clicking.
+        z: 1,
+        silent: true,
         label: {
           show: false,
         },

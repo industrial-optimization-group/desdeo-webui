@@ -64,6 +64,11 @@
         },
       },
       parallelAxis: nameAxis,
+      brush: {
+        brushMode: "multiple",
+        throttleType: "debounce",
+        throttleDelay: 300,
+      },
       series: [
         {
           type: "parallel",

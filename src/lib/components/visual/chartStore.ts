@@ -61,6 +61,19 @@ function handleSelection(chart: ECharts): void {
     return charts;
   }
 
+  // chart.on("select", (params) => {
+  //   console.log("tets");
+  // });
+  // chart.on("brushSelected", (params) => {
+  //   console.log("brushSeelcted");
+  //   // chartStore.update((charts) => {
+  //   //   return addEffectToCharts("highlight", charts, 0);
+  //   // });
+  // });
+  // chart.on("brushEnd", (params) => {
+  //   console.log("brushEnd");
+  // });
+
   // Highlight the data point when the mouse hovers over it
   chart.on("mouseover", (params) => {
     const dataIndex = params.dataIndex;
