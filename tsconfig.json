@@ -1,14 +1,35 @@
 {
+  //
+  // Note that setting `include` or `exclude` overwrites the values set by
+  // SvelteKit. You should copy the values from the referenced configuration
+  // file and merge your changes to them.
+  //
   "extends": "./.svelte-kit/tsconfig.json",
+
   "compilerOptions": {
+    "strict": true,
     "allowJs": true,
     "checkJs": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
+
+    //
+    // Try setting `skipLibCheck` to `true` if compilation fails due to type
+    // errors in libraries or if compilation seems very slow.
+    // See https://www.testim.io/blog/typescript-skiplibcheck/
+    // See https://github.com/microsoft/TypeScript/issues/38538
+    //
+    "skipLibCheck": false,
+
+    //
+    // Generate sourcemap files that allow tools to display the original
+    // TypeScript code when actually working with JavaScript code.
+    //
     "sourceMap": true,
-    "strict": true,
+
+    // Treat imports case-sensitively on every platform
+    "forceConsistentCasingInFileNames": true,
+
     "plugins": [
       {
         // Provides intellisense when interacting with Svelte files
@@ -16,8 +37,4 @@
       }
     ]
   }
-  // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
-  //
-  // If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
-  // from the referenced tsconfig.json - TypeScript does not merge them in
 }
