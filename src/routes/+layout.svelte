@@ -19,7 +19,7 @@
     </div>
     <div class="grid max-w-screen-xl grid-cols-2">
       <!--
-        TODO: Use the theme system instead a hardcoded color?
+        TODO: Use the theme system instead of a hardcoded color?
       -->
       <div class="border-r border-black pr-4">
         <Citation />

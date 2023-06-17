@@ -5,7 +5,7 @@
 </script>
 
 <!--
-  TODO: Use the theme system insted of hardcoded colors?
+  TODO: Use the theme system instead of hardcoded colors?
 -->
 <div class="h-full bg-[#141313] text-[#f0efef]">
   <div class="flex flex-col items-center">
