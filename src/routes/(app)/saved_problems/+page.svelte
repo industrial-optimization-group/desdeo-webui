@@ -15,7 +15,7 @@
     {#if tabSet === 0}
       <SavedProblems class="max-w-screen-md" />
     {:else if tabSet === 1}
-      TODO
+      <SavedProblems />
     {/if}
   </svelte:fragment>
 </TabGroup>

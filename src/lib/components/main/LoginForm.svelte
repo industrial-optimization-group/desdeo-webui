@@ -67,8 +67,8 @@
         >Create a free account</a
       ></span
     >
-    <span class="whitespace-nowrap"
+    <!--<span class="whitespace-nowrap"
       >or <a href="/TODO" class="anchor">explore DESDEO as a guest</a></span
-    >
+    >-->
   </div>
 </div>

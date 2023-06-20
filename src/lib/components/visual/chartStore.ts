@@ -15,13 +15,45 @@ export const selectedSolutions = writable([]);
  * @returns The chart object
  */
 export function createChart(id: string, option: EChartOption) {
+  //console.log(2, option)
+
   const chart = echarts.init(document.getElementById(id) as HTMLCanvasElement);
+
+  console.log("FIRST RENDER", option);
+
   chart.setOption(option);
   chartStore.update((charts) => [...charts, chart]);
 
   handleSelection(chart);
 
   return chart;
+}
+
+export function updateChart(id: string, option: EChartOption) {
+  //console.log(1, id, option)
+  let oldCharts: ECharts[] = [];
+  chartStore.subscribe((charts) => {
+    oldCharts = charts;
+  });
+
+  const chart = oldCharts.find((chart) => chart.getDom().id == id);
+
+  console.log(2, chart);
+
+  if (chart == undefined) return;
+
+  //console.log(1, id, option)
+
+  console.log("RERENDER", chart, option);
+
+  chart.setOption(option, true, false);
+
+  /* const updatedCharts = [...oldCharts];
+    updatedCharts[oldCharts.indexOf(chart)] = chart;
+
+    //console.log(updatedCharts)
+
+    chartStore.update(() => updatedCharts) */
 }
 
 const selectedIndices: number[] = [];
@@ -64,6 +96,8 @@ function handleSelection(chart: ECharts): void {
   // Highlight the data point when the mouse hovers over it
   chart.on("mouseover", (params) => {
     const dataIndex = params.dataIndex;
+
+    if (dataIndex == undefined) return;
     // Highlight the data point in every chart in chartStore
     chartStore.update((charts) => {
       return addEffectToCharts("highlight", charts, dataIndex);
@@ -86,6 +120,9 @@ function handleSelection(chart: ECharts): void {
 
   chart.on("click", (params) => {
     const dataIndex = params.dataIndex;
+
+    if (dataIndex === undefined) return;
+
     const indexOfselected = selectedIndices.indexOf(dataIndex);
 
     // If the data point is already selected, remove it from the selectedIndices array and downplay it
@@ -101,7 +138,6 @@ function handleSelection(chart: ECharts): void {
     else {
       selectedIndices.push(dataIndex);
       //TODO: When selecting from pie, should also show all objective values, not only the pie charts own
-      console.log(chart.getOption().series);
       selectedSolutionsArray.push(params.data);
       // For each chart in the chartStore, dispatch an action to highlight the selected data point
       chartStore.update((charts) => {
@@ -110,7 +146,6 @@ function handleSelection(chart: ECharts): void {
     }
     selectedSolutions.update((solutions) => {
       solutions = selectedSolutionsArray;
-      console.log(solutions);
       return solutions;
     });
   });
