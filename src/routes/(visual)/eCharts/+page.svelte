@@ -3,8 +3,9 @@
   import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   import RadarChart from "$lib/components/visual/RadarChart.svelte";
-  import { selectedSolutions } from "$lib/components/visual/stores";
   import PetalChart from "$lib/components/visual/petalChart.svelte";
+  import BarChart from "$lib/components/visual/barChart.svelte";
+  import { selectedSolutions } from "$lib/components/visual/stores";
   import type { SolutionData } from "$lib/components/visual/types";
 
   // let data = [
@@ -83,6 +84,7 @@
     />
   </div>
   <div>
+    <BarChart id="barChart" title="Bar chart" data={exampleData} />
     <PetalChart id="petalChart" title="Petal chart" data={exampleData} />
   </div>
   <div>
