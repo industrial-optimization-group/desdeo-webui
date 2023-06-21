@@ -7,7 +7,7 @@
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
-  import { createChart } from "./chartStore";
+  import { createChart } from "./stores";
   import type { SolutionData } from "./types";
 
   export let id: string;

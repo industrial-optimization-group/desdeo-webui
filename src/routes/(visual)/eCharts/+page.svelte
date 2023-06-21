@@ -3,7 +3,7 @@
   import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   import RadarChart from "$lib/components/visual/RadarChart.svelte";
-  import { selectedSolutions } from "$lib/components/visual/chartStore";
+  import { selectedSolutions } from "$lib/components/visual/stores";
   import PetalChart from "$lib/components/visual/petalChart.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
 
