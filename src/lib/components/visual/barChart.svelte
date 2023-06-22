@@ -3,7 +3,6 @@
 -->
 
 <script lang="ts">
-  // import type * as echarts from "echarts";
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
@@ -27,7 +26,6 @@
     dataSet.push(newArr);
     series.push({ type: "bar" });
   }
-  console.log(dataSet);
   onMount(() => {
     // Create the option object for the whole chart.
     const option = {
@@ -43,65 +41,30 @@
       },
       xAxis: {
         type: "category",
-        // show: false,
-        // data: names,
       },
       yAxis: {
         type: "value",
       },
-
-      // series:
-      // [
-      // {
-      //   name: "test1",
-      //   data: seriesData,
-      //   type: "bar",
-      //   emphasis: {
-      //     focus: "series",
-      //   },
-      //   seriesLayoutBy: "row",
-      // },
-      // {
-      //   name: "test2",
-      //   data: [6,7,8],
-      //   type: "bar",emphasis: {
-      //     focus: "series",
-      //   }
-      //   // seriesLayoutBy: "row",
-      // },
-      // {
-      //   name: "test3",
-      //   data: [8,8,8],
-      //   type: "bar",emphasis: {
-      //     focus: "series",
-      //   }
-      // seriesLayoutBy: "row",
-      // },
-      // ],
-
       dataset: {
-        // dimensions: names,
         source: dataSet,
-        // sourceHeader: "auto",
       },
       series: series,
     };
-    // let chart: echarts.EChartsType = createChart(id, option);
     let chart = createChart(id, option);
-
+    let allValues = [...Array(values.length).keys()];
     chart.on("mouseover", (params) => {
       console.log(params);
       console.log(params.seriesIndex);
       console.log(params.dataIndex);
       chart.dispatchAction({
         type: "downplay",
-        seriesIndex: [0, 1, 2],
-        dataIndex: [0, 1, 2],
+        seriesIndex: allValues,
+        dataIndex: allValues,
       });
       chart.dispatchAction({
         type: "highlight",
         seriesIndex: params.seriesIndex,
-        dataIndex: [0, 1, 2],
+        dataIndex: allValues,
       });
       chart.setOption({
         emphasis: {
@@ -114,8 +77,8 @@
     chart.on("mouseout", () => {
       chart.dispatchAction({
         type: "downplay",
-        seriesIndex: [0, 1, 2],
-        dataIndex: [0, 1, 2],
+        seriesIndex: allValues,
+        dataIndex: allValues,
       });
       // chart.dispatchAction({
       //   type: "highlight",
