@@ -22,20 +22,15 @@ Multiobjective Optimization", IEEE Access, vol. 9, pp. 148277–148295,
 }`;
 
   // Show BibTeX by default
-  let tabSet = 1;
+  let tabSet = 0;
 </script>
 
 <TabGroup>
-  <Tab bind:group={tabSet} name="tab1" value={0}>Plain text</Tab>
-  <Tab bind:group={tabSet} name="tab2" value={1}>BibTeX</Tab>
+  <Tab bind:group={tabSet} name="tab1" value={0}>BibTeX</Tab>
+  <Tab bind:group={tabSet} name="tab2" value={1}>Plain text</Tab>
   <!-- Tab Panels --->
   <svelte:fragment slot="panel">
     {#if tabSet === 0}
-      <div class="mb-4 bg-white p-2 font-mono">{citation_plain}</div>
-      <button class="anchor" use:clipboard={citation_plain}
-        >Copy to clipboard</button
-      >
-    {:else if tabSet === 1}
       <div class="mb-4 bg-white p-2">
         <pre class="whitespace-pre-wrap">{citation_bib}</pre>
       </div>
@@ -45,6 +40,11 @@ Multiobjective Optimization", IEEE Access, vol. 9, pp. 148277–148295,
         >
         <a class="anchor" href="TODO">Download</a>
       </div>
+    {:else if tabSet === 1}
+      <div class="mb-4 bg-white p-2 font-mono">{citation_plain}</div>
+      <button class="anchor" use:clipboard={citation_plain}
+        >Copy to clipboard</button
+      >
     {/if}
   </svelte:fragment>
 </TabGroup>
