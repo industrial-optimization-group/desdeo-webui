@@ -1,6 +1,6 @@
 <script lang="ts">
   import { TabGroup, Tab } from "@skeletonlabs/skeleton";
-  import { clipboard } from "@skeletonlabs/skeleton";
+  import ClipboardButton from "./ClipboardButton.svelte";
 
   // prettier-ignore
   const citation_plain =
@@ -35,16 +35,12 @@ Multiobjective Optimization", IEEE Access, vol. 9, pp. 148277–148295,
         <pre class="whitespace-pre-wrap">{citation_bib}</pre>
       </div>
       <div class="flex gap-2">
-        <button class="anchor" use:clipboard={citation_bib}
-          >Copy to clipboard</button
-        >
+        <ClipboardButton content={citation_bib} />
         <a class="anchor" href="TODO">Download</a>
       </div>
     {:else if tabSet === 1}
       <div class="mb-4 bg-white p-2 font-mono">{citation_plain}</div>
-      <button class="anchor" use:clipboard={citation_plain}
-        >Copy to clipboard</button
-      >
+      <ClipboardButton content={citation_plain} />
     {/if}
   </svelte:fragment>
 </TabGroup>
