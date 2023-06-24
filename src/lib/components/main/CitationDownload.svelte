@@ -6,19 +6,18 @@
   const citation_plain =
 `G. Misitano, B. S. Saini, B. Afsar, B. Shavazipour and K. Miettinen,
 "DESDEO: The Modular and Open Source Framework for Interactive
-Multiobjective Optimization," in IEEE Access, vol. 9, pp. 148277-148295,
+Multiobjective Optimization", IEEE Access, vol. 9, pp. 148277–148295,
 2021, doi: 10.1109/ACCESS.2021.3123825.`;
 
   // prettier-ignore
   const citation_bib =
 `@ARTICLE{9591595,
   author={Misitano, G. and Saini, B. S. and Afsar, B. and Shavazipour, B. and Miettinen, K.},
-  journal={IEEE Access},
   title={DESDEO: The Modular and Open Source Framework for Interactive Multiobjective Optimization},
-  year={2021},
+  journal={IEEE Access},
   volume={9},
-  number={},
-  pages={148277-148295},
+  pages={148277--148295},
+  year={2021},
   doi={10.1109/ACCESS.2021.3123825},
 }`;
 
