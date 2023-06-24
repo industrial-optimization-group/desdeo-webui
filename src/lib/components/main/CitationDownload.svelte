@@ -36,7 +36,7 @@ Multiobjective Optimization", IEEE Access, vol. 9, pp. 148277–148295,
       </div>
       <div class="flex gap-2">
         <ClipboardButton content={citation_bib} />
-        <a class="anchor" href="TODO">Download</a>
+        <a class="anchor" href="/DESDEO-citation.bib">Download</a>
       </div>
     {:else if tabSet === 1}
       <div class="mb-4 bg-white p-2 font-mono">{citation_plain}</div>
