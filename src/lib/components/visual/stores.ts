@@ -122,7 +122,9 @@ function handleSelection(chart: ECharts): void {
       });
     }
     selectedSolutions.update((solutions) => {
-      solutions = selectedSolutionsArray;
+      solutions = Object.assign(selectedSolutionsArray, {
+        selectedIndices: selectedIndices,
+      });
       console.log(solutions);
       return solutions;
     });
