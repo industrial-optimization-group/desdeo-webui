@@ -122,6 +122,13 @@ function handleSelection(chart: ECharts): void {
         return addEffectToCharts("highlight", charts, dataIndex);
       });
     }
+
+    selectedSolutions.update((solutions) => {
+      solutions = selectedSolutionsArray;
+      console.log(solutions);
+      return solutions;
+    });
+
     selectedSolutionsIndices.update((solutions) => {
       solutions = selectedIndices;
       console.log(solutions);

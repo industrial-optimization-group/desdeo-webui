@@ -49,6 +49,11 @@
         source: dataSet,
       },
       series: series,
+      emphasis: {
+        itemStyle: {
+          color: "red",
+        },
+      },
     };
     let chart = createChart(id, option);
     let allValues = [...Array(values.length).keys()];
@@ -66,13 +71,13 @@
         seriesIndex: params.seriesIndex,
         dataIndex: allValues,
       });
-      chart.setOption({
-        emphasis: {
-          itemStyle: {
-            color: "red",
-          },
-        },
-      });
+      // chart.setOption({
+      //   emphasis: {
+      //     itemStyle: {
+      //       color: "red",
+      //     },
+      //   },
+      // });
     });
     chart.on("mouseout", () => {
       chart.dispatchAction({
