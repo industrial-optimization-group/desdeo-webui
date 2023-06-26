@@ -5,7 +5,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
-  import { selectedSolutions } from "./stores";
+  import { selectedSolutionsIndices } from "./stores";
   import { createChart } from "./stores";
   import type { SolutionData } from "./types";
 
@@ -74,7 +74,7 @@
         },
       });
     });
-    chart.on("mouseout", (params) => {
+    chart.on("mouseout", () => {
       chart.dispatchAction({
         type: "downplay",
         seriesIndex: allValues,
@@ -82,11 +82,12 @@
       });
 
       //TODO: make selectedIndices a store also.
-      console.log({ $selectedSolutions }[0]);
+      console.log({ $selectedSolutionsIndices });
       chart.dispatchAction({
         type: "highlight",
-        seriesIndex: { $selectedSolutions }.selectedIndices,
-        dataIndex: params.dataIndex,
+        seriesIndex: allValues,
+        // dataIndex: params.dataIndex,
+        dataIndex: $selectedSolutionsIndices,
       });
     });
   });

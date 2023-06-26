@@ -6,6 +6,7 @@ import { writable } from "svelte/store";
 
 export const chartStore = writable<ECharts[]>([]);
 export const selectedSolutions = writable([]);
+export const selectedSolutionsIndices = writable([]);
 
 /**
  * Creates a chart and adds it to the chartStore.
@@ -121,10 +122,8 @@ function handleSelection(chart: ECharts): void {
         return addEffectToCharts("highlight", charts, dataIndex);
       });
     }
-    selectedSolutions.update((solutions) => {
-      solutions = Object.assign(selectedSolutionsArray, {
-        selectedIndices: selectedIndices,
-      });
+    selectedSolutionsIndices.update((solutions) => {
+      solutions = selectedIndices;
       console.log(solutions);
       return solutions;
     });
