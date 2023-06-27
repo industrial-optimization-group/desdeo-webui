@@ -118,7 +118,13 @@ function handleSelection(chart: ECharts): void {
       selectedIndices.push(dataIndex);
       //TODO: When selecting from pie, should also show all objective values, not only the pie charts own
       console.log(chart.getOption().series);
-      selectedSolutionsArray.push(params.data);
+      const selectedObject = Array.isArray(params.data)
+        ? {
+            name: params.data[0],
+            value: [...params.data.slice(1)],
+          }
+        : params.data;
+      selectedSolutionsArray.push(selectedObject);
       // For each chart in the chartStore, dispatch an action to highlight the selected data point
       chartStore.update((charts) => {
         return addEffectToCharts("highlight", charts, dataIndex);

@@ -21,11 +21,11 @@
   let subTexts = [{ text: title }];
   // Change values of "values" to be positive with the map function.
   let valuesPositive = values.map((row) => row.map((value) => Math.abs(value)));
+  let valuesTransposed = valuesPositive;
   // Transpose values matrix. One liner from https://stackoverflow.com/questions/17428587/transposing-a-2d-array-in-javascript
-  // let valuesTransposed = valuesPositive
-  let valuesTransposed = valuesPositive[0].map((col, i) =>
-    valuesPositive.map((row) => row[i])
-  );
+  // let valuesTransposed = valuesPositive[0].map((col, i) =>
+  //   valuesPositive.map((row) => row[i])
+  // );
   // Set the column names
   let dataSet = [["Solution", ...names]];
   for (let i = 0; i < valuesTransposed.length; i++) {
@@ -83,7 +83,19 @@
       title: subTexts,
       tooltip: {
         formatter: (params) => {
-          return params.name + ": " + valuesPositive[params.dataIndex];
+          return (
+            params.name +
+            "</br>" +
+            "</br>" +
+            params.seriesName +
+            " value" +
+            ": " +
+            params.data[params.seriesIndex + 1] +
+            "</br>" +
+            "All values" +
+            ": " +
+            valuesPositive[params.dataIndex]
+          );
         },
       },
       dataset: {
