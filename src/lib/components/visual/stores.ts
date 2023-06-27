@@ -34,6 +34,8 @@ const selectedSolutionsArray = [];
  */
 
 function handleSelection(chart: ECharts): void {
+  let hasMultipleSeries;
+
   function addEffectToCharts(
     effect: string,
     charts: ECharts[],
@@ -41,7 +43,7 @@ function handleSelection(chart: ECharts): void {
   ) {
     charts.forEach((c) => {
       // If chart has multiple series, downplay all series. This is the case for example for the petal chart.
-      const hasMultipleSeries =
+      hasMultipleSeries =
         c.getOption().series.length > 1
           ? [...Array(c.getOption().series.length).keys()]
           : false;
@@ -125,13 +127,13 @@ function handleSelection(chart: ECharts): void {
 
     selectedSolutions.update((solutions) => {
       solutions = selectedSolutionsArray;
-      console.log(solutions);
+      // console.log(solutions);
       return solutions;
     });
 
     selectedSolutionsIndices.update((solutions) => {
       solutions = selectedIndices;
-      console.log(solutions);
+      // console.log(solutions);
       return solutions;
     });
   });

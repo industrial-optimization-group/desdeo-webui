@@ -18,12 +18,12 @@
 
   let series = [];
 
-  //
+  // Set the column names
   let dataSet = [["Solution", ...names]];
   for (let i = 0; i < values.length; i++) {
-    let newArr = ["Solution " + (i + 1)];
-    newArr.push(...values[i]);
-    dataSet.push(newArr);
+    let newRow = ["Solution " + (i + 1)];
+    newRow.push(...values[i]);
+    dataSet.push(newRow);
     series.push({ type: "bar" });
   }
   onMount(() => {
@@ -58,9 +58,9 @@
     let chart = createChart(id, option);
     let allValues = [...Array(values.length).keys()];
     chart.on("mouseover", (params) => {
-      console.log(params);
-      console.log(params.seriesIndex);
-      console.log(params.dataIndex);
+      // console.log(params);
+      // console.log(params.seriesIndex);
+      // console.log(params.dataIndex);
       chart.dispatchAction({
         type: "downplay",
         seriesIndex: allValues,
@@ -87,7 +87,7 @@
       });
 
       //TODO: make selectedIndices a store also.
-      console.log({ $selectedSolutionsIndices });
+      // console.log({ $selectedSolutionsIndices });
       chart.dispatchAction({
         type: "highlight",
         seriesIndex: allValues,
