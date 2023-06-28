@@ -18,6 +18,30 @@ export const selectedSolutionsIndices = writable([]);
 export function createChart(id: string, option: EChartOption) {
   const chart = echarts.init(document.getElementById(id) as HTMLCanvasElement);
   chart.setOption(option);
+  chart.setOption({
+    color: [
+      "#a6b1e1",
+      "#eab0d9",
+      "#cbe2b0",
+      "#ffeb99",
+      "#f8a978",
+      "#f6dfeb",
+      "#94daff",
+      "#f6d7a7",
+      "#caf7e3",
+      "#ffb6b9",
+    ],
+    emphasis: {
+      lineStyle: {
+        opacity: 1,
+        color: "#441151",
+      },
+      itemStyle: {
+        // opacity: 0,
+        color: "#441151",
+      },
+    },
+  });
   chartStore.update((charts) => [...charts, chart]);
 
   handleSelection(chart);

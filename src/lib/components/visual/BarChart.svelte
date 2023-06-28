@@ -49,11 +49,6 @@
         source: dataSet,
       },
       series: series,
-      emphasis: {
-        itemStyle: {
-          color: "red",
-        },
-      },
     };
     let chart = createChart(id, option);
     let allValues = [...Array(values.length).keys()];

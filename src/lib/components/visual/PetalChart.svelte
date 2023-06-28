@@ -59,6 +59,13 @@
           borderColor: "gray",
           color: "transparent",
         },
+        emphasis: {
+          itemStyle: {
+            borderWidth: 1,
+            borderColor: "gray",
+            color: "transparent",
+          },
+        },
         center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
         // To be under the petals when clicking.
         z: 1,
