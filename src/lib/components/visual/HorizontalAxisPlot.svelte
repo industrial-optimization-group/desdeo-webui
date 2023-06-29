@@ -10,6 +10,8 @@
   export let data: SolutionData;
 
   const names = data.names;
+  // Array for storing aspiration values
+  $: aspValues = Array(names.length);
 
   onMount(() => {
     let option: echarts.EChartOption = {
@@ -64,26 +66,33 @@
     };
 
     for (let i = 0; i < names.length; i++) {
-      addHoriBar(id + i, option);
+      addHoriBar(id + i, option, i);
     }
     // addHoriBar(id, option);
   });
-  $: value = 0;
-  function addHoriBar(id: string, option: echarts.EChartOption) {
+  // $: value = 0;
+  function addHoriBar(id: string, option: echarts.EChartOption, idx) {
     const chart = echarts.init(document.getElementById(id) as HTMLDivElement);
     chart.setOption(option);
+    // Store the input field's id also in to the chart (Is there a better way to do this, for example does echarts have own input fields?)
+    chart.setOption({
+      inputIndex: idx,
+      // min: data.value_ranges[idx][0],
+      // max: data.value_ranges[idx][1],
+    });
     // Add event listener which adds and updates the line on the graph.
     chart.getZr().on("click", function (params) {
       // var pointInPixel = [params.offsetX, params.offsetY];
       // var pointInGrid = chart.convertFromPixel("grid", pointInPixel);
       updateLine(params, chart);
     });
-    return chart;
   }
-  function updateLine(params?, chart?) {
+  function updateLine(params?, chart?, idx?) {
     let newOption;
     if (params.type === "click") {
-      value = chart.convertFromPixel({ seriesIndex: 0 }, [
+      //Get the index of the input field value
+      idx = chart.getOption().inputIndex;
+      aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
         params.offsetX,
         params.offsetY,
       ])[0];
@@ -93,7 +102,7 @@
       newOption = {
         graphic: {
           id: "rec",
-          x: chart.convertToPixel({ seriesIndex: 0 }, [value, 0])[0],
+          x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
           // top: "center",
           y: gridRect.y,
           shape: {
@@ -103,11 +112,13 @@
         },
       };
     } else {
+      //TODO: Couldnt read this, why?
       chart = echarts.getInstanceByDom(params.target.nextElementSibling);
       newOption = {
         graphic: {
           id: "rec",
-          x: chart.convertToPixel({ seriesIndex: 0 }, [value, 0])[0],
+          //TODO: rename TestArr
+          x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
         },
       };
     }
@@ -123,7 +134,15 @@
   {#each names as name, i}
     <div>
       <label for={name}>{name}</label>
-      <input {name} type="text" bind:value on:change={updateLine} />
+      <input
+        {name}
+        type="text"
+        bind:value={aspValues[i]}
+        on:change={(par) => {
+          updateLine(par, undefined, i);
+        }}
+      />
+
       <div id={id + i} style="width: 70vh; height: 25vh;" />
     </div>
   {/each}
