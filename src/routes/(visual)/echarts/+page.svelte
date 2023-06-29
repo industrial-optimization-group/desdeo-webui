@@ -7,6 +7,7 @@
   import BarChart from "$lib/components/visual/BarChart.svelte";
   import { selectedSolutions } from "$lib/components/visual/stores";
   import type { SolutionData } from "$lib/components/visual/types";
+  import BasicTable from "$lib/components/visual/BasicTable.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -76,6 +77,7 @@
         <p>{solution.name}: {solution.value}</p>
       {/each}
     </p>
+    <BasicTable selectedSolutions={$selectedSolutions} />
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
     <ParallelAxis
       id="parallelAxis"
