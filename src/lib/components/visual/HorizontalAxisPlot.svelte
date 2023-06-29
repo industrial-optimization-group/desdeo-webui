@@ -5,7 +5,11 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
+  import type { SolutionData } from "./types";
   export let id: string;
+  export let data: SolutionData;
+
+  const names = data.names;
 
   onMount(() => {
     let option: echarts.EChartOption = {
@@ -59,7 +63,7 @@
       ],
     };
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < names.length; i++) {
       addHoriBar(id + i, option);
     }
     // addHoriBar(id, option);
@@ -116,9 +120,10 @@
 </script>
 
 <div>
-  {#each { length: 3 } as i}
+  {#each names as name, i}
     <div>
-      <input type="text" bind:value on:change={updateLine} />
+      <label for={name}>{name}</label>
+      <input {name} type="text" bind:value on:change={updateLine} />
       <div id={id + i} style="width: 70vh; height: 25vh;" />
     </div>
   {/each}

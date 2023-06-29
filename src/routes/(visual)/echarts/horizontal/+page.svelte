@@ -6,7 +6,7 @@
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";
   // import BarChart from "$lib/components/visual/BarChart.svelte";
   // import { selectedSolutions } from "$lib/components/visual/stores";
-  // import type { SolutionData } from "$lib/components/visual/types";
+  import type { SolutionData } from "$lib/components/visual/types";
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
 
   // let data = [
@@ -35,43 +35,43 @@
   //     data: ["Excellent", "Good", "OK", "Bad"],
   //   },
   // ];
-  // let exampleData: SolutionData = {
-  //   names: ["Objective1", "Objective2", "Objective3"],
-  //   values: [
-  //     [1, 2, 3],
-  //     [4, 5, 6],
-  //     [7, 8, 9],
-  //   ],
-  //   value_ranges: [
-  //     [0, 10],
-  //     [0, 10],
-  //     [0, 10],
-  //   ],
-  //   tags: [["Tag1", "Tag2"], ["Tag3"], ["Tag4", "Tag5", "Tag6"]],
-  //   uncertainty: [
-  //     [
-  //       [0.9, 1.1],
-  //       [1.9, 2.1],
-  //       [2.9, 3.1],
-  //     ],
-  //     [
-  //       [3.9, 4.1],
-  //       [4.9, 5.1],
-  //       [5.9, 6.1],
-  //     ],
-  //     [
-  //       [6.9, 7.1],
-  //       [7.9, 8.1],
-  //       [8.9, 9.1],
-  //     ],
-  //   ],
-  //   minimize: [true, false, true],
-  // };
+  let exampleData: SolutionData = {
+    names: ["Objective1", "Objective2", "Objective3"],
+    values: [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ],
+    value_ranges: [
+      [0, 10],
+      [0, 10],
+      [0, 10],
+    ],
+    tags: [["Tag1", "Tag2"], ["Tag3"], ["Tag4", "Tag5", "Tag6"]],
+    uncertainty: [
+      [
+        [0.9, 1.1],
+        [1.9, 2.1],
+        [2.9, 3.1],
+      ],
+      [
+        [3.9, 4.1],
+        [4.9, 5.1],
+        [5.9, 6.1],
+      ],
+      [
+        [6.9, 7.1],
+        [7.9, 8.1],
+        [8.9, 9.1],
+      ],
+    ],
+    minimize: [true, false, true],
+  };
 </script>
 
 <div class="container">
   <div>
-    <HorizontalAxisPlot id="hori" />
+    <HorizontalAxisPlot id="hori" data={exampleData} />
     <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->
   </div>
 </div>
