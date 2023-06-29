@@ -1,6 +1,7 @@
 <!--
   @component
       @description Makes a horizontal axis plot using the ECharts library.
+      TODO: Read solution data from props.
 -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -57,9 +58,10 @@
             color: "#5c7bd9",
             opacity: 0.2,
           },
+          // TODO: Make data dynamic. Data is solution value at current iteration.
           name: "Precipitation",
           type: "bar",
-          data: [50],
+          data: [5],
           barWidth: "100%",
         },
       ],
@@ -68,7 +70,6 @@
     for (let i = 0; i < names.length; i++) {
       addHoriBar(id + i, option, i);
     }
-    // addHoriBar(id, option);
   });
   // $: value = 0;
   function addHoriBar(id: string, option: echarts.EChartOption, idx) {
@@ -77,8 +78,10 @@
     // Store the input field's id also in to the chart (Is there a better way to do this, for example does echarts have own input fields?)
     chart.setOption({
       inputIndex: idx,
-      // min: data.value_ranges[idx][0],
-      // max: data.value_ranges[idx][1],
+      xAxis: {
+        min: data.value_ranges[idx][0],
+        max: data.value_ranges[idx][1],
+      },
     });
     // Add event listener which adds and updates the line on the graph.
     chart.getZr().on("click", function (params) {
@@ -103,7 +106,6 @@
         graphic: {
           id: "rec",
           x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
-          // top: "center",
           y: gridRect.y,
           shape: {
             height: gridRect.height,
@@ -112,12 +114,10 @@
         },
       };
     } else {
-      //TODO: Couldnt read this, why?
       chart = echarts.getInstanceByDom(params.target.nextElementSibling);
       newOption = {
         graphic: {
           id: "rec",
-          //TODO: rename TestArr
           x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
         },
       };
@@ -142,7 +142,6 @@
           updateLine(par, undefined, i);
         }}
       />
-
       <div id={id + i} style="width: 70vh; height: 25vh;" />
     </div>
   {/each}
