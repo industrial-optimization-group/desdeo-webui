@@ -1,7 +1,9 @@
 <!--
   @component
       @description Makes a horizontal axis plot using the ECharts library.
-      TODO: Read solution data from props.
+      TODO: Read solution data from props: make this dynamic, but for this the info of which of the solutions to show is needed
+      TODO: Min Max values also to input field
+      TODO: Bar chart's style depending on if the the objective is to be minimized or maximized
 -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -13,6 +15,8 @@
   const names = data.names;
   // Array for storing aspiration values
   $: aspValues = Array(names.length);
+  // TODO: What to do when there is multiple solutions already. Normally the optimization (iterationf) process starts without solutions. If there is already solutions, user may want to start from any of the solutions?
+  const firstIteration = data.values[0];
 
   onMount(() => {
     let option: echarts.EChartOption = {
@@ -51,20 +55,6 @@
           lineWidth: 3,
         },
       },
-      series: [
-        {
-          showBackground: true,
-          backgroundStyle: {
-            color: "#5c7bd9",
-            opacity: 0.2,
-          },
-          // TODO: Make data dynamic. Data is solution value at current iteration.
-          name: "Precipitation",
-          type: "bar",
-          data: [5],
-          barWidth: "100%",
-        },
-      ],
     };
 
     for (let i = 0; i < names.length; i++) {
@@ -81,6 +71,16 @@
       xAxis: {
         min: data.value_ranges[idx][0],
         max: data.value_ranges[idx][1],
+      },
+      series: {
+        showBackground: true,
+        backgroundStyle: {
+          color: "#5c7bd9",
+          opacity: 0.2,
+        },
+        type: "bar",
+        data: [firstIteration[idx]],
+        barWidth: "100%",
       },
     });
     // Add event listener which adds and updates the line on the graph.
