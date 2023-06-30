@@ -14,6 +14,8 @@
   export let data: SolutionData;
 
   const errColor = "red";
+  const arrowSize = 15;
+  const arrowColor = "black";
   const names = data.names;
   // Array for storing aspiration values
   $: aspValues = Array(names.length);
@@ -51,15 +53,10 @@
         show: true,
         borderWidth: 1,
         borderColor: "gray",
-      },
-      graphic: {
-        id: "rec",
-        type: "rect",
-        z: 100,
-        style: {
-          stroke: "red",
-          lineWidth: 3,
-        },
+        left: arrowSize * 2,
+        right: arrowSize * 2,
+        top: 0,
+        bottom: 0,
       },
     };
 
@@ -90,6 +87,69 @@
         barWidth: "100%",
       },
     });
+    // const gridModel = chart.getModel().getComponent("grid");
+    // const gridView = chart.getViewOfComponentModel(gridModel);
+    // const gridRect = gridView.group.getBoundingRect();
+    chart.setOption({
+      graphic: [
+        {
+          id: "rec",
+          type: "rect",
+          z: 100,
+          style: {
+            stroke: "red",
+            lineWidth: 3,
+          },
+        },
+        // Add arrows
+        {
+          type: "group",
+          // bottom: ,
+          top: "center",
+          // left: "10%",
+          // right: "10%",
+          children: [
+            //Left Arrow
+            {
+              type: "polygon",
+              id: "left",
+              shape: {
+                points: [
+                  [-1, arrowSize],
+                  [-1, -arrowSize],
+                  [-arrowSize, 0],
+                ],
+              },
+              style: {
+                fill: arrowColor,
+              },
+              // position: [200,20],
+              // left: "0",
+              left: 0,
+              // right: arrowSize,
+              // bottom: "middle"
+              // top: 0,
+            },
+            // Right Arrow
+            {
+              type: "polygon",
+              id: "right",
+              shape: {
+                points: [
+                  [1, arrowSize],
+                  [1, -arrowSize],
+                  [arrowSize, 0],
+                ],
+              },
+              style: {
+                fill: arrowColor,
+              },
+              left: chart.getWidth() - arrowSize,
+            },
+          ],
+        },
+      ],
+    });
     // Add event listener which adds and updates the line on the graph.
     chart.getZr().on("click", function (params) {
       // var pointInPixel = [params.offsetX, params.offsetY];
@@ -110,15 +170,17 @@
       const gridView = chart.getViewOfComponentModel(gridModel);
       const gridRect = gridView.group.getBoundingRect();
       newOption = {
-        graphic: {
-          id: "rec",
-          x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
-          y: gridRect.y,
-          shape: {
-            height: gridRect.height,
+        graphic: [
+          {
+            id: "rec",
+            x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
+            y: gridRect.y,
+            shape: {
+              height: gridRect.height,
+            },
+            transition: "all",
           },
-          transition: "all",
-        },
+        ],
       };
     } else {
       chart = echarts.getInstanceByDom(params.target.nextElementSibling);
