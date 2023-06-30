@@ -2,7 +2,8 @@
   @component
       @description Makes a horizontal axis plot using the ECharts library.
       TODO: Read solution data from props: make this dynamic, but for this the info of which of the solutions to show is needed
-      TODO: Bar chart's style depending on if the the objective is to be minimized or maximized
+      TODO: (Is it necessary?)Bar chart's style depending on if the the objective is to be minimized or maximized
+      TODO: Arrows (what functionality they have?)
 -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -139,7 +140,12 @@
 <div>
   {#each names as name, i}
     <div>
-      <label for={name}>{name}</label>
+      {#if data.minimize[i]}
+        <p>{name} (minimize)</p>
+      {:else}
+        <p>{name} (maximize)</p>
+      {/if}
+      <label for={name}>Aspiration level</label>
       <input
         {name}
         type="number"
