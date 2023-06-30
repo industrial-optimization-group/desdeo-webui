@@ -8,6 +8,19 @@ export const chartStore = writable<ECharts[]>([]);
 export const selectedSolutions = writable([]);
 export const selectedSolutionsIndices = writable([]);
 
+export const colorPalette = [
+  "#a6b1e1",
+  "#eab0d9",
+  "#cbe2b0",
+  "#ffeb99",
+  "#f8a978",
+  "#f6dfeb",
+  "#94daff",
+  "#f6d7a7",
+  "#caf7e3",
+  "#ffb6b9",
+];
+
 /**
  * Creates a chart and adds it to the chartStore.
  *
@@ -19,18 +32,7 @@ export function createChart(id: string, option: EChartOption) {
   const chart = echarts.init(document.getElementById(id) as HTMLCanvasElement);
   chart.setOption(option);
   chart.setOption({
-    color: [
-      "#a6b1e1",
-      "#eab0d9",
-      "#cbe2b0",
-      "#ffeb99",
-      "#f8a978",
-      "#f6dfeb",
-      "#94daff",
-      "#f6d7a7",
-      "#caf7e3",
-      "#ffb6b9",
-    ],
+    color: colorPalette,
     emphasis: {
       lineStyle: {
         opacity: 1,

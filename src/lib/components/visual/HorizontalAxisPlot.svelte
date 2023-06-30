@@ -8,6 +8,7 @@
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   import type { SolutionData } from "./types";
+  import { colorPalette } from "./stores";
   export let id: string;
   export let data: SolutionData;
 
@@ -23,14 +24,18 @@
       xAxis: {
         id: "xAxis",
         type: "value",
-        min: 0,
-        max: 100,
         axisPointer: {
           show: true,
           lineStyle: {
             type: "solid",
             width: 3,
             color: "black",
+          },
+        },
+        splitLine: {
+          lineStyle: {
+            color: "black",
+            opacity: 0.2,
           },
         },
       },
@@ -62,7 +67,7 @@
     }
   });
   // $: value = 0;
-  function addHoriBar(id: string, option: echarts.EChartOption, idx) {
+  function addHoriBar(id: string, option: echarts.EChartOption, idx: number) {
     const chart = echarts.init(document.getElementById(id) as HTMLDivElement);
     chart.setOption(option);
     // Store the input field's id also in to the chart (Is there a better way to do this, for example does echarts have own input fields?)
@@ -73,9 +78,10 @@
         max: data.value_ranges[idx][1],
       },
       series: {
+        color: colorPalette[idx],
         showBackground: true,
         backgroundStyle: {
-          color: "#5c7bd9",
+          color: colorPalette[idx],
           opacity: 0.2,
         },
         type: "bar",
@@ -157,7 +163,7 @@
           }
         }}
       />
-      <div id={id + i} style="width: 70vh; height: 25vh;" />
+      <div id={id + i} style="width: 70vh; height: 25vh; min-height: 200px" />
     </div>
   {/each}
 </div>
