@@ -2,7 +2,6 @@
   @component
       @description Makes a horizontal axis plot using the ECharts library.
       TODO: Read solution data from props: make this dynamic, but for this the info of which of the solutions to show is needed
-      TODO: Min Max values also to input field
       TODO: Bar chart's style depending on if the the objective is to be minimized or maximized
 -->
 <script lang="ts">
@@ -12,6 +11,7 @@
   export let id: string;
   export let data: SolutionData;
 
+  const errColor = "red";
   const names = data.names;
   // Array for storing aspiration values
   $: aspValues = Array(names.length);
@@ -136,10 +136,25 @@
       <label for={name}>{name}</label>
       <input
         {name}
-        type="text"
+        type="number"
+        min={data.value_ranges[i][0]}
+        max={data.value_ranges[i][1]}
         bind:value={aspValues[i]}
         on:change={(par) => {
-          updateLine(par, undefined, i);
+          // Update the line only when input value is valid
+          if (par.target.checkValidity()) {
+            updateLine(par, undefined, i);
+          } else {
+            par.target.style.borderColor = errColor;
+            var oNewP = document.createElement("p");
+            oNewP.appendChild(
+              document.createTextNode(
+                `Value must be on the range of ${data.value_ranges[i][0]} - ${data.value_ranges[i][1]}`
+              )
+            );
+            oNewP.style.color = errColor;
+            par.target.insertAdjacentElement("afterend", oNewP);
+          }
         }}
       />
       <div id={id + i} style="width: 70vh; height: 25vh;" />
