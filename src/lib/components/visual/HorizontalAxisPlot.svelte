@@ -23,6 +23,7 @@
   const firstIteration = data.values[0];
 
   onMount(() => {
+    // Create the option object for the whole chart.
     let option: echarts.EChartOption = {
       xAxis: {
         id: "xAxis",
@@ -59,22 +60,30 @@
         bottom: 0,
       },
     };
-
+    // Add the horizontal bars dynamically, adds as many bars as there is objectives
     for (let i = 0; i < names.length; i++) {
       addHoriBar(id + i, option, i);
     }
   });
-  // $: value = 0;
+
+  /**
+   * Adds a horizontal bar to the chart.
+   *
+   * @param id The id of the div element where the chart is rendered.
+   * @param option
+   * @param idx
+   */
   function addHoriBar(id: string, option: echarts.EChartOption, idx: number) {
     const chart = echarts.init(document.getElementById(id) as HTMLDivElement);
     chart.setOption(option);
-    // Store the input field's id also in to the chart (Is there a better way to do this, for example does echarts have own input fields?)
     chart.setOption({
       inputIndex: idx,
+      // Set the min max values for the bar
       xAxis: {
         min: data.value_ranges[idx][0],
         max: data.value_ranges[idx][1],
       },
+      // Set the color of the bar
       series: {
         color: colorPalette[idx],
         showBackground: true,
@@ -90,8 +99,11 @@
     const gridModel = chart.getModel().getComponent("grid");
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
+
+    // This setOptions adds the aspiration value line and the arrows
     chart.setOption({
       graphic: [
+        // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
         {
           type: "rect",
           shape: {
@@ -106,6 +118,7 @@
             lineWidth: 0,
           },
         },
+        // Add aspiration value line
         {
           id: "rec",
           type: "rect",
@@ -153,6 +166,8 @@
               left: chart.getWidth() - arrowSize,
             },
           ],
+          // onclick event for the arrows
+          //TODO: set the value how much the value changes when the arrow is clicked to be dynamic
           onclick: (params) => {
             const targetId = params.target.id;
             if (targetId === "left") {
@@ -166,15 +181,13 @@
         },
       ],
     });
-    // Add event listener which adds and updates the line on the graph.
+    // Add event listener which adds and updates the aspiration line on the graph.
     chart.getZr().on("click", function (params) {
-      // var pointInPixel = [params.offsetX, params.offsetY];
-      // var pointInGrid = chart.convertFromPixel("grid", pointInPixel);
       if (params.target == null) {
         return;
       }
       const targetId: number | string = params.target.id;
-      // Don't do anything if the click is not on the grid/chart area
+      // Only update the line if the click is on the grid area
       if (
         !(targetId === "left" || targetId === "right" || targetId === "rec")
       ) {
@@ -183,6 +196,14 @@
       }
     });
   }
+
+  /**
+   * Updates the aspiration (preference) line on the graph.
+   *
+   * @param params The parameters of the click event.
+   * @param chart The chart object.
+   * @param idx The index of the input field value.
+   */
   function updateLine(params?, chart?, idx?) {
     let newOption;
     if (params.type === "click") {
@@ -217,10 +238,6 @@
         },
       };
     }
-    // const xAxisModel = chart.getModel().getComponent("axisPointer");
-    // const xAxisView = chart.getViewOfComponentModel(xAxisModel);
-    // const xAxisRect = xAxisView.group.getBoundingRect();
-    // xAxisRect.height = chart.getHeight();
     chart.setOption(newOption);
   }
 </script>
@@ -242,7 +259,7 @@
         step="any"
         bind:value={aspValues[i]}
         on:change={(par) => {
-          // Update the line only when input value is valid
+          // Update the line only when the input value is valid
           if (par.target.checkValidity()) {
             updateLine(par, undefined, i);
           } else {
