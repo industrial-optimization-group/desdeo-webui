@@ -230,7 +230,9 @@
         ],
       };
     } else {
-      chart = echarts.getInstanceByDom(params.target.nextElementSibling);
+      chart = echarts.getInstanceByDom(
+        params.target.parentElement.querySelector("div")
+      );
       newOption = {
         graphic: {
           id: "rec",
@@ -262,6 +264,8 @@
           // Update the line only when the input value is valid
           if (par.target.checkValidity()) {
             updateLine(par, undefined, i);
+            console.log(par.target.style);
+            par.target.style.borderColor = "";
           } else {
             par.target.style.borderColor = errColor;
             var oNewP = document.createElement("p");
