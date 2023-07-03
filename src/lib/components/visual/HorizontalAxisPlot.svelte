@@ -241,14 +241,21 @@
         },
       };
     }
+    let errorP = document
+      .querySelectorAll(".bar_container")
+      [idx].querySelector(".error");
+    if (errorP != null) {
+      errorP.previousElementSibling.style.borderColor = "";
+      errorP.remove();
+    }
     chart.setOption(newOption);
   }
 
-  function handle(par, i: number) {
-    const targetElem: HTMLInputElement = par.target;
+  function handle(param, i: number) {
+    const targetElem: HTMLInputElement = param.target;
     // Update the line only when the input value is valid
     if (targetElem.checkValidity()) {
-      updateLine(par, undefined, i);
+      updateLine(param, undefined, i);
       console.log(targetElem.style);
       targetElem.style.borderColor = "";
       if (targetElem.parentElement.querySelector(".error") != null) {
@@ -274,7 +281,7 @@
 
 <div>
   {#each names as name, i}
-    <div>
+    <div class="bar_container">
       {#if data.minimize[i]}
         <p>{name} (minimize)</p>
       {:else}
@@ -282,6 +289,7 @@
       {/if}
       <label for={name}>Aspiration level</label>
       <input
+        class="asp_input"
         {name}
         type="number"
         min={data.value_ranges[i][0]}
