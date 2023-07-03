@@ -3,7 +3,7 @@
       @description Makes a horizontal axis plot using the ECharts library.
       TODO: Read solution data from props: make this dynamic, but for this the info of which of the solutions to show is needed
       TODO: (Is it necessary?)Bar chart's style depending on if the the objective is to be minimized or maximized
-      TODO: Arrows (what functionality they have?)
+      TODO: Set default position for the aspiration value line when the component is created (to the solution value)
 -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -176,6 +176,7 @@
               aspValues[idx] += 1;
             }
             const inputField = document.getElementsByName(names[idx])[0];
+            inputField.value = aspValues[idx];
             inputField.dispatchEvent(new Event("change"));
           },
         },
@@ -242,6 +243,33 @@
     }
     chart.setOption(newOption);
   }
+
+  function handle(par, i: number) {
+    const targetElem: HTMLInputElement = par.target;
+    // Update the line only when the input value is valid
+    if (targetElem.checkValidity()) {
+      updateLine(par, undefined, i);
+      console.log(targetElem.style);
+      targetElem.style.borderColor = "";
+      if (targetElem.parentElement.querySelector(".error") != null) {
+        targetElem.parentElement.querySelector(".error").remove();
+      }
+    } else {
+      if (targetElem.parentElement.querySelector(".error") != null) {
+        return;
+      }
+      targetElem.style.borderColor = errColor;
+      var oNewP = document.createElement("p");
+      oNewP.setAttribute("class", "error");
+      oNewP.appendChild(
+        document.createTextNode(
+          `Value must be on the range of ${data.value_ranges[i][0]} - ${data.value_ranges[i][1]}`
+        )
+      );
+      oNewP.style.color = errColor;
+      targetElem.insertAdjacentElement("afterend", oNewP);
+    }
+  }
 </script>
 
 <div>
@@ -260,24 +288,7 @@
         max={data.value_ranges[i][1]}
         step="any"
         bind:value={aspValues[i]}
-        on:change={(par) => {
-          // Update the line only when the input value is valid
-          if (par.target.checkValidity()) {
-            updateLine(par, undefined, i);
-            console.log(par.target.style);
-            par.target.style.borderColor = "";
-          } else {
-            par.target.style.borderColor = errColor;
-            var oNewP = document.createElement("p");
-            oNewP.appendChild(
-              document.createTextNode(
-                `Value must be on the range of ${data.value_ranges[i][0]} - ${data.value_ranges[i][1]}`
-              )
-            );
-            oNewP.style.color = errColor;
-            par.target.insertAdjacentElement("afterend", oNewP);
-          }
-        }}
+        on:change={(par) => handle(par, i)}
       />
       <div id={id + i} style="width: 70vh; height: 25vh; min-height: 200px" />
     </div>
