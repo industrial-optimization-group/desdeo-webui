@@ -232,7 +232,7 @@
       };
     } else {
       chart = echarts.getInstanceByDom(
-        params.target.parentElement.querySelector("div")
+        params.target.parentElement.nextElementSibling
       );
       newOption = {
         graphic: {
@@ -281,24 +281,38 @@
 
 <div>
   {#each names as name, i}
-    <div class="bar_container">
-      {#if data.minimize[i]}
-        <p>{name} (minimize)</p>
-      {:else}
-        <p>{name} (maximize)</p>
-      {/if}
-      <label for={name}>Aspiration level</label>
-      <input
-        class="asp_input"
-        {name}
-        type="number"
-        min={data.value_ranges[i][0]}
-        max={data.value_ranges[i][1]}
-        step="any"
-        bind:value={aspValues[i]}
-        on:change={(par) => handle(par, i)}
+    {#if data.minimize[i]}
+      <p><strong>{name} (minimize)</strong></p>
+    {:else}
+      <p><strong>{name} (minimize)</strong></p>
+    {/if}
+    <div class="bar_container" style="display: flex; margin-top:0.75em">
+      <div>
+        <label for={name}>Reference point</label>
+        <input
+          class="asp_input"
+          {name}
+          type="number"
+          min={data.value_ranges[i][0]}
+          max={data.value_ranges[i][1]}
+          step="any"
+          bind:value={aspValues[i]}
+          on:change={(par) => handle(par, i)}
+        />
+        <label for="prev">Previous preference </label>
+        <input
+          type="number"
+          name="prev"
+          placeholder="2.543"
+          readonly
+          style="border: 0; box-shadow: none;background-color: rgba(232 234 241);"
+        />
+      </div>
+      <div
+        id={id + i}
+        class="chart_div"
+        style="width: 70vh; height: 25vh; min-height: 200px; margin-left:2em"
       />
-      <div id={id + i} style="width: 70vh; height: 25vh; min-height: 200px" />
     </div>
   {/each}
 </div>
