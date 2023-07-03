@@ -87,11 +87,25 @@
         barWidth: "100%",
       },
     });
-    // const gridModel = chart.getModel().getComponent("grid");
-    // const gridView = chart.getViewOfComponentModel(gridModel);
-    // const gridRect = gridView.group.getBoundingRect();
+    const gridModel = chart.getModel().getComponent("grid");
+    const gridView = chart.getViewOfComponentModel(gridModel);
+    const gridRect = gridView.group.getBoundingRect();
     chart.setOption({
       graphic: [
+        {
+          type: "rect",
+          shape: {
+            x: gridRect.x,
+            y: gridRect.y,
+            width: gridRect.width,
+            height: gridRect.height,
+          },
+          style: {
+            fill: "transparent",
+            stroke: "transparent",
+            lineWidth: 0,
+          },
+        },
         {
           id: "rec",
           type: "rect",
@@ -104,10 +118,7 @@
         // Add arrows
         {
           type: "group",
-          // bottom: ,
           top: "center",
-          // left: "10%",
-          // right: "10%",
           children: [
             //Left Arrow
             {
@@ -123,12 +134,7 @@
               style: {
                 fill: arrowColor,
               },
-              // position: [200,20],
-              // left: "0",
               left: 0,
-              // right: arrowSize,
-              // bottom: "middle"
-              // top: 0,
             },
             // Right Arrow
             {
@@ -147,6 +153,16 @@
               left: chart.getWidth() - arrowSize,
             },
           ],
+          onclick: (params) => {
+            const targetId = params.target.id;
+            if (targetId === "left") {
+              aspValues[idx] -= 1;
+            } else if (targetId === "right") {
+              aspValues[idx] += 1;
+            }
+            const inputField = document.getElementsByName(names[idx])[0];
+            inputField.dispatchEvent(new Event("change"));
+          },
         },
       ],
     });
@@ -154,7 +170,17 @@
     chart.getZr().on("click", function (params) {
       // var pointInPixel = [params.offsetX, params.offsetY];
       // var pointInGrid = chart.convertFromPixel("grid", pointInPixel);
-      updateLine(params, chart);
+      if (params.target == null) {
+        return;
+      }
+      const targetId: number | string = params.target.id;
+      // Don't do anything if the click is not on the grid/chart area
+      if (
+        !(targetId === "left" || targetId === "right" || targetId === "rec")
+      ) {
+        updateLine(params, chart, idx);
+        return;
+      }
     });
   }
   function updateLine(params?, chart?, idx?) {
@@ -213,6 +239,7 @@
         type="number"
         min={data.value_ranges[i][0]}
         max={data.value_ranges[i][1]}
+        step="any"
         bind:value={aspValues[i]}
         on:change={(par) => {
           // Update the line only when input value is valid
