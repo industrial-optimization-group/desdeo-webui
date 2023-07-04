@@ -93,7 +93,7 @@
     <RadarChart id="radarChart" title="Radar Chart" data={exampleData} />
   </div>
   <div>
-    <HorizontalAxisPlot />
+    <HorizontalAxisPlot data={exampleData} />
     <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->
   </div>
 </div>
