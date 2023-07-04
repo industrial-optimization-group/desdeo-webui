@@ -51,6 +51,19 @@ export function createChart(id: string, option: EChartOption) {
   return chart;
 }
 
+export function updateChart(id: string, option: EChartOption) {
+  let oldCharts: ECharts[] = [];
+  chartStore.subscribe((charts) => {
+    oldCharts = charts;
+  });
+
+  const chart = oldCharts.find((chart) => chart.getDom().id == id);
+
+  if (chart == undefined) return;
+
+  chart.setOption(option, true, false);
+}
+
 const selectedIndices: number[] = [];
 const selectedSolutionsArray = [];
 /**
@@ -106,6 +119,9 @@ function handleSelection(chart: ECharts): void {
   // Highlight the data point when the mouse hovers over it
   chart.on("mouseover", (params) => {
     const dataIndex = params.dataIndex;
+
+    if (dataIndex == undefined) return;
+
     // Highlight the data point in every chart in chartStore
     chartStore.update((charts) => {
       return addEffectToCharts("highlight", charts, dataIndex);
@@ -128,6 +144,7 @@ function handleSelection(chart: ECharts): void {
 
   chart.on("click", (params) => {
     const dataIndex = params.dataIndex;
+    if (dataIndex === undefined) return;
     const indexOfselected = selectedIndices.indexOf(dataIndex);
 
     // If the data point is already selected, remove it from the selectedIndices array and downplay it

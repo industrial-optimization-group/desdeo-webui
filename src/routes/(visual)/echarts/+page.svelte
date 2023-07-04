@@ -1,6 +1,6 @@
 <script lang="ts">
   // import Example from "$lib/components/visual/Example.svelte";
-  import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
+  // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   import RadarChart from "$lib/components/visual/RadarChart.svelte";
   import PetalChart from "$lib/components/visual/PetalChart.svelte";
@@ -93,7 +93,7 @@
     <RadarChart id="radarChart" title="Radar Chart" data={exampleData} />
   </div>
   <div>
-    <HorizontalAxisPlot />
+    <!-- <HorizontalAxisPlot /> -->
     <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->
   </div>
 </div>
