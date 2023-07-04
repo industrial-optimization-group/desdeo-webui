@@ -15,11 +15,7 @@ export const selectedSolutions = writable([]);
  * @returns The chart object
  */
 export function createChart(id: string, option: EChartOption) {
-  //console.log(2, option)
-
   const chart = echarts.init(document.getElementById(id) as HTMLCanvasElement);
-
-  console.log("FIRST RENDER", option);
 
   chart.setOption(option);
   chartStore.update((charts) => [...charts, chart]);
@@ -30,7 +26,6 @@ export function createChart(id: string, option: EChartOption) {
 }
 
 export function updateChart(id: string, option: EChartOption) {
-  //console.log(1, id, option)
   let oldCharts: ECharts[] = [];
   chartStore.subscribe((charts) => {
     oldCharts = charts;
@@ -38,22 +33,9 @@ export function updateChart(id: string, option: EChartOption) {
 
   const chart = oldCharts.find((chart) => chart.getDom().id == id);
 
-  console.log(2, chart);
-
   if (chart == undefined) return;
 
-  //console.log(1, id, option)
-
-  console.log("RERENDER", chart, option);
-
   chart.setOption(option, true, false);
-
-  /* const updatedCharts = [...oldCharts];
-    updatedCharts[oldCharts.indexOf(chart)] = chart;
-
-    //console.log(updatedCharts)
-
-    chartStore.update(() => updatedCharts) */
 }
 
 const selectedIndices: number[] = [];
@@ -98,6 +80,7 @@ function handleSelection(chart: ECharts): void {
     const dataIndex = params.dataIndex;
 
     if (dataIndex == undefined) return;
+
     // Highlight the data point in every chart in chartStore
     chartStore.update((charts) => {
       return addEffectToCharts("highlight", charts, dataIndex);

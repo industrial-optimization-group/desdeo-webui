@@ -33,7 +33,7 @@
   //     data: ["Excellent", "Good", "OK", "Bad"],
   //   },
   // ];
-  var exampleData: SolutionData = {
+  let exampleData: SolutionData = {
     names: ["Objective1", "Objective2", "Objective3"],
     values: [
       [1, 2, 3],

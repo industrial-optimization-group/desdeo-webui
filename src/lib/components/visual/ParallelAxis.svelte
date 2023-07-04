@@ -13,17 +13,10 @@
   import { createChart, updateChart } from "./chartStore";
   import type { SolutionData } from "./types";
   import type { EChartOption } from "echarts";
-  import { writable } from "svelte/store";
 
   export let id: string;
   export let title: string;
   export let data: SolutionData;
-  // export let callback: (i1: number, i2: number) => void;
-
-  export const chartOption = writable<EChartOption>(undefined);
-
-  //const names: string[] = data.names;
-  //const values: number[][] = data.values;
 
   const selectedLineStyle = {
     width: 7,
@@ -35,21 +28,13 @@
   };
 
   function swapAxes(index1: number, index2: number) {
-    console.log(index1, index2);
-
-    //console.log(1, data)
     const newData = { ...data };
-
-    console.log(1, data.names);
 
     newData.names = rearrangeNames(index1, index2);
     newData.values = rearrangeValues(index1, index2);
     data = newData;
 
-    console.log(2, data.names);
-
-    updateChart(id, createOption(data.names, data.values, true));
-    //chartOption.set(createOption(data.names, data.values, false));
+    updateChart(id, createOption(data.names, data.values));
   }
 
   function rearrangeNames(index1: number, index2: number) {
@@ -69,30 +54,18 @@
       solution[index2] = temp;
     }
 
-    /* const temp = newValues[index1];
-    newValues[index1] = newValues[index2];
-    newValues[index2] = temp; */
-
     return newValues;
   }
 
-  function createOption(
-    names: string[],
-    values: number[][],
-    initialize: boolean
-  ): EChartOption {
+  function createOption(names: string[], values: number[][]): EChartOption {
     // Creates the lines on the chart as series data.
     let seriesData: { value: number[]; name: string }[] = [];
     for (let i = 0; i < values.length; i++) {
       seriesData.push({ value: values[i], name: "Solution " + (i + 1) });
     }
 
-    //console.log(seriesData)
-
     //  Creates the names for the axes as a parallelAxis component.
     const nameAxis: object[] = [];
-
-    //console.log("NEW NAMES INIT", nameAxis)
 
     for (let i = 0; i < names.length; i++) {
       let nameObj = {
@@ -102,10 +75,6 @@
       nameAxis.push(nameObj);
     }
 
-    //console.log("NEW NAMES INIT", nameAxis)
-
-    //console.log(nameAxis)
-
     // Create the option object for the whole chart.
     return {
       title: {
@@ -113,8 +82,6 @@
       },
       tooltip: {
         formatter: function (params) {
-          //console.log(params)
-
           let result = params.name + "<br>";
 
           for (let i = 0; i < params.data.value.length; i++) {
@@ -134,74 +101,57 @@
           data: seriesData,
         },
       ],
-      graphic: initialize
-        ? nameAxis.map((axis, index) => ({
-            type: "group",
-            //left: 100,
-            bottom: 20,
-            children: [
-              // Left arrow button
-              index !== 0
-                ? {
-                    type: "polygon",
-                    shape: {
-                      points: [
-                        [-1, 15],
-                        [-1, -15],
-                        [-15, 0],
-                      ],
-                    },
-                    style: {
-                      fill: "#409EFF",
-                    },
-                    onclick: () => {
-                      swapAxes(index, index - 1);
-
-                      //callback(index, index - 1)
-                    },
-                    position: [82 + index * 405 - 15, 0],
-                  }
-                : undefined,
-              // Right arrow button
-              index !== nameAxis.length - 1
-                ? {
-                    type: "polygon",
-                    shape: {
-                      points: [
-                        [1, 15],
-                        [1, -15],
-                        [15, 0],
-                      ],
-                    },
-                    style: {
-                      fill: "#409EFF",
-                    },
-                    onclick: () => {
-                      //console.log(e.event)
-
-                      swapAxes(index, index + 1);
-                      //e.event.preventDefault()
-                      //callback(index, index + 1)
-                    },
-                    position: [82 + index * 405 + 15, 0],
-                  }
-                : undefined,
-            ],
-          }))
-        : undefined,
+      graphic: nameAxis.map((_, index) => ({
+        type: "group",
+        bottom: 20,
+        children: [
+          // Left arrow button
+          index !== 0
+            ? {
+                type: "polygon",
+                shape: {
+                  points: [
+                    [-1, 15],
+                    [-1, -15],
+                    [-15, 0],
+                  ],
+                },
+                style: {
+                  fill: "#409EFF",
+                },
+                onclick: () => {
+                  swapAxes(index, index - 1);
+                },
+                position: [82 + index * 405 - 15, 0],
+              }
+            : undefined,
+          // Right arrow button
+          index !== nameAxis.length - 1
+            ? {
+                type: "polygon",
+                shape: {
+                  points: [
+                    [1, 15],
+                    [1, -15],
+                    [15, 0],
+                  ],
+                },
+                style: {
+                  fill: "#409EFF",
+                },
+                onclick: () => {
+                  swapAxes(index, index + 1);
+                },
+                position: [82 + index * 405 + 15, 0],
+              }
+            : undefined,
+        ],
+      })),
     };
   }
 
   onMount(() => {
-    // let chart: echarts.EChartsType = createChart(id, option);
-
-    const chart = createChart(id, createOption(data.names, data.values, true));
-
-    chartOption.subscribe((option) => {
-      if (option) {
-        chart.setOption(option);
-      }
-    });
+    createChart(id, createOption(data.names, data.values));
   });
 </script>
 
