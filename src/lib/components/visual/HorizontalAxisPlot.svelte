@@ -3,7 +3,6 @@
       @description Makes a horizontal axis plot using the ECharts library.
       TODO: Read solution data from props: make this dynamic, but for this the info of which of the solutions to show is needed
       TODO: (Is it necessary?)Bar chart's style depending on if the the objective is to be minimized or maximized
-      TODO: Set default position for the aspiration value line when the component is created (to the solution value)
 -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -18,14 +17,22 @@
   const arrowColor = "black";
   const names = data.names;
   // Array for storing aspiration values
-  $: aspValues = Array(names.length);
+
   // TODO: What to do when there is multiple solutions already. Normally the optimization (iterationf) process starts without solutions. If there is already solutions, user may want to start from any of the solutions?
-  const firstIteration = data.values[0];
+  const firstIteration: number[] = data.values[0];
+  $: aspValues = firstIteration;
 
   onMount(() => {
     // Create the option object for the whole chart.
     let option: echarts.EChartOption = {
       xAxis: {
+        axisLabel: {
+          margin: 5,
+          lineHeight: 10,
+        },
+        axisLine: {
+          show: false,
+        },
         id: "xAxis",
         type: "value",
         axisPointer: {
@@ -49,6 +56,12 @@
         axisLabel: {
           show: false,
         },
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
       },
       grid: {
         show: true,
@@ -56,13 +69,19 @@
         borderColor: "gray",
         left: arrowSize * 2,
         right: arrowSize * 2,
-        top: 0,
-        bottom: 0,
+        top: arrowSize,
+        bottom: arrowSize,
       },
     };
     // Add the horizontal bars dynamically, adds as many bars as there is objectives
     for (let i = 0; i < names.length; i++) {
       addHoriBar(id + i, option, i);
+    }
+    const inputs = document.getElementsByClassName("asp_input");
+    for (let idx = 0; idx < inputs.length; idx++) {
+      const input = inputs[idx];
+      input.value = aspValues[idx].toString();
+      input.dispatchEvent(new Event("change"));
     }
   });
 
@@ -122,7 +141,13 @@
         {
           id: "rec",
           type: "rect",
+          x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
+          y: gridRect.y,
           z: 100,
+          transition: "all",
+          shape: {
+            height: gridRect.height,
+          },
           style: {
             stroke: "red",
             lineWidth: 3,
@@ -214,19 +239,11 @@
         params.offsetX,
         params.offsetY,
       ])[0];
-      const gridModel = chart.getModel().getComponent("grid");
-      const gridView = chart.getViewOfComponentModel(gridModel);
-      const gridRect = gridView.group.getBoundingRect();
       newOption = {
         graphic: [
           {
             id: "rec",
             x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
-            y: gridRect.y,
-            shape: {
-              height: gridRect.height,
-            },
-            transition: "all",
           },
         ],
       };
@@ -251,7 +268,14 @@
     chart.setOption(newOption);
   }
 
-  function handle(param, i: number) {
+  /**
+   * Handles the onchange event of the input fields. Updates the graph and the
+   * aspiration value.
+   *
+   * @param param
+   * @param i
+   */
+  function handleOnchange(param, i: number) {
     const targetElem: HTMLInputElement = param.target;
     // Update the line only when the input value is valid
     if (targetElem.checkValidity()) {
@@ -297,7 +321,7 @@
           max={data.value_ranges[i][1]}
           step="any"
           bind:value={aspValues[i]}
-          on:change={(par) => handle(par, i)}
+          on:change={(par) => handleOnchange(par, i)}
         />
         <label for="prev">Previous preference </label>
         <input
@@ -311,7 +335,7 @@
       <div
         id={id + i}
         class="chart_div"
-        style="width: 70vh; height: 25vh; min-height: 200px; margin-left:2em"
+        style="width: 70vh; height: 2vh; min-height: 100px; margin-left:2em"
       />
     </div>
   {/each}
