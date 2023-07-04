@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { logged_in, username, logout } from "$lib/api";
+  import { login_status, username, logout, LoginStatus } from "$lib/api";
   import { goto } from "$app/navigation";
 
   function handleLogout() {
@@ -10,13 +10,17 @@
 </script>
 
 <div class="flex gap-1">
-  {#if $logged_in}
-    <span>Logged in as <span class="font-bold">{$username}</span></span>
-    <span>/</span>
-    <span><button class="anchor" on:click={handleLogout}>Log out</button></span>
-  {:else}
+  {#if $login_status === LoginStatus.LoggedOut}
     <span>Not logged in</span>
     <span>/</span>
     <span><a class="anchor" href="/login">Log in</a></span>
+  {:else}
+    {#if $login_status === LoginStatus.LoggedInAsUser}
+      <span>Logged in as <span class="font-bold">{$username}</span></span>
+    {:else}
+      <span>Logged in as a guest</span>
+    {/if}
+    <span>/</span>
+    <span><button class="anchor" on:click={handleLogout}>Log out</button></span>
   {/if}
 </div>

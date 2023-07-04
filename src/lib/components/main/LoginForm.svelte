@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { login } from "$lib/api.js";
+  import { login, login_as_guest } from "$lib/api.js";
   import { goto } from "$app/navigation";
 
   export let username = "";
@@ -22,6 +22,12 @@
           other_error = true;
         }
       });
+  }
+
+  function handleGuestLogin() {
+    login_as_guest().then(() => {
+      goto("/");
+    });
   }
 </script>
 
@@ -68,7 +74,9 @@
       ></span
     >
     <span class="whitespace-nowrap"
-      >or <a href="/TODO" class="anchor">explore DESDEO as a guest</a></span
+      >or <button class="anchor" on:click={handleGuestLogin}
+        >explore DESDEO as a guest</button
+      ></span
     >
   </div>
 </div>

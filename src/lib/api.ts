@@ -16,7 +16,16 @@ type Token = string | undefined;
 //
 const state = {
   access_token: writable<Token>(undefined),
+
+  /** A refresh token that is not `undefined` represents the state `logged in`. */
   refresh_token: writable<Token>(undefined),
+
+  /**
+   * Username must be `undefined` if the state is `logged out`. When `logged
+   * in`, anything other than `undefined` represents `logged in as a user` and
+   * must be the logged in user's actual username. When `logged in`, `undefined`
+   * username represents `logged in as a guest`.
+   */
   username: writable<string | undefined>(undefined),
 };
 
@@ -49,16 +58,32 @@ function set_username(username: string | undefined) {
   state.username.set(username);
 }
 
-// function get_username() {
-//   return get(state.username);
-// }
+export enum LoginStatus {
+  LoggedOut = "LOGGED_OUT",
+  LoggedInAsUser = "LOGGED_IN_AS_USER",
+  LoggedInAsGuest = "LOGGED_IN_AS_GUEST",
+}
 
 /** The current login status. */
-export const logged_in = derived(state.refresh_token, ($refresh_token) => {
-  return $refresh_token !== undefined;
-});
+// export const logged_in = derived(state.refresh_token, ($refresh_token) => {
+//   return $refresh_token !== undefined;
+// });
 
-/** The current username. */
+/** See {@link state} for how the login status is determined. */
+export const login_status = derived(
+  [state.refresh_token, state.username],
+  ([$refresh_token, $username]) => {
+    if ($refresh_token === undefined) {
+      return LoginStatus.LoggedOut;
+    }
+    if ($username === undefined) {
+      return LoginStatus.LoggedInAsGuest;
+    }
+    return LoginStatus.LoggedInAsUser;
+  }
+);
+
+/** The logged in user's username. */
 export const username = readonly(state.username);
 
 //
@@ -123,6 +148,25 @@ export function login(username: string, password: string) {
 }
 
 /**
+ * Attempts to log in as a guest user.
+ *
+ * @returns The message returned by the server.
+ */
+export function login_as_guest() {
+  return without_token()
+    .post("/guest/create")
+    .then((response) => {
+      set_access_token(response.data.access_token);
+      set_refresh_token(response.data.refresh_token);
+      set_username(undefined);
+
+      return {
+        message: <string>response.data.message,
+      };
+    });
+}
+
+/**
  * Invalidates and clears the tokens and clears the username.
  *
  * Attempts to invalidate the access and refresh tokens and clears them and the
@@ -141,7 +185,7 @@ export function login(username: string, password: string) {
  */
 export async function logout(ignore_errors = true) {
   //
-  // We're invalidating the tokens sequentially rather than in parallel so that
+  // We're invalidating the tokens sequentially rather than concurrently so that
   // possible error situations can be handled correctly. The refresh token is
   // invalidated first because it can be used to get a new access token.
   //
