@@ -1,11 +1,13 @@
 <script lang="ts">
   // import Example from "$lib/components/visual/Example.svelte";
   import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
-  import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
-  import RadarChart from "$lib/components/visual/RadarChart.svelte";
-  import { selectedSolutions } from "$lib/components/visual/chartStore";
-  import PetalChart from "$lib/components/visual/petalChart.svelte";
+  // import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
+  // import RadarChart from "$lib/components/visual/RadarChart.svelte";
+  // import PetalChart from "$lib/components/visual/PetalChart.svelte";
+  // import BarChart from "$lib/components/visual/BarChart.svelte";
+  // import { selectedSolutions } from "$lib/components/visual/stores";
   import type { SolutionData } from "$lib/components/visual/types";
+  // import BasicTable from "$lib/components/visual/BasicTable.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -42,7 +44,7 @@
     ],
     value_ranges: [
       [0, 10],
-      [0, 10],
+      [0, 5],
       [0, 10],
     ],
     tags: [["Tag1", "Tag2"], ["Tag3"], ["Tag4", "Tag5", "Tag6"]],
@@ -69,27 +71,7 @@
 
 <div class="container">
   <div>
-    <p>
-      Current solutions:
-      {#each $selectedSolutions as solution}
-        <p>{solution.name}: {solution.value}</p>
-      {/each}
-    </p>
-    <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
-    <ParallelAxis
-      id="parallelAxis"
-      title="Parallel Axis chart"
-      data={exampleData}
-    />
-  </div>
-  <div>
-    <PetalChart id="petalChart" title="Petal chart" data={exampleData} />
-  </div>
-  <div>
-    <RadarChart id="radarChart" title="Radar Chart" data={exampleData} />
-  </div>
-  <div>
-    <HorizontalAxisPlot />
+    <HorizontalAxisPlot id="hori" data={exampleData} />
     <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->
   </div>
 </div>

@@ -1,5 +1,5 @@
 <!--@component
-    @description Makes a radar chart using the ECharts library.
+    @description Makes a petal chart using the ECharts library's pie option.
 -->
 
 <script lang="ts">
@@ -7,7 +7,7 @@
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
-  import { createChart } from "./chartStore";
+  import { createChart } from "./stores";
   import type { SolutionData } from "./types";
 
   export let id: string;
@@ -17,43 +17,39 @@
   const names: string[] = data.names;
   const values: number[][] = data.values;
 
-  // let charts = $chartStore;
-
   let newSeriesObjects = [];
   let subTexts = [{ text: title }];
-
   // Change values of "values" to be positive with the map function.
   let valuesPositive = values.map((row) => row.map((value) => Math.abs(value)));
-
-  // Transpose values matrix.
-  // One liner from https://stackoverflow.com/questions/17428587/transposing-a-2d-array-in-javascript
-  let valuesTransposed = valuesPositive[0].map((col, i) =>
-    valuesPositive.map((row) => row[i])
-  );
+  let valuesTransposed = valuesPositive;
+  // Transpose values matrix. One liner from https://stackoverflow.com/questions/17428587/transposing-a-2d-array-in-javascript
+  // let valuesTransposed = valuesPositive[0].map((col, i) =>
+  //   valuesPositive.map((row) => row[i])
+  // );
+  // Set the column names
+  let dataSet = [["Solution", ...names]];
   for (let i = 0; i < valuesTransposed.length; i++) {
-    const row = valuesTransposed[i];
-    let petals = [];
-    for (let j = 0; j < row.length; j++) {
-      const value = row[j];
-      petals.push({ value: value, name: "solution " + (j + 1) });
-    }
+    let newRow = ["Solution" + (i + 1)];
+    newRow.push(...valuesTransposed[i]);
+    dataSet.push(newRow);
+
     newSeriesObjects.push(
       {
         name: names[i],
         type: "pie",
-        radius: 70,
+        radius: "30%",
         roseType: "area",
-        itemStyle: {
-          // borderWidth: 3,
-          // borderColor: 'gray'
-        },
         center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-        data: petals,
+        encode: {
+          itemName: "Solution",
+          value: names[i],
+          tooltip: names[i],
+        },
       },
       // A circle for showing the lines between petals and border line.
       {
         type: "pie",
-        radius: 70,
+        radius: "30%",
         tooltip: {
           show: false,
         },
@@ -63,18 +59,21 @@
           borderColor: "gray",
           color: "transparent",
         },
+        emphasis: {
+          itemStyle: {
+            borderWidth: 1,
+            borderColor: "gray",
+            color: "transparent",
+          },
+        },
         center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-        // To be on top of the petals.
-        z: 10,
+        // To be under the petals when clicking.
+        z: 1,
+        silent: true,
         label: {
           show: false,
         },
-        data: [...Array(petals.length).fill(1)],
-        // showEmptyCircle: true,
-        // emptyCircleStyle: {
-        //   borderWidth: 3,
-        //   borderColor: '#235894'
-        // },
+        data: [...Array(valuesTransposed.length).fill(1)],
       }
     );
 
@@ -85,13 +84,30 @@
       textAlign: "center",
     });
   }
-
   onMount(() => {
     // Create the option object for the whole chart.
     const option = {
       title: subTexts,
-      tooltip: {},
-      aria: {},
+      tooltip: {
+        formatter: (params) => {
+          return (
+            params.name +
+            "</br>" +
+            "</br>" +
+            params.seriesName +
+            " value" +
+            ": " +
+            params.data[params.seriesIndex + 1] +
+            "</br>" +
+            "All values" +
+            ": " +
+            valuesPositive[params.dataIndex]
+          );
+        },
+      },
+      dataset: {
+        source: dataSet,
+      },
       series: newSeriesObjects,
     };
     // let chart: echarts.EChartsType = createChart(id, option);

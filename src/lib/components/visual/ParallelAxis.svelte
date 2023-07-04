@@ -10,7 +10,7 @@
   // import type * as echarts from "echarts";
   import { onMount } from "svelte";
   // import { chartStore } from "./chartStore";
-  import { createChart, updateChart } from "./chartStore";
+  import { createChart, updateChart } from "./stores";
   import type { SolutionData } from "./types";
   import type { EChartOption } from "echarts";
 
@@ -91,6 +91,11 @@
         },
       },
       parallelAxis: nameAxis,
+      brush: {
+        brushMode: "multiple",
+        throttleType: "debounce",
+        throttleDelay: 300,
+      },
       series: [
         {
           type: "parallel",

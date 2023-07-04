@@ -6,6 +6,20 @@ import { writable } from "svelte/store";
 
 export const chartStore = writable<ECharts[]>([]);
 export const selectedSolutions = writable([]);
+export const selectedSolutionsIndices = writable([]);
+
+export const colorPalette = [
+  "#a6b1e1",
+  "#eab0d9",
+  "#cbe2b0",
+  "#ffeb99",
+  "#f8a978",
+  "#f6dfeb",
+  "#94daff",
+  "#f6d7a7",
+  "#caf7e3",
+  "#ffb6b9",
+];
 
 /**
  * Creates a chart and adds it to the chartStore.
@@ -18,6 +32,19 @@ export function createChart(id: string, option: EChartOption) {
   const chart = echarts.init(document.getElementById(id) as HTMLCanvasElement);
 
   chart.setOption(option);
+  chart.setOption({
+    color: colorPalette,
+    emphasis: {
+      lineStyle: {
+        opacity: 1,
+        color: "#441151",
+      },
+      itemStyle: {
+        // opacity: 0,
+        color: "#441151",
+      },
+    },
+  });
   chartStore.update((charts) => [...charts, chart]);
 
   handleSelection(chart);
@@ -47,6 +74,8 @@ const selectedSolutionsArray = [];
  */
 
 function handleSelection(chart: ECharts): void {
+  let hasMultipleSeries;
+
   function addEffectToCharts(
     effect: string,
     charts: ECharts[],
@@ -54,7 +83,7 @@ function handleSelection(chart: ECharts): void {
   ) {
     charts.forEach((c) => {
       // If chart has multiple series, downplay all series. This is the case for example for the petal chart.
-      const hasMultipleSeries =
+      hasMultipleSeries =
         c.getOption().series.length > 1
           ? [...Array(c.getOption().series.length).keys()]
           : false;
@@ -74,6 +103,19 @@ function handleSelection(chart: ECharts): void {
     });
     return charts;
   }
+
+  // chart.on("select", (params) => {
+  //   console.log("tets");
+  // });
+  // chart.on("brushSelected", (params) => {
+  //   console.log("brushSeelcted");
+  //   // chartStore.update((charts) => {
+  //   //   return addEffectToCharts("highlight", charts, 0);
+  //   // });
+  // });
+  // chart.on("brushEnd", (params) => {
+  //   console.log("brushEnd");
+  // });
 
   // Highlight the data point when the mouse hovers over it
   chart.on("mouseover", (params) => {
@@ -121,14 +163,29 @@ function handleSelection(chart: ECharts): void {
     else {
       selectedIndices.push(dataIndex);
       //TODO: When selecting from pie, should also show all objective values, not only the pie charts own
-      selectedSolutionsArray.push(params.data);
+      console.log(chart.getOption().series);
+      const selectedObject = Array.isArray(params.data)
+        ? {
+            name: params.data[0],
+            value: [...params.data.slice(1)],
+          }
+        : params.data;
+      selectedSolutionsArray.push(selectedObject);
       // For each chart in the chartStore, dispatch an action to highlight the selected data point
       chartStore.update((charts) => {
         return addEffectToCharts("highlight", charts, dataIndex);
       });
     }
+
     selectedSolutions.update((solutions) => {
       solutions = selectedSolutionsArray;
+      // console.log(solutions);
+      return solutions;
+    });
+
+    selectedSolutionsIndices.update((solutions) => {
+      solutions = selectedIndices;
+      // console.log(solutions);
       return solutions;
     });
   });

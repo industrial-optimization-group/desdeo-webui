@@ -98,22 +98,37 @@ Run `npm run build` to build the project for production.
 This is configured to build a prerendered static site.
 You can preview the build with `npm run preview`.
 
-See [Building your app](https://kit.svelte.dev/docs/building-your-app)
-for more.
+See [Building your app](https://kit.svelte.dev/docs/building-your-app) for more.
 
 ## Version control and contributing
+
+Please don't create new branches in the repository.
+Any branches other than `master` should only exist in your fork
+or in your local copy of the repository.
+
+A commit should not make several unrelated changes.
 
 The project doesn't enforce any particular style for commit messages,
 but please try to roughly follow the format suggested at
 [A note about Git commit messages](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
+(This is also the format [suggested in the Git Book](https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project).)
 
-We will be using branch-based (as opposed to fork-based) collaboration
-(see [Favor branching over forking](https://docs.github.com/en/repositories/creating-and-managing-repositories/best-practices-for-repositories#use-git-large-file-storage)).
+The core developers ([rmojala](https://github.com/rmojala) and [edciriac](https://github.com/edciriac))
+will be pushing directly to the `master` branch.
 
-Please familiarize yourself with [GitHub documentation](https://docs.github.com/en),
+Other potential collaborators should use a fork-based workflow.
+See "Forked Public Project" at [Contributing to a Project](https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project)
+for instructions.
+You should make sure that your pull request can be cleanly fast-forwarded
+on top of the `master` branch (use rebasing if necessary).
+
+Please understand that the project is in early development
+and changes are happening rapidly.
+If you are considering making changes to existing code,
+you should discuss with the core developers in advance.
+
+See also the [GitHub documentation](https://docs.github.com/en),
 especially the topics under the label "Collaborative coding".
-
-More will be written later.
 
 ## Setting up VS Code
 
