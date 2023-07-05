@@ -124,12 +124,13 @@
         barWidth: "100%",
       },
     });
+
     const gridModel = chart.getModel().getComponent("grid");
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
 
-    // This setOptions adds the interactive custom graphic elements to the chart
-    chart.setOption({
+    // This option adds the interactive custom graphic elements to the chart
+    const graphicOptions = {
       graphic: [
         // Add a button (arrow) to reset the aspiration value to the solution value.
         {
@@ -259,13 +260,15 @@
           },
         },
       ],
-    });
+    };
+    chart.setOption(graphicOptions);
     // Add event listener which adds and updates the aspiration line on the graph.
     chart.getZr().on("click", function (params) {
       if (params.target == null) {
         return;
       }
       const targetId: number | string = params.target.id;
+      // TODO: Make this more cleaner
       // Only update the line if the click is on the grid area
       if (
         !(
