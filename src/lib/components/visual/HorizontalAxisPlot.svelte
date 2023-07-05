@@ -20,7 +20,7 @@
 
   // TODO: What to do when there is multiple solutions already. Normally the optimization (iterationf) process starts without solutions. If there is already solutions, user may want to start from any of the solutions?
   const firstIteration: number[] = data.values[0];
-  $: aspValues = firstIteration;
+  $: aspValues = firstIteration.slice();
 
   onMount(() => {
     // Create the option object for the whole chart.
@@ -141,6 +141,30 @@
             lineWidth: 0,
           },
         },
+
+        // Add a down pointing arrow on top of the solution value.
+        {
+          id: "arrow",
+          type: "polygon",
+          x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
+          shape: {
+            points: [
+              [-arrowSize, 0],
+              [arrowSize, 0],
+              [0, arrowSize],
+            ],
+          },
+          style: {
+            fill: arrowColor,
+          },
+          onclick: () => {
+            const inputField = document.getElementsByName(names[idx])[0];
+            aspValues[idx] = firstIteration[idx];
+            inputField.value = aspValues[idx];
+            inputField.dispatchEvent(new Event("change"));
+          },
+        },
+
         // Add aspiration value line
         {
           id: "rec",
@@ -218,7 +242,12 @@
       const targetId: number | string = params.target.id;
       // Only update the line if the click is on the grid area
       if (
-        !(targetId === "left" || targetId === "right" || targetId === "rec")
+        !(
+          targetId === "left" ||
+          targetId === "right" ||
+          targetId === "rec" ||
+          targetId === "arrow"
+        )
       ) {
         updateLine(params, chart, idx);
         return;
