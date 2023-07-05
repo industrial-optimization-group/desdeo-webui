@@ -75,7 +75,7 @@
     };
     // Add the horizontal bars dynamically, adds as many bars as there is objectives
     for (let i = 0; i < names.length; i++) {
-      addHoriBar(id + i, option, i);
+      addHorizontalBar(id + i, option, i);
     }
     const inputs = document.getElementsByClassName("asp_input");
     for (let idx = 0; idx < inputs.length; idx++) {
@@ -92,7 +92,11 @@
    * @param option
    * @param idx
    */
-  function addHoriBar(id: string, option: echarts.EChartOption, idx: number) {
+  function addHorizontalBar(
+    id: string,
+    option: echarts.EChartOption,
+    idx: number
+  ) {
     const chart = echarts.init(document.getElementById(id) as HTMLDivElement);
     chart.setOption(option);
     chart.setOption({
@@ -192,13 +196,12 @@
             },
           ],
           // onclick event for the arrows
-          //TODO: set the value how much the value changes when the arrow is clicked to be dynamic
           onclick: (params) => {
             const targetId = params.target.id;
             if (targetId === "left") {
-              aspValues[idx] -= 1;
+              aspValues[idx] = data.value_ranges[idx][0];
             } else if (targetId === "right") {
-              aspValues[idx] += 1;
+              aspValues[idx] = data.value_ranges[idx][1];
             }
             const inputField = document.getElementsByName(names[idx])[0];
             inputField.value = aspValues[idx];
