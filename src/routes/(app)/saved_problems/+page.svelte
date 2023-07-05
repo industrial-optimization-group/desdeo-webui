@@ -3,6 +3,84 @@
   import SavedProblems from "$lib/components/main/SavedProblems.svelte";
 
   let tabSet = 0;
+  let problems: SavedProblem[] = [];
+
+  import { onMount } from "svelte";
+  import { get_saved_problems, type SavedProblem } from "$lib/api";
+  onMount(() => {
+    get_saved_problems().then((savedProblems) => {
+      problems = savedProblems;
+    });
+  });
+
+  // Fake data to experiment with
+  // const fake_problems = [
+  //   {
+  //     id: 1,
+  //     name: "Problem 1",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Problem 2",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Problem 3",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Problem 4",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Problem 5",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Problem 6",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 7,
+  //     name: "Problem 7",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 8,
+  //     name: "Problem 8",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 9,
+  //     name: "Problem 9",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 10,
+  //     name: "Problem 10",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 11,
+  //     name: "Problem 11",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 12,
+  //     name: "Problem 12",
+  //     problem_type: "Continuous",
+  //   },
+  //   {
+  //     id: 13,
+  //     name: "Problem 13",
+  //     problem_type: "Continuous",
+  //   },
+  // ];
 </script>
 
 <TabGroup>
@@ -13,9 +91,9 @@
   <!-- Tab Panels --->
   <svelte:fragment slot="panel">
     {#if tabSet === 0}
-      <SavedProblems class="max-w-screen-md" />
-    {:else if tabSet === 1}
       TODO
+    {:else if tabSet === 1}
+      <SavedProblems class="max-w-screen-md" {problems} />
     {/if}
   </svelte:fragment>
 </TabGroup>

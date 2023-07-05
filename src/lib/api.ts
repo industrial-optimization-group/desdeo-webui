@@ -291,3 +291,25 @@ export function register_account(username: string, password: string) {
       };
     });
 }
+
+export type SavedProblem = {
+  problem_id: number;
+  problem_name: string;
+  problem_type: string;
+  objective_names: string[];
+  minimize: number[];
+  n_objectives: number;
+  variable_names: string[];
+  n_variables: number;
+  n_constraints: number;
+};
+
+// TODO: Currently requires a batched version of the backend
+export function get_saved_problems(): Promise<SavedProblem[]> {
+  return with_access_token()
+    .get("/problem/access/all")
+    .then((response) => {
+      // TODO: Check that the data has the expected form?
+      return <SavedProblem[]>response.data;
+    });
+}
