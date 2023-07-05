@@ -7,9 +7,8 @@
   @param {SolutionData} data - The data for the chart.
 -->
 <script lang="ts">
-  // import type * as echarts from "echarts";
+  import * as echarts from "echarts";
   import { onMount } from "svelte";
-  // import { chartStore } from "./chartStore";
   import { createChart, updateChart } from "./stores";
   import type { SolutionData } from "./types";
   import type { EChartOption } from "echarts";
@@ -75,6 +74,74 @@
       nameAxis.push(nameObj);
     }
 
+    let chart = echarts.getInstanceByDom(document.getElementById(id));
+
+    const graphicData = nameAxis.map((_, index) => ({
+      type: "group",
+      bottom: 20,
+      children: [
+        // Left arrow button
+        index !== 0
+          ? {
+              type: "polygon",
+              shape: {
+                points: [
+                  [-1, 15],
+                  [-1, -15],
+                  [-15, 0],
+                ],
+              },
+              style: {
+                fill: "#409EFF",
+              },
+              onclick: () => {
+                swapAxes(index, index - 1);
+              },
+              /* Explanation of the code line below:
+                // Gets the model of parallelAxis component, which has all the axes as an array.
+                const model = chart.getModel().getComponent("parallelAxis");
+                // Gets the axesLayot which has the position info of every parallel axes
+                const axes = model.coordinateSystem._axesLayout
+                // Gets the x-coordinate of the i:th axis 
+                const xCoord = Object.values(axes)[index].position[0] 
+                */
+              x: chart
+                ? Object.values(
+                    chart.getModel().getComponent("parallelAxis")
+                      .coordinateSystem._axesLayout
+                  )[index].position[0]
+                : 0,
+            }
+          : undefined,
+
+        // Right arrow button
+        index !== nameAxis.length - 1
+          ? {
+              type: "polygon",
+              shape: {
+                points: [
+                  [1, 15],
+                  [1, -15],
+                  [15, 0],
+                ],
+              },
+              style: {
+                fill: "#409EFF",
+              },
+              onclick: () => {
+                swapAxes(index, index + 1);
+              },
+              x: chart
+                ? Object.values(
+                    chart.getModel().getComponent("parallelAxis")
+                      .coordinateSystem._axesLayout
+                  )[index].position[0]
+                : 0,
+            }
+          : undefined,
+      ],
+    }));
+
     // Create the option object for the whole chart.
     return {
       title: {
@@ -106,57 +173,12 @@
           data: seriesData,
         },
       ],
-      graphic: nameAxis.map((_, index) => ({
-        type: "group",
-        bottom: 20,
-        children: [
-          // Left arrow button
-          index !== 0
-            ? {
-                type: "polygon",
-                shape: {
-                  points: [
-                    [-1, 15],
-                    [-1, -15],
-                    [-15, 0],
-                  ],
-                },
-                style: {
-                  fill: "#409EFF",
-                },
-                onclick: () => {
-                  swapAxes(index, index - 1);
-                },
-                position: [82 + index * 405 - 15, 0],
-              }
-            : undefined,
-          // Right arrow button
-          index !== nameAxis.length - 1
-            ? {
-                type: "polygon",
-                shape: {
-                  points: [
-                    [1, 15],
-                    [1, -15],
-                    [15, 0],
-                  ],
-                },
-                style: {
-                  fill: "#409EFF",
-                },
-                onclick: () => {
-                  swapAxes(index, index + 1);
-                },
-                position: [82 + index * 405 + 15, 0],
-              }
-            : undefined,
-        ],
-      })),
+      graphic: graphicData,
     };
   }
-
   onMount(() => {
     createChart(id, createOption(data.names, data.values));
+    updateChart(id, createOption(data.names, data.values));
   });
 </script>
 
