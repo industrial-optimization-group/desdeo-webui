@@ -14,12 +14,7 @@
   $: paginatedProblems = problems.slice(start, endExclusive);
 
   $: tableSimple = {
-    head: [
-      "Name",
-      "No. of objectives",
-      "No. of variables",
-      "No. of constraints",
-    ],
+    head: ["Name", "Objectives", "Variables", "Constraints"],
     body: tableMapperValues(paginatedProblems, [
       "problem_name",
       "n_objectives",
