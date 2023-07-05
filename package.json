@@ -58,7 +58,7 @@
     "typescript": "^5.0.0",
     "typescript-svelte-plugin": "^0.3.26",
     "vite": "^4.3.0",
-    "vitest": "^0.25.3"
+    "vitest": "^0.32.4"
   },
   "type": "module"
 }
