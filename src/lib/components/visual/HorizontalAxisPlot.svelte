@@ -366,7 +366,7 @@
     {#if data.minimize[i]}
       <p><strong>{name} (minimize)</strong></p>
     {:else}
-      <p><strong>{name} (minimize)</strong></p>
+      <p><strong>{name} (maximize)</strong></p>
     {/if}
     <div class="bar_container" style="display: flex; margin-top:0.75em">
       <div>
