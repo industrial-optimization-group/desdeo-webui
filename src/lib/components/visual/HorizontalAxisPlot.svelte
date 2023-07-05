@@ -11,6 +11,10 @@
   import { colorPalette } from "./stores";
   export let id: string;
   export let data: SolutionData;
+  // function to which returns the aspiration values
+  export function getAspirationValues() {
+    return aspValues;
+  }
 
   const errColor = "red";
   const arrowSize = 15;
@@ -20,59 +24,60 @@
 
   // TODO: What to do when there is multiple solutions already. Normally the optimization (iterationf) process starts without solutions. If there is already solutions, user may want to start from any of the solutions?
   const firstIteration: number[] = data.values[0];
+  const fakePreviousIteration: number[] = data.values[1];
   $: aspValues = firstIteration.slice();
+  // Create the option object for the whole chart.
+  let option: echarts.EChartOption = {
+    xAxis: {
+      axisLabel: {
+        margin: 5,
+        lineHeight: 10,
+      },
+      axisLine: {
+        show: false,
+      },
+      id: "xAxis",
+      type: "value",
+      axisPointer: {
+        show: true,
+        lineStyle: {
+          type: "solid",
+          width: 3,
+          color: "black",
+        },
+      },
+      splitLine: {
+        lineStyle: {
+          color: "black",
+          opacity: 0.2,
+        },
+      },
+    },
+    yAxis: {
+      id: "yAxis",
+      type: "category",
+      axisLabel: {
+        show: false,
+      },
+      axisLine: {
+        show: false,
+      },
+      axisTick: {
+        show: false,
+      },
+    },
+    grid: {
+      show: true,
+      borderWidth: 1,
+      borderColor: "gray",
+      left: arrowSize * 2,
+      right: arrowSize * 2,
+      top: arrowSize,
+      bottom: arrowSize,
+    },
+  };
 
   onMount(() => {
-    // Create the option object for the whole chart.
-    let option: echarts.EChartOption = {
-      xAxis: {
-        axisLabel: {
-          margin: 5,
-          lineHeight: 10,
-        },
-        axisLine: {
-          show: false,
-        },
-        id: "xAxis",
-        type: "value",
-        axisPointer: {
-          show: true,
-          lineStyle: {
-            type: "solid",
-            width: 3,
-            color: "black",
-          },
-        },
-        splitLine: {
-          lineStyle: {
-            color: "black",
-            opacity: 0.2,
-          },
-        },
-      },
-      yAxis: {
-        id: "yAxis",
-        type: "category",
-        axisLabel: {
-          show: false,
-        },
-        axisLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-      },
-      grid: {
-        show: true,
-        borderWidth: 1,
-        borderColor: "gray",
-        left: arrowSize * 2,
-        right: arrowSize * 2,
-        top: arrowSize,
-        bottom: arrowSize,
-      },
-    };
     // Add the horizontal bars dynamically, adds as many bars as there is objectives
     for (let i = 0; i < names.length; i++) {
       addHorizontalBar(id + i, option, i);
@@ -123,26 +128,10 @@
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
 
-    // This setOptions adds the aspiration value line and the arrows
+    // This setOptions adds the interactive custom graphic elements to the chart
     chart.setOption({
       graphic: [
-        // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
-        {
-          type: "rect",
-          shape: {
-            x: gridRect.x,
-            y: gridRect.y,
-            width: gridRect.width,
-            height: gridRect.height,
-          },
-          style: {
-            fill: "transparent",
-            stroke: "transparent",
-            lineWidth: 0,
-          },
-        },
-
-        // Add a down pointing arrow on top of the solution value.
+        // Add a button (arrow) to reset the aspiration value to the solution value.
         {
           id: "arrow",
           type: "polygon",
@@ -181,6 +170,28 @@
             lineWidth: 3,
           },
         },
+
+        // Add a line for previous preference
+        {
+          id: "prev_line",
+          type: "rect",
+          x: chart.convertToPixel({ seriesIndex: 0 }, [
+            fakePreviousIteration[idx],
+            0,
+          ])[0],
+          y: gridRect.y,
+          z: 5,
+          transition: "all",
+          shape: {
+            height: gridRect.height,
+          },
+          style: {
+            stroke: "blue",
+            lineDash: [4],
+            lineWidth: 3,
+          },
+        },
+
         // Add arrows
         {
           type: "group",
@@ -230,6 +241,21 @@
             const inputField = document.getElementsByName(names[idx])[0];
             inputField.value = aspValues[idx];
             inputField.dispatchEvent(new Event("change"));
+          },
+        },
+        // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
+        {
+          type: "rect",
+          shape: {
+            x: gridRect.x,
+            y: gridRect.y,
+            width: gridRect.width,
+            height: gridRect.height,
+          },
+          style: {
+            fill: "transparent",
+            stroke: "transparent",
+            lineWidth: 0,
           },
         },
       ],
