@@ -74,17 +74,20 @@
       transition: ["shape"],
       shape: {
         points: points,
+        smooth: 0.05,
       },
-      style: api.style({
+      style: {
         fill: color,
         stroke: echarts.color.lift(color, 0.1),
-      }),
+      },
     };
   }
 
   function addNautilusBar(id: string, idx: number) {
     const chart = echarts.init(
-      document.getElementById(id + idx) as HTMLDivElement
+      document.getElementById(id + idx) as HTMLDivElement,
+      null,
+      { renderer: "svg" }
     );
     // Create the option object for the whole chart. This example creates a basic bar chart.
     let newOption: echarts.EChartOption = {
@@ -105,56 +108,92 @@
       ],
     };
     chart.setOption(newOption);
+
+    const gridModel = chart.getModel().getComponent("xAxis");
+    console.log(gridModel);
+    // const gridView = chart.getGridModel();
+    // console.log(gridView);
+    const gridRect = chart.getModel().getComponent("xAxis").axis.grid.getRect();
+    console.log(gridRect);
+    console.log(chart.convertToPixel({ seriesIndex: 0 }, [0, -50]));
+
+    chart.setOption({
+      // Add aspiration value line
+      graphic: {
+        // id: "line",
+        // type: "line",
+        type: "rect",
+        x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
+        y: 100,
+        z: 100,
+        transition: "all",
+        // shape: {
+        //   x1: 0,
+        //   y1: 0,
+        //   x2: gridRect.width,
+        //   y2: 0,
+        // },
+        shape: {
+          width: gridRect.width,
+        },
+        style: {
+          stroke: "blue",
+          lineDash: [4],
+          lineWidth: 3,
+        },
+        draggable: "vertical",
+        ondrag: function () {
+          console.log(this);
+          console.log(this.x);
+          console.log(this.y);
+        },
+      },
+    });
+
     // chart.setOption({
-    //   inputIndex: idx,
-    //   // Set the min max values for the bar
-    //   xAxis: {
-    //     min: data.value_ranges[idx][0],
-    //     max: data.value_ranges[idx][1],
-    //   },
-    //   // Set the color of the bar
-    //   series: {
-    //     color: colorPalette[idx],
-    //     showBackground: true,
-    //     backgroundStyle: {
-    //       color: colorPalette[idx],
-    //       opacity: 0.2,
-    //     },
-    //     type: "bar",
-    //     data: [firstIteration[idx]],
-    //     barWidth: "100%",
-    //   },
+    //   graphic: echarts.util.map(
+    //     objectiveShapes[idx],
+    //     function (item, dataIndex) {
+    //       return {
+    //         type: "circle",
+    //         position: chart.convertToPixel("grid", item),
+    //         // z: 100,
+    //         shape: { r: 15 },
+    //         invisible: false,
+    //         draggable: true,
+    //         ondrag: echarts.util.curry((dataIndex, dx, dy) => {
+    //           // Here the `data` is declared in the code block in the beginning
+    //           // of this article. The `this` refers to the dragged circle.
+    //           // `this.position` is the current position of the circle.
+    //           objectiveShapes[idx][dataIndex] = chart.convertFromPixel("grid", [
+    //             dx,
+    //             dy,
+    //           ]);
+    //           // Re-render the chart based on the updated `data`.
+    //           chart.setOption({
+    //             series: [
+    //               {
+    //                 id: "a",
+    //                 data: objectiveShapes[idx],
+    //               },
+    //             ],
+    //           });
+    //         }, dataIndex),
+    //         z: 100,
+    //       };
+    //     }
+    //   ),
     // });
 
+    chart.setOption({
+      graphic: [],
+    });
     // const gridModel = chart.getModel().getComponent("grid");
     // const gridView = chart.getViewOfComponentModel(gridModel);
     // const gridRect = gridView.group.getBoundingRect();
 
     // // This option adds the interactive custom graphic elements to the chart
     // const graphicOptions = {
-    //   graphic: [
-    //     // Add a button (arrow) to reset the aspiration value to the solution value.
-    //     {
-    //       id: "arrow",
-    //       type: "polygon",
-    //       x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
-    //       shape: {
-    //         points: [
-    //           [-arrowSize, 0],
-    //           [arrowSize, 0],
-    //           [0, arrowSize],
-    //         ],
-    //       },
-    //       style: {
-    //         fill: arrowColor,
-    //       },
-    //       onclick: () => {
-    //         const inputField = document.getElementsByName(names[idx])[0];
-    //         aspValues[idx] = firstIteration[idx];
-    //         inputField.value = aspValues[idx];
-    //         inputField.dispatchEvent(new Event("change"));
-    //       },
-    //     },
 
     //     // Add aspiration value line
     //     {
@@ -172,117 +211,6 @@
     //         lineWidth: 3,
     //       },
     //     },
-
-    //     // Add a line for previous preference
-    //     {
-    //       id: "prev_line",
-    //       type: "rect",
-    //       x: chart.convertToPixel({ seriesIndex: 0 }, [
-    //         fakePreviousIteration[idx],
-    //         0,
-    //       ])[0],
-    //       y: gridRect.y,
-    //       z: 5,
-    //       transition: "all",
-    //       shape: {
-    //         height: gridRect.height,
-    //       },
-    //       style: {
-    //         stroke: "blue",
-    //         lineDash: [4],
-    //         lineWidth: 3,
-    //       },
-    //     },
-
-    //     // Add arrows
-    //     {
-    //       type: "group",
-    //       top: "center",
-    //       children: [
-    //         //Left Arrow
-    //         {
-    //           type: "polygon",
-    //           id: "left",
-    //           shape: {
-    //             points: [
-    //               [-1, arrowSize],
-    //               [-1, -arrowSize],
-    //               [-arrowSize, 0],
-    //             ],
-    //           },
-    //           style: {
-    //             fill: arrowColor,
-    //           },
-    //           left: 0,
-    //         },
-    //         // Right Arrow
-    //         {
-    //           type: "polygon",
-    //           id: "right",
-    //           shape: {
-    //             points: [
-    //               [1, arrowSize],
-    //               [1, -arrowSize],
-    //               [arrowSize, 0],
-    //             ],
-    //           },
-    //           style: {
-    //             fill: arrowColor,
-    //           },
-    //           left: chart.getWidth() - arrowSize,
-    //         },
-    //       ],
-    //       // onclick event for the arrows
-    //       onclick: (params) => {
-    //         const targetId = params.target.id;
-    //         if (targetId === "left") {
-    //           aspValues[idx] = data.value_ranges[idx][0];
-    //         } else if (targetId === "right") {
-    //           aspValues[idx] = data.value_ranges[idx][1];
-    //         }
-    //         const inputField = document.getElementsByName(names[idx])[0];
-    //         inputField.value = aspValues[idx];
-    //         inputField.dispatchEvent(new Event("change"));
-    //       },
-    //     },
-    //     // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
-    //     {
-    //       type: "rect",
-    //       shape: {
-    //         x: gridRect.x,
-    //         y: gridRect.y,
-    //         width: gridRect.width,
-    //         height: gridRect.height,
-    //       },
-    //       style: {
-    //         fill: "transparent",
-    //         stroke: "transparent",
-    //         lineWidth: 0,
-    //       },
-    //     },
-    //   ],
-    // };
-    // chart.setOption(graphicOptions);
-    // Add event listener which adds and updates the aspiration line on the graph.
-    // chart.getZr().on("click", function (params) {
-    //   if (params.target == null) {
-    //     return;
-    //   }
-    //   const targetId: number | string = params.target.id;
-    //   // TODO: Make this more cleaner
-    //   // Only update the line if the click is on the grid area
-    //   if (
-    //     !(
-    //       targetId === "left" ||
-    //       targetId === "right" ||
-    //       targetId === "rec" ||
-    //       targetId === "arrow"
-    //     )
-    //   ) {
-    //     updateLine(params, chart, idx);
-    //     return;
-    //   }
-    // });
   }
 
   onMount(() => {
