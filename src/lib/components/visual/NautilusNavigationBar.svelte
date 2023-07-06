@@ -54,33 +54,19 @@
   });
 
   // The chart will be created when the component is mounted. This is done to ensure that the div element exists.
-  // Create the option object for the whole chart. This example creates a basic bar chart.
-  const option: echarts.EChartOption = {
-    xAxis: {},
-    yAxis: {},
-    axisPointer: {
-      show: true,
-    },
-    series: [
-      {
-        type: "custom",
-        renderItem: draw,
-        clip: true,
-        data: objectiveShapes[0],
-      },
-    ],
-  };
+
   function draw(
-    params,
-    api
+    // params,
+    api,
+    objectiveIndex: number
   ): echarts.EChartOption.SeriesCustom.RenderItemReturnPolygon {
     // if (params.context.rendered) {
     //   return {};
     // }
     // params.context.rendered = true;
     let points = [];
-    for (let i = 0; i < objectiveShapes[0].length; i++) {
-      points.push(api.coord(objectiveShapes[0][i]));
+    for (let i = 0; i < objectiveShapes[objectiveIndex].length; i++) {
+      points.push(api.coord(objectiveShapes[objectiveIndex][i]));
     }
     let color = api.visual("color");
     return {
@@ -96,15 +82,29 @@
     };
   }
 
-  function addNautilusBar(
-    id: string,
-    option: echarts.EChartOption,
-    idx: number
-  ) {
+  function addNautilusBar(id: string, idx: number) {
     const chart = echarts.init(
       document.getElementById(id + idx) as HTMLDivElement
     );
-    chart.setOption(option);
+    // Create the option object for the whole chart. This example creates a basic bar chart.
+    let newOption: echarts.EChartOption = {
+      xAxis: { show: false },
+      yAxis: {},
+      axisPointer: {
+        show: true,
+      },
+      series: [
+        {
+          type: "custom",
+          renderItem: (_, api) => {
+            return draw(api, idx);
+          },
+          clip: true,
+          data: objectiveShapes[idx],
+        },
+      ],
+    };
+    chart.setOption(newOption);
     // chart.setOption({
     //   inputIndex: idx,
     //   // Set the min max values for the bar
@@ -288,7 +288,7 @@
   onMount(() => {
     // createChart(id, option);
     for (let i = 0; i < names.length; i++) {
-      addNautilusBar(id, option, i);
+      addNautilusBar(id, i);
     }
     //Other way to draw polygon:
     // shapeData.forEach((pair, index) => {
@@ -306,7 +306,6 @@
     // chart.setOption({
     //   graphic: [testPolygon]
     // });
-    console.log("object");
     /* const chart: echarts.EChartsType = createChart(id, option);
       chart.setOption({
         tooltip: {
@@ -348,7 +347,6 @@
           type="number"
           name="prev"
           placeholder="2.543"
-          readonly
           style="border: 0; box-shadow: none;background-color: rgba(232 234 241);"
         />
       </div>
