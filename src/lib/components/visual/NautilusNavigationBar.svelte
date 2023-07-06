@@ -7,14 +7,15 @@
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
-  import { createChart } from "./stores";
+  // import { createChart } from "./stores";
   import type { SolutionData } from "./types";
   // import { element } from "svelte/internal";
 
   // The properties that can be passed to the component.
   export let id: string;
   export let data: SolutionData;
-  console.log(data);
+  const names: string[] = data.names;
+  $: aspValues = [0, 0, 0];
 
   const upperBounds = [
     [10, 9, 7, 5, 5, 5], // objective 1
@@ -27,63 +28,267 @@
     [-5, -4, -3, 0.2, 0.5, 0.5], // objective 3
   ];
   let firstPart = upperBounds[0];
-  let secondPart: Array<number> = lowerBounds[0];
+  // let secondPart: Array<number> = lowerBounds[0];
   //reverse secondPart
-  let reversed = secondPart.slice();
 
-  let shapeData = [];
+  // let shapeData = [];
   // for (let i = 0; i < upperBounds.length; i++) {
   //   shapeData.push([i,upperBounds]);
   // }
 
-  firstPart.map((value, index) => {
-    shapeData.push([index, value]);
+  let objectiveShapes = [];
+
+  names.forEach((_, row) => {
+    let objShape = [];
+    firstPart = upperBounds[row];
+    let secondPart = lowerBounds[row];
+
+    objShape.push(...firstPart.map((value, index) => [index, value]));
+    objShape.push(
+      ...secondPart
+        .slice()
+        .reverse()
+        .map((value, index) => [secondPart.length - index - 1, value])
+    );
+    objectiveShapes.push(objShape);
   });
-  for (let i = reversed.length; i >= 0; i--) {
-    const point = reversed[i];
-    shapeData.push([i, point]);
-  }
 
   // The chart will be created when the component is mounted. This is done to ensure that the div element exists.
-  onMount(() => {
-    // Create the option object for the whole chart. This example creates a basic bar chart.
-    const option: echarts.EChartOption = {
-      xAxis: {},
-      yAxis: {},
-      series: [
-        {
-          type: "custom",
-          renderItem: draw,
-          clip: true,
-          data: shapeData,
-        },
-      ],
+  // Create the option object for the whole chart. This example creates a basic bar chart.
+  const option: echarts.EChartOption = {
+    xAxis: {},
+    yAxis: {},
+    axisPointer: {
+      show: true,
+    },
+    series: [
+      {
+        type: "custom",
+        renderItem: draw,
+        clip: true,
+        data: objectiveShapes[0],
+      },
+    ],
+  };
+  function draw(
+    params,
+    api
+  ): echarts.EChartOption.SeriesCustom.RenderItemReturnPolygon {
+    // if (params.context.rendered) {
+    //   return {};
+    // }
+    // params.context.rendered = true;
+    let points = [];
+    for (let i = 0; i < objectiveShapes[0].length; i++) {
+      points.push(api.coord(objectiveShapes[0][i]));
+    }
+    let color = api.visual("color");
+    return {
+      type: "polygon",
+      transition: ["shape"],
+      shape: {
+        points: points,
+      },
+      style: api.style({
+        fill: color,
+        stroke: echarts.color.lift(color, 0.1),
+      }),
     };
-    createChart(id, option);
-    function draw(
-      params,
-      api
-    ): echarts.EChartOption.SeriesCustom.RenderItemReturnPolygon {
-      if (params.context.rendered) {
-        return;
-      }
-      params.context.rendered = true;
-      let points = [];
-      for (let i = 0; i < shapeData.length; i++) {
-        points.push(api.coord(shapeData[i]));
-      }
-      let color = api.visual("color");
-      return {
-        type: "polygon",
-        transition: ["shape"],
-        shape: {
-          points: points,
-        },
-        style: api.style({
-          fill: color,
-          stroke: echarts.color.lift(color, 0.1),
-        }),
-      };
+  }
+
+  function addNautilusBar(
+    id: string,
+    option: echarts.EChartOption,
+    idx: number
+  ) {
+    const chart = echarts.init(
+      document.getElementById(id + idx) as HTMLDivElement
+    );
+    chart.setOption(option);
+    // chart.setOption({
+    //   inputIndex: idx,
+    //   // Set the min max values for the bar
+    //   xAxis: {
+    //     min: data.value_ranges[idx][0],
+    //     max: data.value_ranges[idx][1],
+    //   },
+    //   // Set the color of the bar
+    //   series: {
+    //     color: colorPalette[idx],
+    //     showBackground: true,
+    //     backgroundStyle: {
+    //       color: colorPalette[idx],
+    //       opacity: 0.2,
+    //     },
+    //     type: "bar",
+    //     data: [firstIteration[idx]],
+    //     barWidth: "100%",
+    //   },
+    // });
+
+    // const gridModel = chart.getModel().getComponent("grid");
+    // const gridView = chart.getViewOfComponentModel(gridModel);
+    // const gridRect = gridView.group.getBoundingRect();
+
+    // // This option adds the interactive custom graphic elements to the chart
+    // const graphicOptions = {
+    //   graphic: [
+    //     // Add a button (arrow) to reset the aspiration value to the solution value.
+    //     {
+    //       id: "arrow",
+    //       type: "polygon",
+    //       x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
+    //       shape: {
+    //         points: [
+    //           [-arrowSize, 0],
+    //           [arrowSize, 0],
+    //           [0, arrowSize],
+    //         ],
+    //       },
+    //       style: {
+    //         fill: arrowColor,
+    //       },
+    //       onclick: () => {
+    //         const inputField = document.getElementsByName(names[idx])[0];
+    //         aspValues[idx] = firstIteration[idx];
+    //         inputField.value = aspValues[idx];
+    //         inputField.dispatchEvent(new Event("change"));
+    //       },
+    //     },
+
+    //     // Add aspiration value line
+    //     {
+    //       id: "rec",
+    //       type: "rect",
+    //       x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
+    //       y: gridRect.y,
+    //       z: 100,
+    //       transition: "all",
+    //       shape: {
+    //         height: gridRect.height,
+    //       },
+    //       style: {
+    //         stroke: "red",
+    //         lineWidth: 3,
+    //       },
+    //     },
+
+    //     // Add a line for previous preference
+    //     {
+    //       id: "prev_line",
+    //       type: "rect",
+    //       x: chart.convertToPixel({ seriesIndex: 0 }, [
+    //         fakePreviousIteration[idx],
+    //         0,
+    //       ])[0],
+    //       y: gridRect.y,
+    //       z: 5,
+    //       transition: "all",
+    //       shape: {
+    //         height: gridRect.height,
+    //       },
+    //       style: {
+    //         stroke: "blue",
+    //         lineDash: [4],
+    //         lineWidth: 3,
+    //       },
+    //     },
+
+    //     // Add arrows
+    //     {
+    //       type: "group",
+    //       top: "center",
+    //       children: [
+    //         //Left Arrow
+    //         {
+    //           type: "polygon",
+    //           id: "left",
+    //           shape: {
+    //             points: [
+    //               [-1, arrowSize],
+    //               [-1, -arrowSize],
+    //               [-arrowSize, 0],
+    //             ],
+    //           },
+    //           style: {
+    //             fill: arrowColor,
+    //           },
+    //           left: 0,
+    //         },
+    //         // Right Arrow
+    //         {
+    //           type: "polygon",
+    //           id: "right",
+    //           shape: {
+    //             points: [
+    //               [1, arrowSize],
+    //               [1, -arrowSize],
+    //               [arrowSize, 0],
+    //             ],
+    //           },
+    //           style: {
+    //             fill: arrowColor,
+    //           },
+    //           left: chart.getWidth() - arrowSize,
+    //         },
+    //       ],
+    //       // onclick event for the arrows
+    //       onclick: (params) => {
+    //         const targetId = params.target.id;
+    //         if (targetId === "left") {
+    //           aspValues[idx] = data.value_ranges[idx][0];
+    //         } else if (targetId === "right") {
+    //           aspValues[idx] = data.value_ranges[idx][1];
+    //         }
+    //         const inputField = document.getElementsByName(names[idx])[0];
+    //         inputField.value = aspValues[idx];
+    //         inputField.dispatchEvent(new Event("change"));
+    //       },
+    //     },
+    //     // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
+    //     {
+    //       type: "rect",
+    //       shape: {
+    //         x: gridRect.x,
+    //         y: gridRect.y,
+    //         width: gridRect.width,
+    //         height: gridRect.height,
+    //       },
+    //       style: {
+    //         fill: "transparent",
+    //         stroke: "transparent",
+    //         lineWidth: 0,
+    //       },
+    //     },
+    //   ],
+    // };
+    // chart.setOption(graphicOptions);
+    // Add event listener which adds and updates the aspiration line on the graph.
+    // chart.getZr().on("click", function (params) {
+    //   if (params.target == null) {
+    //     return;
+    //   }
+    //   const targetId: number | string = params.target.id;
+    //   // TODO: Make this more cleaner
+    //   // Only update the line if the click is on the grid area
+    //   if (
+    //     !(
+    //       targetId === "left" ||
+    //       targetId === "right" ||
+    //       targetId === "rec" ||
+    //       targetId === "arrow"
+    //     )
+    //   ) {
+    //     updateLine(params, chart, idx);
+    //     return;
+    //   }
+    // });
+  }
+
+  onMount(() => {
+    // createChart(id, option);
+    for (let i = 0; i < names.length; i++) {
+      addNautilusBar(id, option, i);
     }
     //Other way to draw polygon:
     // shapeData.forEach((pair, index) => {
@@ -115,4 +320,43 @@
 </script>
 
 <!--The div where the chart will be rendered. Must have width and height values for the chart to show.-->
-<div {id} style="width: 100vh; height: 50vh;" />
+<div>
+  {#each names as name, i}
+    {#if data.minimize[i]}
+      <p><strong>{name} (minimize)</strong></p>
+    {:else}
+      <p><strong>{name} (maximize)</strong></p>
+    {/if}
+    <div class="bar_container" style="display: flex; margin-top:0.75em">
+      <div>
+        <label for={name}>Reference point</label>
+        <input
+          class="asp_input"
+          {name}
+          type="number"
+          min={data.value_ranges[i][0]}
+          max={data.value_ranges[i][1]}
+          step="any"
+          bind:value={aspValues[i]}
+          on:change={(par) => {
+            console.log(par);
+          }}
+        />
+        <!-- on:change={(par) => handleOnchange(par, i)} -->
+        <label for="prev">Previous preference </label>
+        <input
+          type="number"
+          name="prev"
+          placeholder="2.543"
+          readonly
+          style="border: 0; box-shadow: none;background-color: rgba(232 234 241);"
+        />
+      </div>
+      <div
+        id={id + i}
+        class="chart_div"
+        style="width: 70vh; height: 2vh; min-height: 300px; margin-left:2em"
+      />
+    </div>
+  {/each}
+</div>

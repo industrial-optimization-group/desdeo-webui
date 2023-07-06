@@ -71,7 +71,7 @@
 
 <div class="container">
   <div>
-    <NautilusNavigationBar id="hori" data={exampleData} />
+    <NautilusNavigationBar id="nautilus" data={exampleData} />
     <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->
   </div>
 </div>

@@ -19,7 +19,7 @@
   const errColor = "red";
   const arrowSize = 15;
   const arrowColor = "black";
-  const names = data.names;
+  const names: string[] = data.names;
   // Array for storing aspiration values
 
   // TODO: What to do when there is multiple solutions already. Normally the optimization (iterationf) process starts without solutions. If there is already solutions, user may want to start from any of the solutions?
@@ -80,7 +80,7 @@
   onMount(() => {
     // Add the horizontal bars dynamically, adds as many bars as there is objectives
     for (let i = 0; i < names.length; i++) {
-      addHorizontalBar(id + i, option, i);
+      addHorizontalBar(id, option, i);
     }
     const inputs = document.getElementsByClassName("asp_input");
     for (let idx = 0; idx < inputs.length; idx++) {
@@ -102,7 +102,9 @@
     option: echarts.EChartOption,
     idx: number
   ) {
-    const chart = echarts.init(document.getElementById(id) as HTMLDivElement);
+    const chart = echarts.init(
+      document.getElementById(id + idx) as HTMLDivElement
+    );
     chart.setOption(option);
     chart.setOption({
       inputIndex: idx,
