@@ -12,7 +12,8 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
+.eslintrc.cjs
+.prettierrc.cjs
 *.config.js
 *.config.ts
 *.config.cjs
-.eslintrc.cjs
