@@ -1,5 +1,6 @@
 <!--@component
-    @description This is a template for a component that uses ECharts. It is not meant to be used directly.
+    @description A component that displays a Nautilus navigation bar.
+
 -->
 
 <script lang="ts">
@@ -15,7 +16,8 @@
   export let id: string;
   export let data: SolutionData;
   const names: string[] = data.names;
-  $: aspValues = [0, 0, 0];
+  const firstIteration: number[] = data.values[0];
+  $: aspValues = Array(names.length).fill(0);
 
   const upperBounds = [
     [10, 9, 7, 5, 5, 5], // objective 1
@@ -84,6 +86,10 @@
   }
 
   function addNautilusBar(id: string, idx: number) {
+    const inputField = document.getElementsByName(names[idx])[0];
+    aspValues[idx] = firstIteration[idx];
+    inputField.value = aspValues[idx];
+
     const chart = echarts.init(
       document.getElementById(id + idx) as HTMLDivElement,
       {
@@ -166,6 +172,15 @@
       const yOld = oldPoints[0][1];
       console.log(xOld);
       console.log(yOld);
+
+      aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
+        xClick,
+        yClick,
+      ])[1];
+      console.log(
+        "cvrtToPxl: " + chart.convertToPixel({ seriesIndex: 0 }, [0, 6])
+      );
+
       // let newPoints = [
       //   [xOld, yOld],
       //   [xClick, yOld],
@@ -339,7 +354,34 @@
           step="any"
           bind:value={aspValues[i]}
           on:change={(par) => {
+            console.log("Chanfge event");
             console.log(par);
+            const chart = echarts.getInstanceByDom(
+              par.target.parentElement.nextElementSibling
+            );
+            console.log("chart pos");
+            console.log(aspValues[i]);
+            console.log(
+              chart.convertToPixel({ seriesIndex: 0 }, [0, aspValues[i]])[1]
+            );
+            let newY = chart.convertToPixel({ seriesIndex: 0 }, [
+              0,
+              aspValues[i],
+            ])[1];
+            let newOption = {
+              graphic: {
+                id: "AspLine",
+                shape: {
+                  points: [
+                    [20, 100],
+                    [200, newY],
+                  ],
+                },
+              },
+            };
+            chart.setOption(newOption);
+            console.log(newOption);
+            console.log(newOption);
           }}
         />
         <!-- on:change={(par) => handleOnchange(par, i)} -->
