@@ -1,9 +1,13 @@
+import { join } from "path";
+import forms from "@tailwindcss/forms";
+import skeleton from "@skeletonlabs/skeleton/tailwind/skeleton.cjs";
+
 /** @type {import("tailwindcss").Config} */
-const config = {
+module.exports = {
   darkMode: "class",
   content: [
     "./src/**/*.{html,js,svelte,ts}",
-    require("path").join(
+    join(
       require.resolve("@skeletonlabs/skeleton"),
       "../**/*.{html,js,svelte,ts}"
     ),
@@ -11,10 +15,5 @@ const config = {
   theme: {
     extend: {},
   },
-  plugins: [
-    require("@tailwindcss/forms"),
-    ...require("@skeletonlabs/skeleton/tailwind/skeleton.cjs")(),
-  ],
+  plugins: [forms, ...skeleton()],
 };
-
-module.exports = config;
