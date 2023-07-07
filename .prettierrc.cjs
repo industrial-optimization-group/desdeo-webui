@@ -1,3 +1,7 @@
+//
+// See also `.prettierignore`
+//
+
 /** @type {import("prettier").Options} */
 const config = {
   plugins: [
