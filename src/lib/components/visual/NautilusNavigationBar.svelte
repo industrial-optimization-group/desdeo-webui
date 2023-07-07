@@ -1,6 +1,11 @@
 <!--@component
     @description A component that displays a Nautilus navigation bar.
-
+    TODO: documentation
+    TODO: Make YAxis visible
+    TODO: Add validation for input fields and lines
+          - Aspiration value should be between upper and lower bounds
+          - Aspiration line should not be draggable over the bound line
+          - Bound value should be between ideal and nadir points
 -->
 
 <script lang="ts">
@@ -17,7 +22,7 @@
   export let data: SolutionData;
   const names: string[] = data.names;
   const firstIteration: number[] = data.values[0];
-  $: boundValues = Array(names.length).fill(0);
+  $: boundValues = Array(names.length);
   $: aspValues = Array(names.length).fill(0);
   const aspirationLineStyle = {
     stroke: "blue",
@@ -439,10 +444,46 @@
         <input
           type="number"
           name="bounds"
-          min={data.value_ranges[i][0]}
-          max={data.value_ranges[i][1]}
+          min="0"
+          step="any"
           bind:value={boundValues[i]}
           placeholder="Set upper/lower bound here"
+          on:change={(par) => {
+            const chart = echarts.getInstanceByDom(
+              par.target.parentElement.nextElementSibling
+            );
+            const xAxisRect = chart
+              .getModel()
+              .getComponent("xAxis")
+              .axis.grid.getRect();
+            let newY = chart.convertToPixel({ seriesIndex: 0 }, [
+              0,
+              boundValues[i],
+            ])[1];
+
+            chart.setOption({
+              graphic: [
+                {
+                  id: "BoundLine",
+                  type: "polyline",
+                  z: 250,
+                  y: newY,
+                  transition: "y",
+                  shape: {
+                    points: [
+                      [0, 0],
+                      [xAxisRect.width, 0],
+                    ],
+                  },
+                  style: {
+                    stroke: "red",
+                    lineWidth: 2,
+                    opacity: 0.5,
+                  },
+                },
+              ],
+            });
+          }}
         />
       </div>
       <div

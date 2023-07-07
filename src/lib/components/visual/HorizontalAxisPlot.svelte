@@ -3,7 +3,7 @@
       @description Makes a horizontal axis plot using the ECharts library.
       TODO: Read solution data from props: make this dynamic, but for this the info of which of the solutions to show is needed
       TODO: (Is it necessary?)Bar chart's style depending on if the the objective is to be minimized or maximized
-      TODO: Link previous preference value also
+      TODO: Link previous preference value 
       TODO: Fix hard coded aspiration array
 -->
 <script lang="ts">
