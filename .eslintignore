@@ -13,6 +13,7 @@ package-lock.json
 yarn.lock
 
 .eslintrc.cjs
+.lintstagedrc.cjs
 .prettierrc.cjs
 *.config.js
 *.config.ts
