@@ -13,5 +13,6 @@ package-lock.json
 yarn.lock
 
 *.config.js
-*.config.cjs
 *.config.ts
+*.config.cjs
+.eslintrc.cjs
