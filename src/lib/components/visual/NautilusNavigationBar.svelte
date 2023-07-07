@@ -124,7 +124,11 @@
       .axis.grid.getRect();
     // console.log(xAxisRect);
     // console.log(chart.convertToPixel({ seriesIndex: 0 }, [0, -50]));
-
+    const aspirationLineStyle = {
+      stroke: "blue",
+      lineDash: [4],
+      lineWidth: 3,
+    };
     chart.setOption({
       // Add aspiration value line
       graphic: {
@@ -135,15 +139,11 @@
         transition: "all",
         shape: {
           points: [
-            [0, 0],
-            [xAxisRect.width, 0],
+            [0, xAxisRect.height / 2],
+            [xAxisRect.width, xAxisRect.height / 2],
           ],
         },
-        style: {
-          stroke: "blue",
-          lineDash: [4],
-          lineWidth: 3,
-        },
+        style: aspirationLineStyle,
         draggable: "vertical",
         ondrag: function () {
           console.log(this);
@@ -151,6 +151,79 @@
           console.log(this.y);
         },
       },
+    });
+
+    chart.getZr().on("click", (param) => {
+      // console.log(chart.convertFromPixel({seriesIndex: 0}, [param.offsetX, param.offsetY]));
+
+      console.log(param.offsetX, param.offsetY);
+      console.log(param);
+      console.log(chart.getOption());
+      const xClick = param.offsetX;
+      const yClick = param.offsetY;
+      let oldPoints = chart.getOption().graphic[0].elements[0].shape.points;
+      const xOld = oldPoints[0][0];
+      const yOld = oldPoints[0][1];
+      console.log(xOld);
+      console.log(yOld);
+      // let newPoints = [
+      //   [xOld, yOld],
+      //   [xClick, yOld],
+      //   [xClick, yClick],
+      //   [xAxisRect.width, yClick],
+      // ];
+      const oldAspLinePoints = [
+        [xOld, yOld],
+        [xClick, yOld],
+      ];
+      const betweenLinePoints = [
+        [xClick, yOld],
+        [xClick, yClick],
+      ];
+      const newAspLinePoints = [
+        [xClick, yClick],
+        [xAxisRect.width, yClick],
+      ];
+
+      chart.setOption({
+        graphic: [
+          {
+            id: "AspLine",
+            invisible: true,
+          },
+          {
+            id: "OldAspLine",
+            type: "polyline",
+            z: 200,
+            shape: {
+              points: oldAspLinePoints,
+            },
+            style: aspirationLineStyle,
+            transition: "all",
+          },
+          {
+            id: "BetweenLine",
+            type: "polyline",
+            z: 200,
+            shape: {
+              points: betweenLinePoints,
+            },
+            style: aspirationLineStyle,
+            transition: "all",
+          },
+          {
+            id: "NewAspLine",
+            type: "polyline",
+            z: 200,
+            shape: {
+              points: newAspLinePoints,
+            },
+            style: aspirationLineStyle,
+            transition: "all",
+          },
+        ],
+      });
+      console.log(chart.getOption());
     });
 
     // chart.setOption({
@@ -211,41 +284,6 @@
     //         lineWidth: 3,
     //       },
     //     },
-
-    chart.getZr().on("click", (param) => {
-      // console.log(chart.convertFromPixel({seriesIndex: 0}, [param.offsetX, param.offsetY]));
-
-      console.log(param.offsetX, param.offsetY);
-      console.log(param);
-      console.log(chart.getOption());
-      const xClick = param.offsetX;
-      const yClick = param.offsetY;
-      let oldPoints = chart.getOption().graphic[0].elements[0].shape.points;
-      const xOld = oldPoints[0][0];
-      const yOld = oldPoints[0][1];
-      console.log(xOld);
-      console.log(yOld);
-      let newPoints = [
-        [xOld, yOld],
-        [xClick, yOld],
-        [xClick, yClick],
-        [xAxisRect.width, yClick],
-      ];
-      chart.setOption({
-        graphic: {
-          id: "AspLine",
-          type: "polyline",
-          style: {
-            stroke: "red",
-          },
-
-          shape: {
-            points: newPoints,
-          },
-        },
-      });
-      console.log(chart.getOption());
-    });
   }
 
   onMount(() => {
