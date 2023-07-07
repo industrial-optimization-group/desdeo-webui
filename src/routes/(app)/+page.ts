@@ -1,9 +1,9 @@
 import { redirect } from "@sveltejs/kit";
 import { get } from "svelte/store";
 import { login_status, LoginStatus } from "$lib/api";
+import type { PageLoad } from "./$types";
 
-/** @type {import("./$types").PageLoad} */
-export function load() {
+export const load: PageLoad = () => {
   if (get(login_status) !== LoginStatus.LoggedOut) {
     //
     // The root page currently has no content to show, so we redirect
@@ -11,4 +11,4 @@ export function load() {
     //
     throw redirect(307, "/saved_problems");
   }
-}
+};
