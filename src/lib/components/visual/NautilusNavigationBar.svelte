@@ -17,6 +17,7 @@
   export let data: SolutionData;
   const names: string[] = data.names;
   const firstIteration: number[] = data.values[0];
+  $: boundValues = Array(names.length).fill(0);
   $: aspValues = Array(names.length).fill(0);
   const aspirationLineStyle = {
     stroke: "blue",
@@ -434,12 +435,14 @@
           }}
         />
         <!-- on:change={(par) => handleOnchange(par, i)} -->
-        <label for="prev">Previous preference </label>
+        <label for="bounds">Bounds </label>
         <input
           type="number"
-          name="prev"
-          placeholder="2.543"
-          style="border: 0; box-shadow: none;background-color: rgba(232 234 241);"
+          name="bounds"
+          min={data.value_ranges[i][0]}
+          max={data.value_ranges[i][1]}
+          bind:value={boundValues[i]}
+          placeholder="Set upper/lower bound here"
         />
       </div>
       <div
