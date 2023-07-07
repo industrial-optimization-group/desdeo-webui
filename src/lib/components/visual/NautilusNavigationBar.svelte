@@ -86,10 +86,18 @@
   function addNautilusBar(id: string, idx: number) {
     const chart = echarts.init(
       document.getElementById(id + idx) as HTMLDivElement,
-      null,
+      {
+        grid: {
+          show: true,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        },
+      },
       { renderer: "svg" }
     );
-    // Create the option object for the whole chart. This example creates a basic bar chart.
+
     let newOption: echarts.EChartOption = {
       xAxis: { show: false },
       yAxis: {},
@@ -108,33 +116,28 @@
       ],
     };
     chart.setOption(newOption);
-
-    const gridModel = chart.getModel().getComponent("xAxis");
-    console.log(gridModel);
-    // const gridView = chart.getGridModel();
-    // console.log(gridView);
-    const gridRect = chart.getModel().getComponent("xAxis").axis.grid.getRect();
-    console.log(gridRect);
-    console.log(chart.convertToPixel({ seriesIndex: 0 }, [0, -50]));
+    // const xAxisModel = chart.getModel().getComponent("xAxis");
+    // console.log(xAxisModel);
+    const xAxisRect = chart
+      .getModel()
+      .getComponent("xAxis")
+      .axis.grid.getRect();
+    // console.log(xAxisRect);
+    // console.log(chart.convertToPixel({ seriesIndex: 0 }, [0, -50]));
 
     chart.setOption({
       // Add aspiration value line
       graphic: {
-        // id: "line",
+        id: "AspLine",
         // type: "line",
-        type: "rect",
-        x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
-        y: 100,
+        type: "polyline",
         z: 100,
         transition: "all",
-        // shape: {
-        //   x1: 0,
-        //   y1: 0,
-        //   x2: gridRect.width,
-        //   y2: 0,
-        // },
         shape: {
-          width: gridRect.width,
+          points: [
+            [0, 0],
+            [xAxisRect.width, 0],
+          ],
         },
         style: {
           stroke: "blue",
@@ -185,9 +188,6 @@
     //   ),
     // });
 
-    chart.setOption({
-      graphic: [],
-    });
     // const gridModel = chart.getModel().getComponent("grid");
     // const gridView = chart.getViewOfComponentModel(gridModel);
     // const gridRect = gridView.group.getBoundingRect();
@@ -211,6 +211,41 @@
     //         lineWidth: 3,
     //       },
     //     },
+
+    chart.getZr().on("click", (param) => {
+      // console.log(chart.convertFromPixel({seriesIndex: 0}, [param.offsetX, param.offsetY]));
+
+      console.log(param.offsetX, param.offsetY);
+      console.log(param);
+      console.log(chart.getOption());
+      const xClick = param.offsetX;
+      const yClick = param.offsetY;
+      let oldPoints = chart.getOption().graphic[0].elements[0].shape.points;
+      const xOld = oldPoints[0][0];
+      const yOld = oldPoints[0][1];
+      console.log(xOld);
+      console.log(yOld);
+      let newPoints = [
+        [xOld, yOld],
+        [xClick, yOld],
+        [xClick, yClick],
+        [xAxisRect.width, yClick],
+      ];
+      chart.setOption({
+        graphic: {
+          id: "AspLine",
+          type: "polyline",
+          style: {
+            stroke: "red",
+          },
+
+          shape: {
+            points: newPoints,
+          },
+        },
+      });
+      console.log(chart.getOption());
+    });
   }
 
   onMount(() => {
