@@ -13,7 +13,7 @@
     "test:end-to-end": "playwright test",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "prettier --check . && eslint --ext .js,.ts,.svelte src/",
+    "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "prepare": "husky install"
   },
