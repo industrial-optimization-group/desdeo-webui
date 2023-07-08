@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Runs Prettier and ESLint on staged files. The actual commands to run
-# are configured in package.json.
+#
+# Runs linting on staged files. The specific commands to run are configured
+# in `.lintstagedrc.cjs`.
+#
 npx lint-staged
