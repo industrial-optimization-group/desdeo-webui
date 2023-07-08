@@ -3,7 +3,7 @@
 //
 
 /** @type {import("prettier").Options} */
-const config = {
+module.exports = {
   plugins: [
     "prettier-plugin-jsdoc",
     "prettier-plugin-svelte",
@@ -18,5 +18,3 @@ const config = {
   // See the above comment about the tailwindcss plugin
   pluginSearchDirs: false,
 };
-
-module.exports = config;
