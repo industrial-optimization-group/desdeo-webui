@@ -5,5 +5,5 @@ module.exports = {
   // ESLint outputs a warning if we try to lint a file that is ignored
   // by the rules in `.eslintignore`
   //
-  "{src,tests}/**/*": "eslint --max-warnings 0",
+  "{src,tests}/**/*.{js,svelte,ts}": "eslint --max-warnings 0",
 };
