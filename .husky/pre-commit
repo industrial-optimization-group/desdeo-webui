@@ -5,4 +5,12 @@
 # Runs linting on staged files. The specific commands to run are configured
 # in `.lintstagedrc.cjs`.
 #
-npx lint-staged
+# (The project is so small that we could perhaps get rid of lint-staged
+# and lint the entire repository on every commit.)
+#
+npx lint-staged || exit 1
+
+#
+# TODO: Uncomment afer we have fixed the current errors
+#
+# npm run check || exit 1
