@@ -1,7 +1,13 @@
 <script>
+  // The selected theme
   import "@skeletonlabs/skeleton/themes/theme-hamlindigo.css";
+
+  // Contains the bulk of Skeleton's required styles
   import "@skeletonlabs/skeleton/styles/skeleton.css";
+
+  // The application's global stylesheet
   import "../app.postcss";
+
   import { Drawer, drawerStore } from "@skeletonlabs/skeleton";
   import Citation from "$lib/components/main/Citation.svelte";
   import CitationDownload from "$lib/components/main/CitationDownload.svelte";
