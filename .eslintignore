@@ -1,20 +1,6 @@
-.DS_Store
-node_modules
-/build
-/.svelte-kit
-/package
-.env
-.env.*
-!.env.example
-
-# Ignore files for PNPM, NPM and YARN
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
-
-.eslintrc.cjs
-.lintstagedrc.cjs
-.prettierrc.cjs
-*.config.js
-*.config.ts
-*.config.cjs
+# Only lint files under the src/ and tests/ directories
+*
+!/src/
+!/src/**/*
+!/tests/
+!/tests/**/*
