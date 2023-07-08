@@ -11,22 +11,21 @@
   import { Drawer, drawerStore } from "@skeletonlabs/skeleton";
   import Citation from "$lib/components/main/Citation.svelte";
   import CitationDownload from "$lib/components/main/CitationDownload.svelte";
-
-  function closeDrawer() {
-    drawerStore.close();
-  }
 </script>
 
 <Drawer position="bottom">
   <div class="h-full p-4">
     <div class="mb-4 flex justify-between">
       <span class="font-bold">Citing DESDEO</span>
-      <button class="anchor" on:click={closeDrawer}>Close</button>
+      <button
+        class="anchor"
+        on:click={() => {
+          drawerStore.close();
+        }}>Close</button
+      >
     </div>
     <div class="grid max-w-screen-xl grid-cols-2">
-      <!--
-        TODO: Use the theme system instead of a hardcoded color?
-      -->
+      <!--  TODO: Use the theme system instead of a hardcoded color value? -->
       <div class="border-r border-black pr-4">
         <Citation />
       </div>
