@@ -1,6 +1,6 @@
-import { join } from "path";
-import forms from "@tailwindcss/forms";
-import skeleton from "@skeletonlabs/skeleton/tailwind/skeleton.cjs";
+const { join } = require("path");
+const forms = require("@tailwindcss/forms");
+const skeleton = require("@skeletonlabs/skeleton/tailwind/skeleton.cjs");
 
 /** @type {import("tailwindcss").Config} */
 module.exports = {
