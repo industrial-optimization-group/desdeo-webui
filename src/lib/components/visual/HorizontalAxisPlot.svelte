@@ -198,9 +198,11 @@
                 fill: arrowColor,
               },
               onclick: () => {
-                const inputField = document.getElementsByName(names[idx])[0];
+                const inputField = document.getElementsByName(
+                  names[idx]
+                )[0] as HTMLInputElement;
                 aspValues[idx] = firstIteration[idx];
-                inputField.value = aspValues[idx];
+                inputField.value = aspValues[idx].toString();
                 inputField.dispatchEvent(new Event("change"));
               },
             },
@@ -248,15 +250,17 @@
             },
           ],
           // onclick event for the arrows
-          onclick: (params) => {
+          onclick: (params: { target: { id: string } }) => {
             const targetId = params.target.id;
             if (targetId === "left") {
               aspValues[idx] = data.value_ranges[idx][0];
             } else if (targetId === "right") {
               aspValues[idx] = data.value_ranges[idx][1];
             }
-            const inputField = document.getElementsByName(names[idx])[0];
-            inputField.value = aspValues[idx];
+            const inputField = document.getElementsByName(
+              names[idx]
+            )[0] as HTMLInputElement;
+            inputField.value = aspValues[idx].toString();
             inputField.dispatchEvent(new Event("change"));
           },
         },
@@ -297,12 +301,18 @@
    *
    * @param params The parameters of the click event.
    * @param chart The chart object.
-   * @param idx The index of the input field value.
+   * @param idx The index of the input field value. TODO: make default chart
+   *   type
    */
-  function updateLine(params?, chart?, idx?) {
+  function updateLine(
+    params: echarts.ElementEvent,
+    chart: echarts.EChartsType,
+    idx: number
+  ) {
     let newOption;
     if (params.type === "click") {
       //Get the index of the input field value
+      // TODO: .inputIndex is a custom property that's why the type error. How to implement this differently, so that there is no need for the custom property
       idx = chart.getOption().inputIndex;
       aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
         params.offsetX,
@@ -331,7 +341,7 @@
       .querySelectorAll(".bar_container")
       [idx].querySelector(".error");
     if (errorP != null) {
-      errorP.previousElementSibling.style.borderColor = "";
+      (errorP.previousElementSibling as HTMLElement).style.borderColor = "";
       errorP.remove();
     }
     chart.setOption(newOption);
@@ -344,7 +354,10 @@
    * @param param
    * @param i
    */
-  function handleOnchange(param, i: number) {
+  function handleOnchange(
+    param: Event & { currentTarget: EventTarget & HTMLInputElement },
+    i: number
+  ) {
     const targetElem: HTMLInputElement = param.target;
     // Update the line only when the input value is valid
     if (targetElem.checkValidity()) {
