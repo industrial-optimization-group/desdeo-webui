@@ -48,10 +48,10 @@
   //   shapeData.push([i,upperBounds]);
   // }
 
-  let objectiveShapes = [];
+  let objectiveShapes: number[][][] = [];
 
   names.forEach((_, row) => {
-    let objShape = [];
+    let objShape: number[][] = [];
     firstPart = upperBounds[row];
     let secondPart = lowerBounds[row];
 
@@ -69,13 +69,14 @@
 
   function draw(
     // params,
-    api,
+    api: echarts.EChartOption.SeriesCustom.RenderItemApi,
     objectiveIndex: number
   ): echarts.EChartOption.SeriesCustom.RenderItemReturnPolygon {
     // if (params.context.rendered) {
     //   return {};
     // }
     // params.context.rendered = true;
+
     let points = [];
     for (let i = 0; i < objectiveShapes[objectiveIndex].length; i++) {
       points.push(api.coord(objectiveShapes[objectiveIndex][i]));
@@ -83,7 +84,8 @@
     let color = api.visual("color");
     return {
       type: "polygon",
-      transition: ["shape"],
+      transition: ["shape"], // transition option not defined in RenderItemReturnPolygon, but is in the documentation:https://echarts.apache.org/en/option.html#series-custom.renderItem.return_polygon.transition
+      // Should RenderItemReturnPolygon be extended to include the transition property?
       shape: {
         points: points,
         smooth: 0.05,
@@ -96,7 +98,9 @@
   }
 
   function addNautilusBar(id: string, idx: number) {
-    const inputField = document.getElementsByName(names[idx])[0];
+    const inputField = document.getElementsByName(
+      names[idx]
+    )[0] as HTMLInputElement;
     aspValues[idx] = firstIteration[idx];
     inputField.value = aspValues[idx];
 
@@ -123,24 +127,31 @@
       series: [
         {
           type: "custom",
+
           renderItem: (_, api) => {
             return draw(api, idx);
           },
-          clip: true,
           data: objectiveShapes[idx],
         },
       ],
     };
+    chart.on("finished", function () {
+      console.log("tes");
+      this.getVisual("series", "color");
+    });
     chart.setOption(newOption);
     // const xAxisModel = chart.getModel().getComponent("xAxis");
     // console.log(xAxisModel);
     const xAxisRect = chart
-      .getModel()
+      .getModel() // TODO: How to get info needed without getModel. This is a private method, can break in the future!!https://github.com/apache/echarts/issues/16479
       .getComponent("xAxis")
       .axis.grid.getRect();
     // console.log(xAxisRect);
     // console.log(chart.convertToPixel({ seriesIndex: 0 }, [0, -50]));
-
+    // console.log(xAxisRect.width);
+    // console.log(xAxisRect.height);
+    // console.log(chart.getWidth());
+    // console.log(chart.getHeight());
     chart.setOption({
       // Add aspiration value line
       graphic: [
@@ -188,9 +199,15 @@
           style: aspirationLineStyle,
           draggable: "vertical",
           ondrag: function () {
-            console.log(this);
-            console.log(this.x);
-            console.log(this.y);
+            // console.log("shape:");
+            // console.log(this.shape.points[0][0]);
+            // console.log(this.shape.points[0][1]);
+            // console.log("this:");
+            // console.log(this.coordSys);
+
+            // TODO: what is this's type? It's not CustomRenderItemParams. this.x and .y are used in documentation
+            // console.log(this.x);
+            // console.log(this.y);
             updateLine(chart, idx, this.x, this.y, false);
           },
         },
@@ -271,7 +288,13 @@
     //     },
   }
 
-  function updateLine(chart, idx, xNew, yNew, transition: boolean) {
+  function updateLine(
+    chart: echarts.EChartsType,
+    idx: number,
+    xNew: number | undefined,
+    yNew: number,
+    transition: boolean
+  ) {
     let oldPoints = chart.getOption().graphic[0].elements[0].shape.points;
     const xOld = oldPoints[0][0];
     const yOld = oldPoints[0][1];
