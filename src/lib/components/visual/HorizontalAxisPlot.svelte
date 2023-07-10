@@ -136,29 +136,6 @@
     // This option adds the interactive custom graphic elements to the chart
     const graphicOptions = {
       graphic: [
-        // Add a button (arrow) to reset the aspiration value to the solution value.
-        {
-          id: "arrow",
-          type: "polygon",
-          x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
-          shape: {
-            points: [
-              [-arrowSize, 0],
-              [arrowSize, 0],
-              [0, arrowSize],
-            ],
-          },
-          style: {
-            fill: arrowColor,
-          },
-          onclick: () => {
-            const inputField = document.getElementsByName(names[idx])[0];
-            aspValues[idx] = firstIteration[idx];
-            inputField.value = aspValues[idx];
-            inputField.dispatchEvent(new Event("change"));
-          },
-        },
-
         // Add aspiration value line
         {
           id: "rec",
@@ -196,16 +173,51 @@
             lineWidth: 3,
           },
         },
-
+        {
+          id: "verticalGroup",
+          type: "group",
+          name: "interactiveButtons",
+          children: [
+            // Add a button (arrow) to reset the aspiration value to the solution value.
+            {
+              id: "arrow",
+              type: "polygon",
+              // group: "test",
+              x: chart.convertToPixel({ seriesIndex: 0 }, [
+                aspValues[idx],
+                0,
+              ])[0],
+              shape: {
+                points: [
+                  [-arrowSize, 0],
+                  [arrowSize, 0],
+                  [0, arrowSize],
+                ],
+              },
+              style: {
+                fill: arrowColor,
+              },
+              onclick: () => {
+                const inputField = document.getElementsByName(names[idx])[0];
+                aspValues[idx] = firstIteration[idx];
+                inputField.value = aspValues[idx];
+                inputField.dispatchEvent(new Event("change"));
+              },
+            },
+          ],
+        },
         // Add arrows
         {
+          id: "leftRightGroup",
           type: "group",
           top: "center",
+          name: "interactiveButtons",
           children: [
             //Left Arrow
             {
               type: "polygon",
               id: "left",
+
               shape: {
                 points: [
                   [-1, arrowSize],
@@ -271,17 +283,9 @@
       if (params.target == null) {
         return;
       }
-      const targetId: number | string = params.target.id;
-      // TODO: Make this more cleaner
-      // Only update the line if the click is on the grid area
-      if (
-        !(
-          targetId === "left" ||
-          targetId === "right" ||
-          targetId === "rec" ||
-          targetId === "arrow"
-        )
-      ) {
+      const targetParentName: string = params.target.parent.name;
+      // Only update the line if click has not happened on the interactive buttons
+      if (targetParentName !== "interactiveButtons") {
         updateLine(params, chart, idx);
         return;
       }
