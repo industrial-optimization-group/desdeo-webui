@@ -20,16 +20,19 @@
   // The properties that can be passed to the component.
   export let id: string;
   export let data: SolutionData;
+  const currentIteration = 3;
   const names: string[] = data.names;
-  const firstIteration: number[] = data.values[0];
+  const values: number[][] = data.values;
+  const firstIteration: number[] = data.values[0].slice();
   $: boundValues = Array(names.length);
   $: aspValues = Array(names.length).fill(0);
+
   const aspirationLineStyle = {
     stroke: "blue",
     lineDash: [4],
     lineWidth: 3,
   };
-  const upperBounds = [
+  /* const upperBounds = [
     [10, 9, 7, 5, 5, 5], // objective 1
     [2.0, 1.9, 1.5, 0.8, 0.6, 0.6], // objective 2
     [5, 4.5, 4, 3, 2.8, 2.8], // objective 3
@@ -39,7 +42,10 @@
     [0.0, 0.05, 0.1, 0.15, 0.2, 0.2], // objective 2
     [-5, -4, -3, 0.2, 0.5, 0.5], // objective 3
   ];
-  let firstPart = upperBounds[0];
+  let firstPart = upperBounds[0]; */
+
+  const bounds: number[][][] = data.uncertainty;
+
   // let secondPart: Array<number> = lowerBounds[0];
   //reverse secondPart
 
@@ -48,22 +54,59 @@
   //   shapeData.push([i,upperBounds]);
   // }
 
-  let objectiveShapes: number[][][] = [];
+  /* uncertainty: [
+      //Objective1:
+      [
+        [0.9, 1.1], // [lower, upper] of the first iteration
+        [1.9, 2.1], // [lower, upper] of the second iteration
+        [2.9, 3.1], // [lower, upper] of the third iteration
+      ],
+      //Objective2:
+      [
+        [3.9, 4.1],
+        [4.9, 5.1],
+        [5.9, 6.1],
+      ],
+      [
+        [6.9, 7.1],
+        [7.9, 8.1],
+        [8.9, 9.1],
+      ],
+    ], */
 
+  let objectiveShapes: number[][][] = [];
+  names.forEach((_, objectiveIndex) => {
+    let objShape: number[][] = [];
+
+    for (let index = 0; index < currentIteration; index++) {
+      let iterationBounds = bounds[objectiveIndex][index];
+      const lowerBound = iterationBounds[0];
+      objShape.push([index, lowerBound]);
+    }
+    for (let index = currentIteration - 1; index >= 0; index--) {
+      let iterationBounds = bounds[objectiveIndex][index];
+      const upperBound = iterationBounds[1];
+      objShape.push([index, upperBound]);
+    }
+    objectiveShapes.push(objShape);
+  });
+
+  /*   // This works only for original bounds, the data is copied from desdeo components. 
   names.forEach((_, row) => {
     let objShape: number[][] = [];
     firstPart = upperBounds[row];
     let secondPart = lowerBounds[row];
 
-    objShape.push(...firstPart.map((value, index) => [index, value]));
-    objShape.push(
-      ...secondPart
-        .slice()
-        .reverse()
-        .map((value, index) => [secondPart.length - index - 1, value])
-    );
+   for (let index = 0; index < currentItaration; index++) {
+    const value = firstPart[index];
+    objShape.push([index, value]);
+   }
+    for (let index = currentItaration - 1; index >= 0; index--) {
+      const value = secondPart[index];
+      objShape.push([index, value]);
+    }
     objectiveShapes.push(objShape);
-  });
+  }); */
 
   // The chart will be created when the component is mounted. This is done to ensure that the div element exists.
 
@@ -78,6 +121,9 @@
     // params.context.rendered = true;
 
     let points = [];
+    if (!api.coord || !api.visual) {
+      return {};
+    }
     for (let i = 0; i < objectiveShapes[objectiveIndex].length; i++) {
       points.push(api.coord(objectiveShapes[objectiveIndex][i]));
     }
@@ -119,7 +165,10 @@
     );
 
     let newOption: echarts.EChartOption = {
-      xAxis: { show: false },
+      xAxis: {
+        show: false,
+        max: values[idx].length - 1,
+      },
       yAxis: {},
       axisPointer: {
         show: true,
@@ -143,7 +192,7 @@
     // const xAxisModel = chart.getModel().getComponent("xAxis");
     // console.log(xAxisModel);
     const xAxisRect = chart
-      .getModel() // TODO: How to get info needed without getModel. This is a private method, can break in the future!!https://github.com/apache/echarts/issues/16479
+      .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
       .getComponent("xAxis")
       .axis.grid.getRect();
     // console.log(xAxisRect);
@@ -205,7 +254,7 @@
             // console.log("this:");
             // console.log(this.coordSys);
 
-            // TODO: what is this's type? It's not CustomRenderItemParams. this.x and .y are used in documentation
+            // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
             // console.log(this.x);
             // console.log(this.y);
             updateLine(chart, idx, this.x, this.y, false);
