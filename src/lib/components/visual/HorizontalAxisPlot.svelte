@@ -86,7 +86,7 @@
     }
     const inputs = document.getElementsByClassName("asp_input");
     for (let idx = 0; idx < inputs.length; idx++) {
-      const input = inputs[idx];
+      const input = inputs[idx] as HTMLInputElement;
       input.value = aspValues[idx].toString();
       input.dispatchEvent(new Event("change"));
     }
@@ -109,7 +109,6 @@
     );
     chart.setOption(option);
     chart.setOption({
-      inputIndex: idx,
       // Set the min max values for the bar
       xAxis: {
         min: data.value_ranges[idx][0],
@@ -129,6 +128,7 @@
       },
     });
 
+    // TODO: How to get the gridRect without using the private methods?
     const gridModel = chart.getModel().getComponent("grid");
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
@@ -326,9 +326,6 @@
       chartDiv = (params.event.currentTarget as HTMLDivElement)
         .parentElement as HTMLDivElement;
       chart = echarts.getInstanceByDom(chartDiv);
-      //Get the index of the input field value
-      // TODO: .inputIndex is a custom property that's why the type error. Implement this differently, so that there is no need for the custom property
-      idx = chart.getOption().inputIndex;
       aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
         params.offsetX,
         params.offsetY,
