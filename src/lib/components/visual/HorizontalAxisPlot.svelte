@@ -290,7 +290,7 @@
       const targetParentName: string = params.target.parent.name;
       // Only update the line if click has not happened on the interactive buttons
       if (targetParentName !== "interactiveButtons") {
-        updateLine(params, chart, idx);
+        updateLine(params, idx);
         return;
       }
     });
@@ -304,15 +304,30 @@
    * @param idx The index of the input field value. TODO: make default chart
    *   type
    */
-  function updateLine(
-    params: echarts.ElementEvent,
-    chart: echarts.EChartsType,
-    idx: number
-  ) {
+  function updateLine(params: echarts.ElementEvent | Event, idx: number) {
     let newOption;
-    if (params.type === "click") {
+    let chartDiv: HTMLDivElement | HTMLCanvasElement;
+    let chart: echarts.ECharts;
+    if (params instanceof Event) {
+      const target = params.target as HTMLInputElement | null;
+      const parentElem = target?.parentElement;
+      if (!target || !parentElem) {
+        return;
+      }
+      chartDiv = target.parentElement.nextElementSibling as HTMLDivElement;
+      chart = echarts.getInstanceByDom(chartDiv);
+      newOption = {
+        graphic: {
+          id: "rec",
+          x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
+        },
+      };
+    } else {
+      chartDiv = (params.event.currentTarget as HTMLDivElement)
+        .parentElement as HTMLDivElement;
+      chart = echarts.getInstanceByDom(chartDiv);
       //Get the index of the input field value
-      // TODO: .inputIndex is a custom property that's why the type error. How to implement this differently, so that there is no need for the custom property
+      // TODO: .inputIndex is a custom property that's why the type error. Implement this differently, so that there is no need for the custom property
       idx = chart.getOption().inputIndex;
       aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
         params.offsetX,
@@ -326,17 +341,8 @@
           },
         ],
       };
-    } else {
-      chart = echarts.getInstanceByDom(
-        params.target.parentElement.nextElementSibling
-      );
-      newOption = {
-        graphic: {
-          id: "rec",
-          x: chart.convertToPixel({ seriesIndex: 0 }, [aspValues[idx], 0])[0],
-        },
-      };
     }
+
     let errorP = document
       .querySelectorAll(".bar_container")
       [idx].querySelector(".error");
@@ -354,21 +360,23 @@
    * @param param
    * @param i
    */
-  function handleOnchange(
-    param: Event & { currentTarget: EventTarget & HTMLInputElement },
-    i: number
-  ) {
-    const targetElem: HTMLInputElement = param.target;
+  function handleOnchange(param: Event, i: number) {
+    const targetElem = param.target as HTMLInputElement | null;
+    const parentElem = targetElem?.parentElement;
+    if (!targetElem || !parentElem) {
+      return;
+    }
     // Update the line only when the input value is valid
     if (targetElem.checkValidity()) {
-      updateLine(param, undefined, i);
+      updateLine(param, i);
       console.log(targetElem.style);
       targetElem.style.borderColor = "";
-      if (targetElem.parentElement.querySelector(".error") != null) {
-        targetElem.parentElement.querySelector(".error").remove();
+      const errElem = parentElem.querySelector(".error");
+      if (errElem !== null) {
+        errElem.remove();
       }
     } else {
-      if (targetElem.parentElement.querySelector(".error") != null) {
+      if (parentElem.querySelector(".error") != null) {
         return;
       }
       targetElem.style.borderColor = errColor;
