@@ -20,7 +20,7 @@
   // The properties that can be passed to the component.
   export let id: string;
   export let data: SolutionData;
-  const currentIteration = 3;
+  const currentIterationIndex = 1;
   const names: string[] = data.names;
   const values: number[][] = data.values;
   const firstIteration: number[] = data.values[0].slice();
@@ -78,12 +78,12 @@
   names.forEach((_, objectiveIndex) => {
     let objShape: number[][] = [];
 
-    for (let index = 0; index < currentIteration; index++) {
+    for (let index = 0; index <= currentIterationIndex; index++) {
       let iterationBounds = bounds[objectiveIndex][index];
       const lowerBound = iterationBounds[0];
       objShape.push([index, lowerBound]);
     }
-    for (let index = currentIteration - 1; index >= 0; index--) {
+    for (let index = currentIterationIndex; index >= 0; index--) {
       let iterationBounds = bounds[objectiveIndex][index];
       const upperBound = iterationBounds[1];
       objShape.push([index, upperBound]);
@@ -184,10 +184,10 @@
         },
       ],
     };
-    chart.on("finished", function () {
-      console.log("tes");
-      this.getVisual("series", "color");
-    });
+    // chart.on("finished", function () {
+    //   console.log("tes");
+    //   this.getVisual("series", "color");
+    // });
     chart.setOption(newOption);
     // const xAxisModel = chart.getModel().getComponent("xAxis");
     // console.log(xAxisModel);
@@ -223,8 +223,10 @@
           z: 100,
           transition: "shape",
 
-          // TODO: Default position dynamic
-          x: chart.convertToPixel({ seriesIndex: 0 }, [3, 0])[0],
+          x: chart.convertToPixel({ seriesIndex: 0 }, [
+            currentIterationIndex,
+            0,
+          ])[0],
           shape: {
             points: [
               [0, xAxisRect.height / 2],
@@ -345,6 +347,10 @@
     transition: boolean
   ) {
     let oldPoints = chart.getOption().graphic[0].elements[0].shape.points;
+    xNew = chart.convertToPixel({ seriesIndex: 0 }, [
+      currentIterationIndex,
+      0,
+    ])[0];
     const xOld = oldPoints[0][0];
     const yOld = oldPoints[0][1];
     console.log(xOld);
@@ -358,24 +364,14 @@
     // const xNew = param.offsetX;
     // const yNew = param.offsetY;
 
+    // Set transition effect when the line is dragged
     if (transition) {
       betweenLineTransition = "shape";
-    }
-    if (xNew == undefined) {
-      xNew = xAxisRect.width;
-      xNew = chart.convertToPixel({ seriesIndex: 0 }, [3, 0])[0];
-      // Set transition effect when the line is dragged
-    } else {
-      // If x coordinate is given, it means that it is the new asp line, so it should be two lines
-      xNew = chart.convertToPixel({ seriesIndex: 0 }, [3, 0])[0];
     }
     aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
       xNew,
       yNew,
     ])[1];
-    console.log(
-      "cvrtToPxl: " + chart.convertToPixel({ seriesIndex: 0 }, [0, 6])
-    );
 
     // let newPoints = [
     //   [xOld, yOld],
