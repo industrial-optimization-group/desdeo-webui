@@ -20,12 +20,13 @@
   // The properties that can be passed to the component.
   export let id: string;
   export let data: SolutionData;
-  const currentIterationIndex = 1;
+  let currentIterationIndex = 0;
   const names: string[] = data.names;
   const values: number[][] = data.values;
   const firstIteration: number[] = data.values[0].slice();
   $: boundValues = Array(names.length);
   $: aspValues = Array(names.length).fill(0);
+  // $: currentIterationIndex = 2;
 
   const aspirationLineStyle = {
     stroke: "blue",
@@ -75,21 +76,26 @@
     ], */
 
   let objectiveShapes: number[][][] = [];
-  names.forEach((_, objectiveIndex) => {
-    let objShape: number[][] = [];
+  updateData();
 
-    for (let index = 0; index <= currentIterationIndex; index++) {
-      let iterationBounds = bounds[objectiveIndex][index];
-      const lowerBound = iterationBounds[0];
-      objShape.push([index, lowerBound]);
-    }
-    for (let index = currentIterationIndex; index >= 0; index--) {
-      let iterationBounds = bounds[objectiveIndex][index];
-      const upperBound = iterationBounds[1];
-      objShape.push([index, upperBound]);
-    }
-    objectiveShapes.push(objShape);
-  });
+  function updateData() {
+    objectiveShapes = [];
+    names.forEach((_, objectiveIndex) => {
+      let objShape: number[][] = [];
+
+      for (let index = 0; index <= currentIterationIndex; index++) {
+        let iterationBounds = bounds[objectiveIndex][index];
+        const lowerBound = iterationBounds[0];
+        objShape.push([index, lowerBound]);
+      }
+      for (let index = currentIterationIndex; index >= 0; index--) {
+        let iterationBounds = bounds[objectiveIndex][index];
+        const upperBound = iterationBounds[1];
+        objShape.push([index, upperBound]);
+      }
+      objectiveShapes.push(objShape);
+    });
+  }
 
   /*   // This works only for original bounds, the data is copied from desdeo components. 
   names.forEach((_, row) => {
@@ -130,7 +136,7 @@
     let color = api.visual("color");
     return {
       type: "polygon",
-      transition: ["shape"], // transition option not defined in RenderItemReturnPolygon, but is in the documentation:https://echarts.apache.org/en/option.html#series-custom.renderItem.return_polygon.transition
+      // transition: ["shape"], // transition option not defined in RenderItemReturnPolygon, but is in the documentation:https://echarts.apache.org/en/option.html#series-custom.renderItem.return_polygon.transition
       // Should RenderItemReturnPolygon be extended to include the transition property?
       shape: {
         points: points,
@@ -167,9 +173,25 @@
     let newOption: echarts.EChartOption = {
       xAxis: {
         show: false,
-        max: values[idx].length - 1,
+        max: values[idx].length,
       },
-      yAxis: {},
+      // Get the max and min values from the current objective uncertainties and set them as the max and min values for the y-axis.
+      yAxis: {
+        max: Math.ceil(
+          Math.max(
+            ...bounds[idx].map((x) => {
+              return x[1];
+            })
+          )
+        ),
+        min: Math.floor(
+          Math.min(
+            ...bounds[idx].map((x) => {
+              return x[0];
+            })
+          )
+        ),
+      },
       axisPointer: {
         show: true,
       },
@@ -201,6 +223,7 @@
     // console.log(xAxisRect.height);
     // console.log(chart.getWidth());
     // console.log(chart.getHeight());
+    console.log(currentIterationIndex);
     chart.setOption({
       // Add aspiration value line
       graphic: [
@@ -471,6 +494,31 @@
 </script>
 
 <!--The div where the chart will be rendered. Must have width and height values for the chart to show.-->
+<button
+  on:click={function () {
+    // console.log(params);
+    // console.log(currentIterationIndex);
+
+    currentIterationIndex = currentIterationIndex + 1;
+    let chart = echarts.getInstanceByDom(document.getElementById("nautilus0"));
+    console.log(chart.getOption());
+    updateData();
+    chart.setOption({
+      series: [
+        {
+          type: "custom",
+
+          renderItem: (_, api) => {
+            return draw(api, 0);
+          },
+          data: objectiveShapes[0],
+        },
+      ],
+    });
+    // console.log(currentIterationIndex);
+  }}>Next Iteration</button
+>
+<p>{currentIterationIndex}</p>
 <div>
   {#each names as name, i}
     {#if data.minimize[i]}
