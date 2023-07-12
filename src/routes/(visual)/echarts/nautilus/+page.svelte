@@ -38,8 +38,8 @@
   let exampleData: SolutionData = {
     names: ["Objective1", "Objective2", "Objective3"],
     values: [
-      [-1, 2, 3],
-      [-4, 5, 6],
+      [1, 2, 3],
+      [4, 5, 6],
       [7, 8, 9],
     ],
     value_ranges: [
@@ -50,8 +50,8 @@
     tags: [["Tag1", "Tag2"], ["Tag3"], ["Tag4", "Tag5", "Tag6"]],
     uncertainty: [
       [
-        [0.9, 1.1],
-        [-5.9, 2.1],
+        [-5.9, 4.1],
+        [-5.9, 3.1],
         [-5.5, 3.1],
         [-4.9, 2.1],
         [-2.3, 1.3],

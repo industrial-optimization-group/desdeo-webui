@@ -27,6 +27,7 @@
   const firstIteration: number[] = data.values[0].slice();
   $: boundValues = Array(names.length);
   $: aspValues = Array(names.length).fill(0);
+  $: navigationBars = [];
   // $: currentIterationIndex = 2;
 
   const aspirationLineStyle = {
@@ -34,7 +35,7 @@
     lineDash: [4],
     lineWidth: 3,
   };
-  /* const upperBounds = [
+  /*   const upperBounds = [
     [10, 9, 7, 5, 5, 5], // objective 1
     [2.0, 1.9, 1.5, 0.8, 0.6, 0.6], // objective 2
     [5, 4.5, 4, 3, 2.8, 2.8], // objective 3
@@ -47,6 +48,7 @@
   let firstPart = upperBounds[0]; */
 
   const bounds: number[][][] = data.uncertainty;
+  let maxIterations = bounds[0].length - 1;
 
   // let secondPart: Array<number> = lowerBounds[0];
   //reverse secondPart
@@ -361,6 +363,8 @@
     //         lineWidth: 3,
     //       },
     //     },
+
+    navigationBars.push(chart);
   }
 
   function updateLine(
@@ -501,23 +505,17 @@
   on:click={function () {
     // console.log(params);
     // console.log(currentIterationIndex);
+    if (currentIterationIndex < maxIterations) {
+      currentIterationIndex = currentIterationIndex + 1;
+      navigationBars.map((chart) => {
+        console.log(chart.getOption());
+        updateData();
+        chart.setOption({});
+      });
+    } else {
+      console.log("Max iterations reached");
+    }
 
-    currentIterationIndex = currentIterationIndex + 1;
-    let chart = echarts.getInstanceByDom(document.getElementById("nautilus0"));
-    console.log(chart.getOption());
-    updateData();
-    chart.setOption({
-      series: [
-        {
-          type: "custom",
-
-          renderItem: (_, api) => {
-            return draw(api, 0);
-          },
-          data: objectiveShapes[0],
-        },
-      ],
-    });
     // console.log(currentIterationIndex);
   }}>Next Iteration</button
 >
