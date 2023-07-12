@@ -143,7 +143,7 @@
       // Should RenderItemReturnPolygon be extended to include the transition property?
       shape: {
         points: points,
-        smooth: 0.05,
+        // smooth: 0.05,
       },
       style: {
         fill: color,
@@ -244,7 +244,7 @@
           style: aspirationLineStyle,
         },
         {
-          id: "BetweenLine",
+          id: "verticalLine",
           type: "polyline",
           z: 100,
           transition: "shape",
@@ -255,9 +255,13 @@
           ])[0],
           shape: {
             points: [
-              [0, xAxisRect.height / 2],
-              [0, xAxisRect.height / 2],
+              [0, 0],
+              [0, xAxisRect.height],
             ],
+          },
+          style: {
+            stroke: "black",
+            lineWidth: 3,
           },
         },
         {
@@ -370,31 +374,53 @@
   function updateLine(
     chart: echarts.EChartsType,
     idx: number,
-    xNew: number | undefined,
+    xNew: number,
     yNew: number,
-    transition: boolean
+    transition = false
   ) {
-    let oldPoints = chart.getOption().graphic[0].elements[0].shape.points;
+    let oldPoints;
+    let previousNewLineProperty;
+    let graphicComponent = chart.getOption()
+      .graphic as echarts.GraphicComponentOption;
+
+    if (graphicComponent instanceof Array && graphicComponent.length > 0) {
+      oldPoints = graphicComponent[0].elements.find(
+        (property: echarts.GraphicComponentOption) =>
+          property.id === "OldAspLine"
+      ).shape.points;
+      previousNewLineProperty = graphicComponent[0].elements.find(
+        (property: echarts.GraphicComponentOption) =>
+          property.id === "NewAspLine"
+      );
+    }
+
     xNew = chart.convertToPixel({ seriesIndex: 0 }, [
       currentIterationIndex,
       0,
     ])[0];
     const xOld = oldPoints[0][0];
     const yOld = oldPoints[0][1];
+
+    // if xNew or yNew is undefined, use the value of the previous user defined aspiration line
+    if (!xNew) {
+      xNew = previousNewLineProperty.shape.points[0][0];
+    } else if (!yNew) {
+      yNew = previousNewLineProperty.y;
+    }
     console.log(xOld);
     console.log(yOld);
     const xAxisRect = chart
       .getModel()
       .getComponent("xAxis")
       .axis.grid.getRect();
-    let betweenLineTransition = "";
+    let verticalLineTransition = "";
 
     // const xNew = param.offsetX;
     // const yNew = param.offsetY;
 
     // Set transition effect when the line is dragged
     if (transition) {
-      betweenLineTransition = "shape";
+      verticalLineTransition = "shape";
     }
     aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
       xNew,
@@ -411,10 +437,10 @@
       [xOld, yOld],
       [xNew, yOld],
     ];
-    const betweenLinePoints = [
-      [0, yOld],
-      [0, yNew],
-    ];
+    // const verticalLinePoints = [
+    //   [0, yOld],
+    //   [0, yNew],
+    // ];
     const newAspLinePoints = [
       [xNew, 0],
       [xAxisRect.width, 0],
@@ -440,17 +466,15 @@
           // transition: "y",
         },
         {
-          id: "BetweenLine",
+          id: "verticalLine",
           type: "polyline",
 
           z: 200,
           x: xNew,
           // y: yNew,
-          shape: {
-            points: betweenLinePoints,
-          },
-          style: aspirationLineStyle,
-          transition: betweenLineTransition,
+
+          // style: aspirationLineStyle,
+          transition: verticalLineTransition,
         },
         {
           id: "NewAspLine",
@@ -510,6 +534,7 @@
       navigationBars.map((chart) => {
         console.log(chart.getOption());
         updateData();
+        updateLine(chart, 0, undefined, undefined, false);
         chart.setOption({});
       });
     } else {
