@@ -6,6 +6,7 @@
           - Aspiration value should be between upper and lower bounds
           - Aspiration line should not be draggable over the bound line
           - Bound value should be between ideal and nadir points
+    TODO: Make min max values to be taken from value_ranges (if it is always correct)
 -->
 
 <script lang="ts">
@@ -20,9 +21,9 @@
   // The properties that can be passed to the component.
   export let id: string;
   export let data: SolutionData;
-  let currentIterationIndex = 0;
+  let currentIterationIndex = 2;
   const names: string[] = data.names;
-  const values: number[][] = data.values;
+  // const values: number[][] = data.values;
   const firstIteration: number[] = data.values[0].slice();
   $: boundValues = Array(names.length);
   $: aspValues = Array(names.length).fill(0);
@@ -173,7 +174,7 @@
     let newOption: echarts.EChartOption = {
       xAxis: {
         show: false,
-        max: values[idx].length,
+        max: bounds[idx].length,
       },
       // Get the max and min values from the current objective uncertainties and set them as the max and min values for the y-axis.
       yAxis: {
@@ -437,7 +438,9 @@
         {
           id: "BetweenLine",
           type: "polyline",
+
           z: 200,
+          x: xNew,
           // y: yNew,
           shape: {
             points: betweenLinePoints,
