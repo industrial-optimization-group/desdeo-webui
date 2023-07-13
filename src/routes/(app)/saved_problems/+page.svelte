@@ -1,12 +1,16 @@
 <script lang="ts">
   import { TabGroup, Tab } from "@skeletonlabs/skeleton";
   import SavedProblems from "$lib/components/main/SavedProblems.svelte";
+  import ProblemDetails from "$lib/components/main/ProblemDetails.svelte";
+  import Card from "$lib/components/main/Card.svelte";
+  import {} from "@skeletonlabs/skeleton";
+  import { onMount } from "svelte";
+  import { get_saved_problems, type SavedProblem } from "$lib/api";
 
   let tabSet = 0;
   let problems: SavedProblem[] = [];
+  let selectedProblem: SavedProblem | undefined = undefined;
 
-  import { onMount } from "svelte";
-  import { get_saved_problems, type SavedProblem } from "$lib/api";
   onMount(() => {
     get_saved_problems().then((savedProblems) => {
       problems = savedProblems;
@@ -90,10 +94,24 @@
   >
   <!-- Tab Panels --->
   <svelte:fragment slot="panel">
-    {#if tabSet === 0}
-      TODO
-    {:else if tabSet === 1}
-      <SavedProblems class="max-w-screen-md" {problems} />
-    {/if}
+    <div class="grid grid-cols-2 gap-20">
+      <div>
+        {#if tabSet === 0}
+          TODO
+        {:else if tabSet === 1}
+          <SavedProblems {problems} bind:selectedProblem />
+        {/if}
+      </div>
+      <div>
+        {#if selectedProblem === undefined}
+          <Card>
+            <svelte:fragment slot="header">Instructions</svelte:fragment>
+            <div>Select a problem to see problem details.</div>
+          </Card>
+        {:else}
+          <ProblemDetails problem={selectedProblem} />
+        {/if}
+      </div>
+    </div>
   </svelte:fragment>
 </TabGroup>

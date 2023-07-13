@@ -292,11 +292,13 @@ export function register_account(username: string, password: string) {
     });
 }
 
-export type SavedProblem = {
+/** Problem data in the format provided by the API */
+type _SavedProblem = {
   problem_id: number;
   problem_name: string;
   problem_type: string;
   objective_names: string[];
+  // TODO: Check if 1 means minimize and -1 maximize
   minimize: number[];
   n_objectives: number;
   variable_names: string[];
@@ -304,12 +306,65 @@ export type SavedProblem = {
   n_constraints: number;
 };
 
+export type Objective = {
+  name: string;
+  minimize: boolean;
+};
+
+export type Variable = {
+  name: string;
+};
+
+export type SavedProblem = {
+  id: number;
+  name: string;
+  type: string;
+  objectives: Objective[];
+  n_objectives: number;
+  variables: Variable[];
+  n_variables: number;
+  n_constraints: number;
+};
+
+function getObjectives(problem: _SavedProblem): Objective[] {
+  // TODO: Check that input is well-formed?
+  return problem.objective_names.map((name, i) => {
+    return {
+      name,
+      minimize: problem.minimize[i] === 1,
+    };
+  });
+}
+
+function getVariables(problem: _SavedProblem): Variable[] {
+  // TODO: Check that input is well-formed?
+  return problem.variable_names.map((name) => {
+    return {
+      name,
+    };
+  });
+}
+
+/** Transforms problem data to a more useful form */
+function transformProblem(problem: _SavedProblem): SavedProblem {
+  return {
+    id: problem.problem_id,
+    name: problem.problem_name,
+    type: problem.problem_type,
+    objectives: getObjectives(problem),
+    n_objectives: problem.n_objectives,
+    variables: getVariables(problem),
+    n_variables: problem.n_variables,
+    n_constraints: problem.n_constraints,
+  };
+}
+
 // TODO: Currently requires a batched version of the backend
 export function get_saved_problems(): Promise<SavedProblem[]> {
   return with_access_token()
     .get("/problem/access/all")
     .then((response) => {
       // TODO: Check that the data has the expected form?
-      return <SavedProblem[]>response.data;
+      return (<_SavedProblem[]>response.data).map(transformProblem);
     });
 }

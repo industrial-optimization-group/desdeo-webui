@@ -16,21 +16,26 @@
   $: tableSimple = {
     head: ["Name", "Objectives", "Variables", "Constraints"],
     body: tableMapperValues(paginatedProblems, [
-      "problem_name",
+      "name",
       "n_objectives",
       "n_variables",
       "n_constraints",
     ]),
-    // Optional: The data returned when interactive is enabled and a row is clicked.
-    // meta: tableMapperValues(sourceData, [
-    //   "position",
-    //   "name",
-    //   "symbol",
-    //   "weight",
-    // ]),
+    // The data returned when interactive is enabled and a row is clicked
+    meta: tableMapperValues(paginatedProblems, ["id"]),
     // Optional: A list of footer labels.
     //foot: ["Total", "", '<code class="code">5</code>'],
   };
+
+  export let selectedProblem: SavedProblem | undefined = undefined;
+
+  // TODO: Specify a type for `meta`
+  function handleSelection(meta) {
+    const problem_id = meta.detail[0];
+    selectedProblem = paginatedProblems.find((problem) => {
+      return problem.id === problem_id;
+    });
+  }
 </script>
 
 <div class={$$props.class}>
@@ -42,5 +47,9 @@
       bind:endExclusive
     />
   </dev>
-  <Table source={tableSimple} interactive={true} />
+  <Table
+    source={tableSimple}
+    interactive={true}
+    on:selected={handleSelection}
+  />
 </div>
