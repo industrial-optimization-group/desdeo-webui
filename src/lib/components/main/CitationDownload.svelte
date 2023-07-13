@@ -31,7 +31,7 @@ Multiobjective Optimization", IEEE Access, vol. 9, pp. 148277–148295,
   <!-- Tab Panels --->
   <svelte:fragment slot="panel">
     {#if tabSet === 0}
-      <div class="mb-4 bg-white p-2">
+      <div class="mb-4 bg-white p-2 shadow-md">
         <pre class="whitespace-pre-wrap">{citation_bib}</pre>
       </div>
       <div class="flex gap-2">
@@ -39,7 +39,7 @@ Multiobjective Optimization", IEEE Access, vol. 9, pp. 148277–148295,
         <a class="anchor" href="/DESDEO-citation.bib">Download</a>
       </div>
     {:else if tabSet === 1}
-      <div class="mb-4 bg-white p-2 font-mono">{citation_plain}</div>
+      <div class="mb-4 bg-white p-2 font-mono shadow-md">{citation_plain}</div>
       <ClipboardButton content={citation_plain} />
     {/if}
   </svelte:fragment>
