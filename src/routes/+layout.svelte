@@ -15,7 +15,7 @@
 </script>
 
 <Drawer position="bottom">
-  <div class="h-full p-4">
+  <div class="min-h-full p-4">
     <div class="mb-4 flex justify-between">
       <span class="font-bold">Citing DESDEO</span>
       <CloseButton
