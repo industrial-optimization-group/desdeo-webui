@@ -1,6 +1,6 @@
 <script lang="ts">
   import { drawerStore } from "@skeletonlabs/skeleton";
-  import NewWindowIcon from "$lib/assets/icons/NewWindow.svelte";
+  import NewWindowIcon from "~icons/heroicons/arrow-top-right-on-square";
 
   export let show_bibtex_button = false;
 </script>

@@ -2,9 +2,9 @@
   import { setContext } from "svelte";
   import { page } from "$app/stores";
   import NavigationTile from "$lib/components/main/NavigationTile.svelte";
-  import Plus from "$lib/assets/icons/Plus.svelte";
-  import PuzzlePiece from "$lib/assets/icons/PuzzlePiece.svelte";
   import logo from "$lib/assets/logo.png";
+  import PlusIcon from "~icons/heroicons/plus";
+  import PuzzleIcon from "~icons/heroicons/puzzle-piece";
 
   //
   // Navigation tiles get the `active` and `hover` styles from the context,
@@ -27,14 +27,14 @@
       selected={$page.url.pathname === "/saved_problems"}
       text={["Saved", "problems"]}
     >
-      <PuzzlePiece />
+      <PuzzleIcon />
     </NavigationTile>
     <NavigationTile
       href="/new_problem"
       selected={$page.url.pathname === "/new_problem"}
       text={["New", "problem"]}
     >
-      <Plus />
+      <PlusIcon />
     </NavigationTile>
   </div>
 </div>

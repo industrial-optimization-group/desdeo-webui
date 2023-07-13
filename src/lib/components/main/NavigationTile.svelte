@@ -15,7 +15,7 @@
   class="min-h-[content-width] w-full px-2 py-6 {classesActive} {classesHover}"
 >
   <div class="flex flex-col items-center gap-2">
-    <slot />
+    <div class="text-2xl"><slot /></div>
     <div class="flex flex-col items-center">
       {#each text as row}
         <span class="whitespace-nowrap">{row}</span>
