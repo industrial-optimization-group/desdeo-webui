@@ -7,6 +7,7 @@
           - Aspiration line should not be draggable over the bound line
           - Bound value should be between ideal and nadir points
     TODO: Make min max values to be taken from value_ranges (if it is always correct)
+    TODO: If chart is initialized from other than first iteration, the aspiration line is not drawn correctly.
 -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -148,6 +149,12 @@
     };
   }
 
+  /**
+   * Creates a new nautilus navigation bar.
+   *
+   * @param id The id of the div element where the chart will be drawn.
+   * @param idx The index of the objective.
+   */
   function addNautilusBar(id: string, idx: number) {
     const inputField = document.getElementsByName(
       names[idx]
@@ -160,6 +167,7 @@
       { renderer: "svg" }
     );
 
+    // Default options for the chart.
     let newOption: echarts.EChartOption = {
       grid: {
         show: true,
@@ -171,6 +179,18 @@
       xAxis: {
         show: false,
         max: bounds[idx].length,
+        axisPointer: {
+          show: true,
+          label: {
+            formatter: function (params) {
+              if (params.axisDimension === "x") {
+                return (
+                  Math.round((params.value / (maxIterations + 1)) * 100) + "%"
+                );
+              }
+            },
+          },
+        },
       },
       // Get the max and min values from the current objective uncertainties and set them as the max and min values for the y-axis.
       yAxis: {
@@ -189,8 +209,9 @@
           )
         ),
       },
-      axisPointer: {
-        show: true,
+      tooltip: {
+        show: false,
+        triggerOn: "mousemove",
       },
       series: [
         {
@@ -203,23 +224,12 @@
         },
       ],
     };
-    // chart.on("finished", function () {
-    //   console.log("tes");
-    //   this.getVisual("series", "color");
-    // });
     chart.setOption(newOption);
-    // const xAxisModel = chart.getModel().getComponent("xAxis");
-    // console.log(xAxisModel);
+
     const xAxisRect = chart
       .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
       .getComponent("xAxis")
       .axis.grid.getRect();
-    // console.log(xAxisRect);
-    // console.log(chart.convertToPixel({ seriesIndex: 0 }, [0, -50]));
-    // console.log(xAxisRect.width);
-    // console.log(xAxisRect.height);
-    // console.log(chart.getWidth());
-    // console.log(chart.getHeight());
 
     chart.setOption({
       // Add aspiration value line
@@ -228,7 +238,7 @@
           id: "oldAspLine",
           // type: "line",
           type: "polyline",
-          z: 199,
+          z: 100,
           // y: 0,
           shape: {
             points: [
@@ -279,7 +289,7 @@
         {
           id: "verticalLine",
           type: "polyline",
-          z: 100,
+          z: 3,
           x: chart.convertToPixel({ seriesIndex: 0 }, [
             currentIterationIndex,
             0,
@@ -300,7 +310,7 @@
           type: "polyline",
           lastY: -99,
           y: -99,
-          z: 200,
+          z: 2,
           shape: {
             points: [
               [0, 0],
@@ -587,7 +597,7 @@
                 {
                   id: "BoundLine",
                   type: "polyline",
-                  z: 250,
+                  z: 2,
                   y: newY,
                   transition: "y",
                   shape: {
