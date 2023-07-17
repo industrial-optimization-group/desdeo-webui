@@ -208,6 +208,16 @@
             })
           )
         ),
+        position: "right",
+        axisLine: {
+          onZero: false,
+        },
+        // axisTick: {
+        //   show: false,
+        // },
+        axisLabel: {
+          inside: true,
+        },
       },
       tooltip: {
         show: false,
