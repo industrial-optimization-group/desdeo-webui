@@ -167,6 +167,12 @@
       { renderer: "svg" }
     );
 
+    // const upperBound = Math.max(
+    //         ...bounds[idx].map((x) => {
+    //           return x[1];
+    //         })
+    //       )
+
     // Default options for the chart.
     let newOption: echarts.EChartOption = {
       grid: {
@@ -194,20 +200,17 @@
       },
       // Get the max and min values from the current objective uncertainties and set them as the max and min values for the y-axis.
       yAxis: {
-        max: Math.ceil(
-          Math.max(
-            ...bounds[idx].map((x) => {
-              return x[1];
-            })
-          )
-        ),
-        min: Math.floor(
-          Math.min(
-            ...bounds[idx].map((x) => {
-              return x[0];
-            })
-          )
-        ),
+        // boundaryGap:["20%","20%"],
+        max: "dataMax",
+        min: "dataMin",
+        // max: Math.ceil(upperBound) ,
+        // min: Math.floor(
+        //   Math.min(
+        //     ...bounds[idx].map((x) => {
+        //       return x[0];
+        //     })
+        //   )
+        // ),
         position: "right",
         axisLine: {
           onZero: false,
@@ -216,7 +219,19 @@
         //   show: false,
         // },
         axisLabel: {
+          // showMinLabel: false,
+          // showMaxLabel: false,
           inside: true,
+          formatter: function (value, index) {
+            // console.log(chart.getOption().yAxis[0].splitNumber);
+            console.log(value, index);
+            if (index === 0) {
+              return "Worst = " + value.toFixed(2);
+            } else if (index === 6) {
+              return "Best =  " + value.toFixed(2);
+            }
+            return value.toFixed(2);
+          },
         },
       },
       tooltip: {
@@ -536,6 +551,7 @@
     if (currentIterationIndex < maxIterations) {
       currentIterationIndex = currentIterationIndex + 1;
       navigationBars.map((chart) => {
+        // chart.resize({width: "200", height: "200"});
         updateData();
         updateStepLine(chart);
         if (currentIterationIndex > 0) {
