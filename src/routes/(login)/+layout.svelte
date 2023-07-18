@@ -25,8 +25,8 @@
     </div>
     <div class="mx-28 flex h-full items-center">
       <div class="max-w-2xl">
-        <h1 class="mb-12 text-5xl font-bold leading-snug">
-          Enabling Better<br />Decision Making
+        <h1 class="mb-12 max-w-md text-5xl font-bold leading-snug">
+          Enabling Better Decision Making
         </h1>
         <Citation show_bibtex_button={true} />
       </div>
