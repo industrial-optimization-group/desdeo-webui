@@ -36,6 +36,11 @@
     lineDash: [4],
     lineWidth: 3,
   };
+  const boundLineStyle = {
+    stroke: "red",
+    // lineDash: [4],
+    lineWidth: 3,
+  };
   /*   const upperBounds = [
     [10, 9, 7, 5, 5, 5], // objective 1
     [2.0, 1.9, 1.5, 0.8, 0.6, 0.6], // objective 2
@@ -224,7 +229,7 @@
           inside: true,
           formatter: function (value, index) {
             // console.log(chart.getOption().yAxis[0].splitNumber);
-            console.log(value, index);
+            // console.log(value, index);
             if (index === 0) {
               return "Worst = " + value.toFixed(2);
             } else if (index === 6) {
@@ -260,106 +265,202 @@
       // Add aspiration value line
       graphic: [
         {
-          id: "oldAspLine",
-          // type: "line",
-          type: "polyline",
-          z: 100,
-          // y: 0,
-          shape: {
-            points: [
-              [0, xAxisRect.height / 2],
-              [xAxisRect.width, xAxisRect.height / 2],
-            ],
-          },
-          style: aspirationLineStyle,
-          draggable: "vertical",
-          // ondragstart: function (event){
-          //   splitLine(chart, event.offsetX, event.offsetY);
-          // },
-          // onmousedown:function (event){
-
-          //   // addNewLine(chart, event.offsetX, event.offsetY);
-          // },
-          ondrag: function (event: echarts.ElementEvent) {
-            // Convert drag Y pixel value to Y real value and update the value to the aspValues (updates input field value also)
-            aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
-              event.offsetX,
-              event.offsetY,
-            ])[1];
-
-            // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
-
-            // updateLine(chart, idx, event.offsetX, event.offsetY, false);
-          },
-          ondragend: function (event: echarts.ElementEvent) {
-            // updateLineShape(chart, event.offsetX, event.offsetY);
-
-            let lastY = event.offsetY;
-
-            chart.setOption({
-              graphic: {
-                id: "oldAspLine",
-                lastY: lastY,
-                y: 0,
-                shape: {
-                  points: [
-                    [0, lastY],
-                    [xAxisRect.width, lastY],
-                  ],
-                },
+          type: "group",
+          id: "aspLine",
+          children: [
+            {
+              id: "oldAspLine",
+              // type: "line",
+              type: "polyline",
+              z: 3,
+              // y: 0,
+              shape: {
+                points: [
+                  [0, xAxisRect.height / 2],
+                  [xAxisRect.width, xAxisRect.height / 2],
+                ],
               },
-            });
-          },
-        },
-        {
-          id: "verticalLine",
-          type: "polyline",
-          z: 3,
-          x: chart.convertToPixel({ seriesIndex: 0 }, [
-            currentIterationIndex,
-            0,
-          ])[0],
-          shape: {
-            points: [
-              [0, 0],
-              [0, xAxisRect.height],
-            ],
-          },
-          style: {
-            stroke: "black",
-            lineWidth: 3,
-          },
-        },
-        {
-          id: "newAspLine",
-          type: "polyline",
-          lastY: -99,
-          y: -99,
-          z: 2,
-          shape: {
-            points: [
-              [0, 0],
-              [xAxisRect.width, 0],
-            ],
-          },
-          style: aspirationLineStyle,
-          /* style: {
+              style: aspirationLineStyle,
+              draggable: "vertical",
+              // ondragstart: function (event){
+              //   splitLine(chart, event.offsetX, event.offsetY);
+              // },
+              // onmousedown:function (event){
+
+              //   // addNewLine(chart, event.offsetX, event.offsetY);
+              // },
+              ondrag: function (event: echarts.ElementEvent) {
+                // Convert drag Y pixel value to Y real value and update the value to the aspValues (updates input field value also)
+                aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
+                  event.offsetX,
+                  event.offsetY,
+                ])[1];
+
+                // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
+
+                // updateLine(chart, idx, event.offsetX, event.offsetY, false);
+              },
+              ondragend: function (event: echarts.ElementEvent) {
+                // updateLineShape(chart, event.offsetX, event.offsetY);
+
+                let lastY = event.offsetY;
+
+                chart.setOption({
+                  graphic: {
+                    id: "oldAspLine",
+                    lastY: lastY,
+                    y: 0,
+                    shape: {
+                      points: [
+                        [0, lastY],
+                        [xAxisRect.width, lastY],
+                      ],
+                    },
+                  },
+                });
+              },
+            },
+            {
+              id: "verticalLine",
+              type: "polyline",
+              z: 4,
+              x: chart.convertToPixel({ seriesIndex: 0 }, [
+                currentIterationIndex,
+                0,
+              ])[0],
+              shape: {
+                points: [
+                  [0, 0],
+                  [0, xAxisRect.height],
+                ],
+              },
+              style: {
+                stroke: "black",
+                lineWidth: 3,
+              },
+            },
+            {
+              id: "newAspLine",
+              type: "polyline",
+              lastY: -99,
+              y: -99,
+              z: 3,
+              shape: {
+                points: [
+                  [0, 0],
+                  [xAxisRect.width, 0],
+                ],
+              },
+              style: aspirationLineStyle,
+              /* style: {
             stroke: "red",
             lineWidth: 6,
           }, */
-          draggable: "vertical",
-          ondrag: function (event: echarts.ElementEvent) {
-            aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
-              event.offsetX,
-              event.offsetY,
-            ])[1];
-            chart.setOption({
-              graphic: {
-                id: "newAspLine",
-                lastY: event.offsetY,
+              draggable: "vertical",
+              ondrag: function (event: echarts.ElementEvent) {
+                aspValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
+                  event.offsetX,
+                  event.offsetY,
+                ])[1];
+                chart.setOption({
+                  graphic: {
+                    id: "newAspLine",
+                    lastY: event.offsetY,
+                  },
+                });
               },
-            });
-          },
+            },
+          ],
+        },
+        // Bound line options
+        {
+          type: "group",
+          id: "boundLine",
+          children: [
+            {
+              id: "oldBoundLine",
+              // type: "line",
+              type: "polyline",
+              z: 3,
+              // y: 0,
+              shape: {
+                points: [
+                  [0, xAxisRect.height - 2],
+                  [xAxisRect.width, xAxisRect.height - 2],
+                ],
+              },
+              style: boundLineStyle,
+              draggable: "vertical",
+              // ondragstart: function (event){
+              //   splitLine(chart, event.offsetX, event.offsetY);
+              // },
+              // onmousedown:function (event){
+
+              //   // addNewLine(chart, event.offsetX, event.offsetY);
+              // },
+              ondrag: function (event: echarts.ElementEvent) {
+                // Convert drag Y pixel value to Y real value and update the value to the aspValues (updates input field value also)
+                boundValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
+                  event.offsetX,
+                  event.offsetY,
+                ])[1];
+
+                // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
+
+                // updateLine(chart, idx, event.offsetX, event.offsetY, false);
+              },
+              ondragend: function (event: echarts.ElementEvent) {
+                // updateLineShape(chart, event.offsetX, event.offsetY);
+
+                let lastY = event.offsetY;
+
+                chart.setOption({
+                  graphic: {
+                    id: "oldBoundLine",
+                    lastY: lastY,
+                    y: 0,
+                    shape: {
+                      points: [
+                        [0, lastY],
+                        [xAxisRect.width, lastY],
+                      ],
+                    },
+                  },
+                });
+              },
+            },
+            {
+              id: "newBoundLine",
+              type: "polyline",
+              lastY: -99,
+              y: -99,
+              z: 2,
+              shape: {
+                points: [
+                  [0, 0],
+                  [xAxisRect.width, 0],
+                ],
+              },
+              style: boundLineStyle,
+              /* style: {
+            stroke: "red",
+            lineWidth: 6,
+          }, */
+              draggable: "vertical",
+              ondrag: function (event: echarts.ElementEvent) {
+                boundValues[idx] = chart.convertFromPixel({ seriesIndex: 0 }, [
+                  event.offsetX,
+                  event.offsetY,
+                ])[1];
+                chart.setOption({
+                  graphic: {
+                    id: "newBoundLine",
+                    lastY: event.offsetY,
+                  },
+                });
+              },
+            },
+          ],
         },
       ],
     });
@@ -405,33 +506,41 @@
    * @param chart The chart where the aspiration line is.
    * @param newY The new y-value.
    */
-  function updateAspirationLine(chart: echarts.EChartsType, newY: number) {
-    let oldLineComponentPoints = getLineComponent(chart, "oldAspLine").shape
-      .points;
-    oldLineComponentPoints[0][1] = newY;
-    oldLineComponentPoints[1][1] = newY;
-    if (currentIterationIndex == 0) {
-      chart.setOption({
-        graphic: [
-          {
-            id: "oldAspLine",
-            shape: {
-              points: oldLineComponentPoints,
+  function updateLine(
+    chart: echarts.EChartsType,
+    newY: number,
+    lineName?: string
+  ) {
+    applyForMultipleLines((oldName, newName) => {
+      let oldLineComponentPoints = getLineComponent(chart, "oldAspLine").shape
+        .points;
+      // let teset = getLineComponent(chart, "aspLine");
+      oldLineComponentPoints[0][1] = newY;
+      oldLineComponentPoints[1][1] = newY;
+      if (currentIterationIndex == 0) {
+        chart.setOption({
+          graphic: [
+            {
+              id: oldName,
+              shape: {
+                points: oldLineComponentPoints,
+              },
             },
-          },
-        ],
-      });
-    } else {
-      chart.setOption({
-        graphic: [
-          {
-            id: "newAspLine",
-            lastY: newY,
-            y: newY,
-          },
-        ],
-      });
-    }
+          ],
+        });
+      } else {
+        chart.setOption({
+          graphic: [
+            {
+              id: newName,
+              lastY: newY,
+              y: newY,
+              transition: "y",
+            },
+          ],
+        });
+      }
+    }, lineName);
   }
 
   /**
@@ -443,53 +552,55 @@
   function splitLine(chart: echarts.EChartsType) {
     let oldLineComponent;
     let oldLinePoints;
-    let verticalLineComponent;
+    // let verticalLineComponent;
     // Dont resize on the first iteration
     if (currentIterationIndex == 0) {
       return;
     }
 
-    // Get the components of the aspiration line and the vertical line
-    oldLineComponent = getLineComponent(chart, "oldAspLine");
-    verticalLineComponent = getLineComponent(chart, "verticalLine");
-    oldLinePoints = oldLineComponent.shape.points;
+    applyForMultipleLines((wholeNameOld, wholeNameNew) => {
+      let verticalLineComponent = getLineComponent(chart, "verticalLine");
+      // Get the components of the aspiration line and the vertical line
+      oldLineComponent = getLineComponent(chart, wholeNameOld);
+      oldLinePoints = oldLineComponent.shape.points;
 
-    //get the newLine
-    let newAspLineComponent = getLineComponent(chart, "newAspLine");
-    let newAspLinePoints = newAspLineComponent.shape.points;
-    let lastY =
-      newAspLineComponent.lastY < 0
-        ? oldLineComponent.lastY
-        : newAspLineComponent.lastY;
-    if (currentIterationIndex == 1) {
-      oldLinePoints[1][0] = verticalLineComponent.x;
-    }
-    // The line between the old aspiration values line and the current iteration vertical line
-    let betweenLine = [
-      [0, 0],
-      [0, 0],
-    ];
-    let newPoints = oldLinePoints;
-    if (newAspLinePoints[0][0] > 0) {
-      newAspLinePoints[1][0] = verticalLineComponent.x;
-      betweenLine = [
-        [newAspLinePoints[0][0], lastY],
-        [verticalLineComponent.x, lastY],
+      //get the newLine
+      let newAspLineComponent = getLineComponent(chart, wholeNameNew);
+      let newAspLinePoints = newAspLineComponent.shape.points;
+      let lastY =
+        newAspLineComponent.lastY < 0
+          ? oldLineComponent.lastY
+          : newAspLineComponent.lastY;
+      if (currentIterationIndex == 1) {
+        oldLinePoints[1][0] = verticalLineComponent.x;
+      }
+      // The line between the old aspiration values line and the current iteration vertical line
+      let betweenLine = [
+        [0, 0],
+        [0, 0],
       ];
-      newPoints = oldLinePoints.concat(betweenLine);
-    }
+      let newPoints = oldLinePoints;
+      if (newAspLinePoints[0][0] > 0) {
+        newAspLinePoints[1][0] = verticalLineComponent.x;
+        betweenLine = [
+          [newAspLinePoints[0][0], lastY],
+          [verticalLineComponent.x, lastY],
+        ];
+        newPoints = oldLinePoints.concat(betweenLine);
+      }
 
-    // Update the position of the aspiration line and make it visible
-    chart.setOption({
-      graphic: [
-        {
-          id: "oldAspLine",
-          lastY: lastY,
-          shape: {
-            points: newPoints,
+      // Update the position of the aspiration line and make it visible
+      chart.setOption({
+        graphic: [
+          {
+            id: wholeNameOld,
+            lastY: lastY,
+            shape: {
+              points: newPoints,
+            },
           },
-        },
-      ],
+        ],
+      });
     });
   }
 
@@ -500,28 +611,32 @@
    */
   function addNewLine(chart: echarts.EChartsType) {
     // Get the components of the aspiration line and the vertical line
-    let verticalLineComponent = getLineComponent(chart, "verticalLine");
-    let oldLineComponent = getLineComponent(chart, "oldAspLine");
-    const lastIndex = oldLineComponent.shape.points.length - 1;
-    // const oldLineLastX = oldLineComponent.shape.points[lastIndex][0];
-    const oldLineLastY = oldLineComponent.shape.points[lastIndex][1];
-    const newY = oldLineComponent.lastY ? oldLineComponent.lastY : oldLineLastY;
+    applyForMultipleLines((wholeNameOld, wholeNameNew) => {
+      let verticalLineComponent = getLineComponent(chart, "verticalLine");
+      let oldLineComponent = getLineComponent(chart, wholeNameOld);
+      const lastIndex = oldLineComponent.shape.points.length - 1;
+      // const oldLineLastX = oldLineComponent.shape.points[lastIndex][0];
+      const oldLineLastY = oldLineComponent.shape.points[lastIndex][1];
+      const newY = oldLineComponent.lastY
+        ? oldLineComponent.lastY
+        : oldLineLastY;
 
-    let newAspLinePoints = [
-      [verticalLineComponent.x, 0],
-      [chart.getModel().getComponent("xAxis").axis.grid.getRect().width, 0],
-    ];
+      let newAspLinePoints = [
+        [verticalLineComponent.x, 0],
+        [chart.getModel().getComponent("xAxis").axis.grid.getRect().width, 0],
+      ];
 
-    // Update the position of the aspiration line so that it is visible (and draggable) again.
-    chart.setOption({
-      graphic: {
-        id: "newAspLine",
-        lastY: newY,
-        y: newY,
-        shape: {
-          points: newAspLinePoints,
+      // Update the position of the aspiration line so that it is visible (and draggable) again.
+      chart.setOption({
+        graphic: {
+          id: wholeNameNew,
+          lastY: newY,
+          y: newY,
+          shape: {
+            points: newAspLinePoints,
+          },
         },
-      },
+      });
     });
   }
 
@@ -541,6 +656,21 @@
       return graphicComponent[0].elements.find(
         (property: echarts.GraphicComponentOption) => property.id === lineId
       );
+    }
+  }
+
+  function applyForMultipleLines(
+    funToApply: (nameOld: string, nameNew: string) => void,
+    onlyLinename?: string
+  ) {
+    if (onlyLinename) {
+      funToApply("old" + onlyLinename, "new" + onlyLinename);
+    } else {
+      ["AspLine", "BoundLine"].forEach((lineTypeName) => {
+        let wholeNameOld = "old" + lineTypeName;
+        let wholeNameNew = "new" + lineTypeName;
+        funToApply(wholeNameOld, wholeNameNew);
+      });
     }
   }
 </script>
@@ -593,7 +723,7 @@
               0,
               aspValues[i],
             ])[1];
-            updateAspirationLine(chart, newY);
+            updateLine(chart, newY, "AspLine");
           }}
         />
         <!-- on:change={(par) => handleOnchange(par, i)} -->
@@ -609,37 +739,11 @@
             const chart = echarts.getInstanceByDom(
               par.target.parentElement.nextElementSibling
             );
-            const xAxisRect = chart
-              .getModel()
-              .getComponent("xAxis")
-              .axis.grid.getRect();
             let newY = chart.convertToPixel({ seriesIndex: 0 }, [
               0,
               boundValues[i],
             ])[1];
-
-            chart.setOption({
-              graphic: [
-                {
-                  id: "BoundLine",
-                  type: "polyline",
-                  z: 2,
-                  y: newY,
-                  transition: "y",
-                  shape: {
-                    points: [
-                      [0, 0],
-                      [xAxisRect.width, 0],
-                    ],
-                  },
-                  style: {
-                    stroke: "red",
-                    lineWidth: 2,
-                    opacity: 0.5,
-                  },
-                },
-              ],
-            });
+            updateLine(chart, newY, "BoundLine");
           }}
         />
       </div>
