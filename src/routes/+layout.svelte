@@ -29,6 +29,7 @@
     <div class="mb-4 flex justify-between">
       <span class="font-bold">Citing DESDEO</span>
       <CloseButton
+        aria-label="Close drawer"
         on:click={() => {
           drawerStore.close();
         }}
@@ -49,6 +50,9 @@
 <!--
   -- The toast feature uses a singleton pattern, so the toast component should
   -- not be used anywhere but here. 
+  --
+  -- NOTE: The dismiss button's styling should be kept in sync with the general
+  -- close button's styling (`CloseButton.svelte`).
   -->
 <Toast />
 
