@@ -23,7 +23,7 @@
         } else {
           toastStore.trigger({
             // prettier-ignore
-            message: "Oops! Something went wrong. The server could be unreachable. Please try again later.",
+            message: "Oops! Something went wrong. Please try again later.",
             background: "variant-filled-error",
             timeout: 5000,
           });
@@ -40,7 +40,7 @@
       .catch(() => {
         toastStore.trigger({
           // prettier-ignore
-          message: "Oops! Something went wrong. The server could be unreachable. Please try again later.",
+          message: "Oops! Something went wrong. Please try again later.",
           background: "variant-filled-error",
           timeout: 5000,
         });
