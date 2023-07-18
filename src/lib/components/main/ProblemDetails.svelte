@@ -26,7 +26,7 @@
     <Table source={variablesData} />
   </div>
   <svelte:fragment slot="footer">
-    <button class="btn variant-filled"
+    <button class="btn variant-filled-primary"
       >Start solving with the Reference Point Method</button
     >
   </svelte:fragment>
