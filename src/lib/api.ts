@@ -154,7 +154,7 @@ export function login(username: string, password: string) {
  */
 export function login_as_guest() {
   return without_token()
-    .post("/guest/create")
+    .get("/guest/create")
     .then((response) => {
       set_access_token(response.data.access_token);
       set_refresh_token(response.data.refresh_token);
