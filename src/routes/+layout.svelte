@@ -1,5 +1,10 @@
 <script>
+  //
   // The selected theme
+  //
+  // TODO: Implement the design with a custom theme
+  // See https://www.skeleton.dev/docs/generator
+  //
   import "@skeletonlabs/skeleton/themes/theme-hamlindigo.css";
 
   // Contains the bulk of Skeleton's required styles
@@ -9,11 +14,16 @@
   import "../app.postcss";
 
   import { Drawer, drawerStore } from "@skeletonlabs/skeleton";
+  import { Toast } from "@skeletonlabs/skeleton";
   import Citation from "$lib/components/main/Citation.svelte";
   import CitationDownload from "$lib/components/main/CitationDownload.svelte";
   import CloseButton from "$lib/components/main/CloseButton.svelte";
 </script>
 
+<!--
+  -- The drawer feature uses a singleton pattern, so the drawer component should
+  -- not be used anywhere but here. 
+  -->
 <Drawer position="bottom">
   <div class="min-h-full p-4">
     <div class="mb-4 flex justify-between">
@@ -35,5 +45,11 @@
     </div>
   </div>
 </Drawer>
+
+<!--
+  -- The toast feature uses a singleton pattern, so the toast component should
+  -- not be used anywhere but here. 
+  -->
+<Toast />
 
 <slot />

@@ -1,36 +1,50 @@
 <script lang="ts">
   import { register_account, login_as_guest } from "$lib/api";
   import { goto } from "$app/navigation";
+  import { toastStore } from "@skeletonlabs/skeleton";
 
   export let username = "";
   export let password = "";
-
   let retyped = "";
 
-  let registration_error = false;
-  let other_error = false;
-
   function handleRegistration() {
-    registration_error = false;
-    other_error = false;
-
     register_account(username, password)
       .then(() => {
         goto("/");
       })
       .catch((error) => {
         if (error.response && error.response.status === 400) {
-          registration_error = true;
+          toastStore.trigger({
+            // prettier-ignore
+            message: "Account creation failed. The username is invalid or is already in use.",
+            background: "variant-filled-error",
+            timeout: 5000,
+          });
         } else {
-          other_error = true;
+          toastStore.trigger({
+            // prettier-ignore
+            message: "Oops! Something went wrong. The server could be unreachable. Please try again later.",
+            background: "variant-filled-error",
+            timeout: 5000,
+          });
         }
       });
   }
 
+  // TODO: This function is repeated in the login form component
   function handleGuestLogin() {
-    login_as_guest().then(() => {
-      goto("/");
-    });
+    login_as_guest()
+      .then(() => {
+        goto("/");
+      })
+      .catch(() => {
+        toastStore.trigger({
+          // prettier-ignore
+          message: "Oops! Something went wrong. The server could be unreachable. Please try again later.",
+          background: "variant-filled-error",
+          timeout: 5000,
+        });
+      });
   }
 </script>
 
@@ -58,7 +72,7 @@
       class:input-success={password.length > 0 && retyped === password}
       type="password"
       bind:value={retyped}
-      placeholder="Confirm password"
+      placeholder="Repeat password"
     />
     <button
       class="btn variant-filled-primary mt-2 uppercase"
@@ -70,18 +84,6 @@
       on:click={handleRegistration}>Create account</button
     >
   </form>
-
-  {#if registration_error}
-    <div class="flex w-3/4 flex-col items-center text-error-500">
-      <span>Account creation failed.</span>
-      <span>The username is already in use or invalid.</span>
-    </div>
-  {:else if other_error}
-    <div class="flex w-3/4 flex-col items-center text-error-500">
-      <span>An unknown error occurred.</span>
-      <span>Please try again later.</span>
-    </div>
-  {/if}
 
   <div class="flex flex-col items-center">
     <span class="whitespace-nowrap"

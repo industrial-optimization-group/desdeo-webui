@@ -1,33 +1,49 @@
 <script lang="ts">
   import { login, login_as_guest } from "$lib/api.js";
   import { goto } from "$app/navigation";
+  import { toastStore } from "@skeletonlabs/skeleton";
 
   export let username = "";
   export let password = "";
 
-  let auth_error = false;
-  let other_error = false;
-
   function handleLogin() {
-    auth_error = false;
-    other_error = false;
     login(username, password)
       .then(() => {
         goto("/");
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          auth_error = true;
+          toastStore.trigger({
+            // prettier-ignore
+            message: "Login attempt failed. Please check your username and password.",
+            background: "variant-filled-error",
+            timeout: 5000,
+          });
         } else {
-          other_error = true;
+          toastStore.trigger({
+            // prettier-ignore
+            message: "Oops! Something went wrong. The server could be unreachable. Please try again later.",
+            background: "variant-filled-error",
+            timeout: 5000,
+          });
         }
       });
   }
 
+  // TODO: This function is repeated in the registration form component
   function handleGuestLogin() {
-    login_as_guest().then(() => {
-      goto("/");
-    });
+    login_as_guest()
+      .then(() => {
+        goto("/");
+      })
+      .catch(() => {
+        toastStore.trigger({
+          // prettier-ignore
+          message: "Oops! Something went wrong. The server could be unreachable. Please try again later.",
+          background: "variant-filled-error",
+          timeout: 5000,
+        });
+      });
   }
 </script>
 
@@ -54,18 +70,6 @@
       on:click={handleLogin}>Log in</button
     >
   </form>
-
-  {#if auth_error}
-    <div class="flex w-3/4 flex-col items-center text-error-500">
-      <span>Login attempt failed.</span>
-      <span>Please check your username and password.</span>
-    </div>
-  {:else if other_error}
-    <div class="flex w-3/4 flex-col items-center text-error-500">
-      <span>An unknown error occurred.</span>
-      <span>Please try again later.</span>
-    </div>
-  {/if}
 
   <div class="flex flex-col items-center">
     <span class="whitespace-nowrap"
