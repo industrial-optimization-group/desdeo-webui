@@ -2,27 +2,37 @@
   import SingleHorizontalBar from "$lib/components/visual/SingleHorizontalBar.svelte";
   // import { onMount } from "svelte";
 
-  $: selectedValue = 3;
+  // $: selectedValue = 3;
   let bar: SingleHorizontalBar;
   // let chartDiv: HTMLDivElement
 </script>
 
 <div class="container">
   <!-- Note the calling the updateSelected method -->
-  <input
+  <!-- <input
     type="number"
     bind:value={selectedValue}
     on:change={() => bar.updateSelected()}
-  />
+  /> -->
   <!-- The size of this div willbe the size of the chart -->
   <div id="hori" style="width: 70vh; height: 2vh; min-height: 100px;">
     <!-- Note reference to the component itself -->
     <SingleHorizontalBar
-      divId="hori"
       bind:this={bar}
       higherBound={5}
       lowerBound={0}
-      bind:selectedValue
+      selectedValue={3}
+      inputs={true}
+    />
+  </div>
+  <div id="hori2" style="width: 70vh; height: 2vh; min-height: 100px;">
+    <!-- Note reference to the component itself -->
+    <SingleHorizontalBar
+      bind:this={bar}
+      higherBound={10}
+      lowerBound={-10}
+      selectedValue={3}
+      inputs={true}
     />
   </div>
   <!-- <div id="hori2" style="width: 70vh; height: 2vh; min-height: 100px;">

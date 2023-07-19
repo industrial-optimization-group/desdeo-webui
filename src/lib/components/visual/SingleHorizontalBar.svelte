@@ -21,7 +21,8 @@
   export let previousValue = 0;
   // export let isMin = true;
   export let colorPaletteIndex = 0;
-  export let divId: string;
+  // export let divId: string;
+  export let inputs = false;
   export function updateSelected() {
     updateLine();
   }
@@ -31,6 +32,7 @@
   const arrowSize = 15;
   const arrowColor = "black";
 
+  let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
   const solutionValue = selectedValue;
 
@@ -43,8 +45,11 @@
       },
       axisLine: {
         show: false,
+        onZero: false,
       },
       id: "xAxis",
+      min: lowerBound,
+      max: higherBound,
       type: "value",
       axisPointer: {
         show: true,
@@ -60,6 +65,7 @@
           opacity: 0.2,
         },
       },
+      data: [lowerBound],
     },
     yAxis: {
       id: "yAxis",
@@ -86,7 +92,7 @@
   };
 
   onMount(() => {
-    chart = echarts.init(document.getElementById(divId) as HTMLDivElement);
+    chart = echarts.init(chartDiv);
     addHorizontalBar(option);
   });
 
@@ -96,12 +102,16 @@
     // idx?: number
   ) {
     chart.setOption(option);
+    let animation = true;
+    if (lowerBound < 0) {
+      animation = false;
+    }
     chart.setOption({
       // Set the min max values for the bar
-      xAxis: {
-        min: lowerBound,
-        max: higherBound,
-      },
+      // xAxis: {
+      //   min: lowerBound,
+      //   max: higherBound,
+      // },
       // Set the color of the bar
       series: {
         color: colorPalette[colorPaletteIndex],
@@ -111,7 +121,8 @@
           opacity: 0.2,
         },
         type: "bar",
-        data: [selectedValue],
+        animation: animation,
+        data: [[selectedValue]],
         barWidth: "100%",
       },
     });
@@ -381,3 +392,29 @@
   //   }
   // }
 </script>
+
+<!-- By default creates just the horizontal bar. If inputs prop is true adds input and input logic -->
+{#if inputs}
+  <div style="display: flex; margin-top:0.75em">
+    <!-- Div for inputs -->
+    <div>
+      <input
+        type="number"
+        bind:value={selectedValue}
+        on:change={() => updateSelected()}
+      />
+      <label for="prev">Previous preference: </label>
+      <input
+        name="prev"
+        type="number"
+        readonly
+        bind:value={previousValue}
+        on:change={() => updateSelected()}
+        style="border: 2; box-shadow: none;background-color: rgba(232 234 241);"
+      />
+    </div>
+    <div style="height:100%; width:100%" bind:this={chartDiv} />
+  </div>
+{:else}
+  <div style="height:100%; width:100%" bind:this={chartDiv} />
+{/if}
