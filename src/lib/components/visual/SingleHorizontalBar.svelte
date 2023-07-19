@@ -1,19 +1,22 @@
 <!--
   @component
-      @description Makes a single horizontal using the ECharts library.
-
+    @name SingleHorizontalBar
+    @description Renders a single horizontal bar chart using the ECharts library.
+    @props
+      @param {number} lowerBound - The lower bound of the chart.
+      @param {number} higherBound - The higher bound of the chart.
+      @param {number} selectedValue - The selected value to display on the chart.
+      @param {number} previousValue - The previous value to display on the chart.
+      @param {number} colorPaletteIndex - The index of the color palette to use for the chart.
+      @param {boolean} inputs - Whether to display input fields for the chart.
+    @events
+      updateSelected - Emitted when the selected value is updated. 
 -->
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   // import type { SolutionData } from "./types";
   import { colorPalette } from "./stores";
-  // export let id: string;
-
-  // function to which returns the aspiration values
-  // export function getAspirationValues() {
-  //   return aspValues;
-  // }
 
   export let lowerBound: number;
   export let higherBound: number;
@@ -342,55 +345,8 @@
       };
     }
 
-    // let errorP = document
-    //   .querySelectorAll(".bar_container")
-    //   [idx].querySelector(".error");
-    // if (errorP != null) {
-    //   (errorP.previousElementSibling as HTMLElement).style.borderColor = "";
-    //   errorP.remove();
-    // }
-
     chart.setOption(newOption);
   }
-
-  // /**
-  //  * Handles the onchange event of the input fields. Updates the graph and the
-  //  * aspiration value.
-  //  *
-  //  * @param param
-  //  * @param i
-  //  */
-  // function handleOnchange(param: Event, i: number) {
-  //   const targetElem = param.target as HTMLInputElement | null;
-  //   const parentElem = targetElem?.parentElement;
-  //   if (!targetElem || !parentElem) {
-  //     return;
-  //   }
-  //   // Update the line only when the input value is valid
-  //   if (targetElem.checkValidity()) {
-  //     updateLine(param);
-  //     console.log(targetElem.style);
-  //     targetElem.style.borderColor = "";
-  //     const errElem = parentElem.querySelector(".error");
-  //     if (errElem !== null) {
-  //       errElem.remove();
-  //     }
-  //   } else {
-  //     if (parentElem.querySelector(".error") != null) {
-  //       return;
-  //     }
-  //     targetElem.style.borderColor = errColor;
-  //     var oNewP = document.createElement("p");
-  //     oNewP.setAttribute("class", "error");
-  //     oNewP.appendChild(
-  //       document.createTextNode(
-  //         `Value must be on the range of ${data.value_ranges[i][0]} - ${data.value_ranges[i][1]}`
-  //       )
-  //     );
-  //     oNewP.style.color = errColor;
-  //     targetElem.insertAdjacentElement("afterend", oNewP);
-  //   }
-  // }
 </script>
 
 <!-- By default creates just the horizontal bar. If inputs prop is true adds input and input logic -->
