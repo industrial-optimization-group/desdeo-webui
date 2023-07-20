@@ -1,14 +1,25 @@
-<!--@component
+<!--
+  @component
     @description A component that displays a Nautilus navigation bar.
-    TODO: documentation
+    @props
+      @param {number} lowerBound - The lower bound, worst value (nadir value).
+      @param {number} higherBound - The higher bound, best value (ideal value).
+      @param {number} iterations - The number of iterations.
+      @param {number} currentIterationIndex - The index of the current iteration.
+      @param {number} selectedValue - The aspiration value that the user has selected.
+      @param {number} selectedBoundValue -The bound value that the user has selected .
+      @param {Array<Array<number>>} uncertaintyBounds - The uncertainty bounds to drawn on the chart.
+
+    
+-->
+<!-- TODO: documentation
     TODO: Make YAxis visible
     TODO: Add validation for input fields and lines
           - Aspiration value should be between upper and lower bounds
           - Aspiration line should not be draggable over the bound line
           - Bound value should be between ideal and nadir points
-    TODO: Make min max values to be taken from value_ranges (if it is always correct)
-    TODO: If chart is initialized from other than first iteration, the aspiration line is not drawn correctly.
--->
+  
+   -->
 <script lang="ts">
   import { onMount } from "svelte";
   import * as echarts from "echarts";
