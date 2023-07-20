@@ -5,7 +5,8 @@
     @props
       @param {number} lowerBound - The lower bound of the chart.
       @param {number} higherBound - The higher bound of the chart.
-      @param {number} selectedValue - The selected value to display on the chart.
+      @param {number} solutionValue - The solution value to display on the chart.
+      @param {number} selectedValue - The value that the user has selected.
       @param {number} previousValue - The previous value to display on the chart.
       @param {number} colorPaletteIndex - The index of the color palette to use for the chart.
       @param {boolean} inputs - Whether to display input fields for the chart.
@@ -20,7 +21,8 @@
 
   export let lowerBound: number;
   export let higherBound: number;
-  export let selectedValue: number;
+  export let solutionValue: number;
+  export let selectedValue = solutionValue;
   export let previousValue = 0;
   // export let isMin = true;
   export let colorPaletteIndex = 0;
@@ -37,7 +39,6 @@
 
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
-  const solutionValue = selectedValue;
 
   // Create the option object for the whole chart.
   let option: echarts.EChartOption = {
