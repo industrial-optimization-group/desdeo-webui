@@ -1,6 +1,7 @@
 <script lang="ts">
   // import Example from "$lib/components/visual/Example.svelte";
   import NautilusNavigationBar from "$lib/components/visual/NautilusNavigationBar.svelte";
+  import SingleNautilusNavigationBar from "$lib/components/visual/SingleNautilusNavigationBar.svelte";
   // import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";
@@ -81,17 +82,25 @@
   };
 </script>
 
+<!-- Single Nautilus bars -->
+<div id="hori" style="width: 70vh; height: 2vh; min-height: 100px;">
+  <SingleNautilusNavigationBar
+    higherBound={5}
+    lowerBound={0}
+    iterations={10}
+    currentIterationIndex={2}
+    uncertaintyBounds={exampleData.uncertainty[0]}
+  />
+</div>
 <div class="container">
   <div>
     <NautilusNavigationBar id="nautilus" data={exampleData} />
-    <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->
   </div>
 </div>
-
 <!-- <div>
   <Example></Example>
 </div> -->
-<style>
+<!-- <style>
   /* A scrollable div where height is the height of the screen*/
 
   .container {
@@ -99,4 +108,4 @@
     min-width: max-content;
     overflow: scroll;
   }
-</style>
+</style> -->
