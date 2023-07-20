@@ -105,30 +105,48 @@
     // idx?: number
   ) {
     chart.setOption(option);
-    let animation = true;
-    if (lowerBound < 0) {
-      animation = false;
-    }
     chart.setOption({
-      // Set the min max values for the bar
-      // xAxis: {
-      //   min: lowerBound,
-      //   max: higherBound,
-      // },
-      // Set the color of the bar
-      series: {
-        color: colorPalette[colorPaletteIndex],
-        showBackground: true,
-        backgroundStyle: {
+      series: [
+        {
+          stack: "negative",
           color: colorPalette[colorPaletteIndex],
-          opacity: 0.2,
+          showBackground: true,
+          backgroundStyle: {
+            color: colorPalette[colorPaletteIndex],
+            opacity: 0.2,
+          },
+          type: "bar",
+          data: [[selectedValue]],
+          barWidth: "100%",
+          emphasis: {
+            disabled: true,
+          },
         },
-        type: "bar",
-        animation: animation,
-        data: [[selectedValue]],
-        barWidth: "100%",
-      },
+      ],
     });
+    if (lowerBound < 0) {
+      chart.setOption({
+        series: [
+          {
+            id: "lower",
+            stack: "negative",
+            color: colorPalette[colorPaletteIndex],
+            showBackground: true,
+            backgroundStyle: {
+              color: colorPalette[colorPaletteIndex],
+              opacity: 0.2,
+            },
+            type: "bar",
+            animation: false,
+            data: [[lowerBound]],
+            barWidth: "100%",
+            emphasis: {
+              disabled: true,
+            },
+          },
+        ],
+      });
+    }
 
     // TODO: How to get the gridRect without using the private methods?
     const gridModel = chart.getModel().getComponent("grid");
