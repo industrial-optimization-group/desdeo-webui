@@ -88,7 +88,7 @@
     higherBound={5}
     lowerBound={0}
     iterations={10}
-    currentIterationIndex={2}
+    currentIterationIndex={0}
     uncertaintyBounds={exampleData.uncertainty[0]}
   />
 </div>
