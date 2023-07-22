@@ -203,12 +203,12 @@
               // type: "line",
               type: "polyline",
               z: 3,
-              y: 0,
-              lastY: 0,
+              y: xAxisRect.height / 2,
+              lastY: xAxisRect.height / 2,
               shape: {
                 points: [
-                  [0, xAxisRect.height / 2],
-                  [xAxisRect.width, xAxisRect.height / 2],
+                  [0, 0],
+                  [xAxisRect.width, 0],
                 ],
               },
               style: aspirationLineStyle,
@@ -241,9 +241,7 @@
                 // let test = getLineComponent(chart, "oldAspLine");
                 console.log(getLineComponent(chart, "oldAspLine").y);
                 if (
-                  event.offsetY <
-                    getLineComponent(chart, "oldBoundLine").shape
-                      .points[0][1] &&
+                  event.offsetY < getLineComponent(chart, "oldBoundLine").y &&
                   event.offsetY > 0 &&
                   event.offsetY < 100
                 ) {
@@ -314,16 +312,47 @@
               style: aspirationLineStyle,
               draggable: "vertical",
               ondrag: function (event: echarts.ElementEvent) {
-                selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-                  event.offsetX,
-                  event.offsetY,
-                ])[1];
-                chart.setOption({
-                  graphic: {
-                    id: "newAspLine",
-                    lastY: event.offsetY,
-                  },
-                });
+                // chart.setOption({
+                //   graphic: {
+                //     id: "oldAspLine",
+                //     lastY: event.offsetY,
+                //     y: event.offsetY,
+                //   },
+                // });
+                // let test = getLineComponent(chart, "oldAspLine");
+                console.log(getLineComponent(chart, "oldAspLine").y);
+                if (
+                  event.offsetY <
+                    getLineComponent(chart, "newBoundLine").lastY &&
+                  event.offsetY > 0 &&
+                  event.offsetY < 100
+                ) {
+                  console.log("yes");
+                  selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+                    event.offsetX,
+                    event.offsetY,
+                  ])[1];
+                  lastPosition = event.offsetY;
+                  chart.setOption({
+                    graphic: {
+                      id: "newAspLine",
+                      lastY: lastPosition,
+                      y: lastPosition,
+                    },
+                  });
+                } else {
+                  chart.setOption({
+                    graphic: {
+                      id: "newAspLine",
+                      lastY: lastPosition,
+                      y: lastPosition,
+                    },
+                  });
+                }
+
+                // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
+
+                // updateLine(chart, idx, event.offsetX, event.offsetY, false);
               },
             },
           ],
@@ -338,12 +367,12 @@
               // type: "line",
               type: "polyline",
               z: 3,
-              y: 0,
-              lastY: 0,
+              y: xAxisRect.height - 2,
+              lastY: xAxisRect.height - 2,
               shape: {
                 points: [
-                  [0, xAxisRect.height - 2],
-                  [xAxisRect.width, xAxisRect.height - 2],
+                  [0, 0],
+                  [xAxisRect.width, 0],
                 ],
               },
               style: boundLineStyle,
@@ -380,33 +409,38 @@
                 )[1];
                 // let test = getLineComponent(chart, "oldAspLine");
                 console.log(getLineComponent(chart, "oldAspLine").y);
-                // if (event.offsetY < getLineComponent(chart, "oldBoundLine").shape.points[0][1] && event.offsetY > 0 && event.offsetY < 100) {
-                //   selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-                //   event.offsetX,
-                //   event.offsetY,
-                // ])[1];
-                // lastPosition = event.offsetY
-                // chart.setOption({
-                //   graphic: {
-                //     id: "oldAspLine",
-                //     lastY: lastPosition,
-                //     y: lastPosition
-                //   },
-                // });
-                // }
-                chart.setOption({
-                  graphic: {
-                    id: "oldBoundLine",
-                    lastY: event.offsetY,
-                    y: event.offsetY,
-                    shape: {
-                      points: [
-                        [0, 0],
-                        [xAxisRect.width, 0],
-                      ],
+                if (
+                  event.offsetY > getLineComponent(chart, "oldAspLine").y &&
+                  event.offsetY > 0 &&
+                  event.offsetY < 100
+                ) {
+                  selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+                    event.offsetX,
+                    event.offsetY,
+                  ])[1];
+                  lastPosition = event.offsetY;
+                  chart.setOption({
+                    graphic: {
+                      id: "oldBoundLine",
+                      lastY: lastPosition,
+                      y: lastPosition,
                     },
-                  },
-                });
+                  });
+                } else {
+                  chart.setOption({
+                    graphic: {
+                      id: "oldBoundLine",
+                      lastY: lastPosition,
+                      y: lastPosition,
+                      shape: {
+                        points: [
+                          [0, 0],
+                          [xAxisRect.width, 0],
+                        ],
+                      },
+                    },
+                  });
+                }
 
                 // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
 
@@ -449,16 +483,36 @@
           }, */
               draggable: "vertical",
               ondrag: function (event: echarts.ElementEvent) {
+                console.log(getLineComponent(chart, "newAspLine").y);
+                if (
+                  event.offsetY > getLineComponent(chart, "newAspLine").lastY &&
+                  event.offsetY > 0 &&
+                  event.offsetY < 100
+                ) {
+                  console.log("yes");
+
+                  lastPosition = event.offsetY;
+                  chart.setOption({
+                    graphic: {
+                      id: "newBoundLine",
+                      lastY: lastPosition,
+                      y: lastPosition,
+                    },
+                  });
+                } else {
+                  chart.setOption({
+                    graphic: {
+                      id: "newBoundLine",
+                      lastY: lastPosition,
+                      y: lastPosition,
+                    },
+                  });
+                }
+
                 selectedBoundValue = chart.convertFromPixel(
                   { seriesIndex: 0 },
                   [event.offsetX, event.offsetY]
                 )[1];
-                chart.setOption({
-                  graphic: {
-                    id: "newBoundLine",
-                    lastY: event.offsetY,
-                  },
-                });
               },
             },
           ],
