@@ -13,6 +13,7 @@
     
 -->
 <!-- TODO: documentation
+    TODO: Fix draggable oldLines
     TODO: Make YAxis visible
     TODO: Add validation for input fields and lines
           - Aspiration value should be between upper and lower bounds
@@ -42,6 +43,8 @@
   let lastPosition: number;
   // let chartHeight;
   // let chartWidth;
+  $: console.log(selectedValue);
+  $: console.log("bound value: " + selectedBoundValue);
 
   // export function updateSelected() {
   //   updateLine();
@@ -345,10 +348,6 @@
               },
               ondrag: function (event: echarts.ElementEvent) {
                 // Convert drag Y pixel value to Y real value and update the value to the aspValues (updates input field value also)
-                selectedBoundValue = chart.convertFromPixel(
-                  { seriesIndex: 0 },
-                  [event.offsetX, event.offsetY]
-                )[1];
 
                 restrictDrag(event);
                 // let test = getLineComponent(chart, "oldAspLine");
@@ -426,11 +425,6 @@
                 } */
 
                 restrictDrag(event);
-
-                selectedBoundValue = chart.convertFromPixel(
-                  { seriesIndex: 0 },
-                  [event.offsetX, event.offsetY]
-                )[1];
               },
             },
           ],
@@ -448,17 +442,13 @@
     let lineType = event.target?.parent?.id;
 
     if (lineType == "aspLine") {
-      selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-        event.offsetX,
-        event.offsetY,
-      ])[1];
+      // Update the selected value prop
       lineToCompare = getLineComponent(chart, "newBoundLine");
-      // If the aspiration line is still invisible, use the y value of the old line
+      // If the new part of the bound line is still invisible, use the y value of the old line
       compareLineY = lineToCompare.invisible
         ? getLineComponent(chart, "oldBoundLine").y
         : lineToCompare.y;
       dragIsValid = event.offsetY < compareLineY;
-      // restrictAspirationLine(newLineName, oldLineName)
     } else {
       lineToCompare = getLineComponent(chart, "newAspLine");
       // If the aspiration line is still invisible, use the y value of the old line
@@ -466,99 +456,50 @@
         ? getLineComponent(chart, "oldAspLine").y
         : lineToCompare.y;
       dragIsValid = event.offsetY > compareLineY;
-      // restrictBoundLine(newLineName, oldLineName)
     }
     if (dragIsValid && event.offsetY > 0 && event.offsetY < chart.getHeight()) {
-      console.log("yes");
-      console.log(lastPosition);
-
       lastPosition = event.offsetY;
-      chart.setOption({
-        graphic: {
-          id: newLineName,
-          lastY: lastPosition,
-          y: lastPosition,
-        },
-      });
-    } else {
-      console.log("dont drag");
-      console.log(lastPosition);
-      chart.setOption({
-        graphic: {
-          id: newLineName,
-          lastY: lastPosition,
-          y: lastPosition,
-        },
-      });
+      if (lineType == "aspLine") {
+        selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+          event.offsetX,
+          event.offsetY,
+        ])[1];
+      } else {
+        selectedBoundValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+          event.offsetX,
+          event.offsetY,
+        ])[1];
+      }
     }
+    chart.setOption({
+      graphic: {
+        id: newLineName,
+        lastY: lastPosition,
+        y: lastPosition,
+      },
+    });
   }
-
   onMount(() => {
     chart = echarts.init(chartDiv);
     addNautilusBar();
   });
 
-  //: step line dragging
+  //TODO: step line dragging
   function updateStepLine() {
     let xForVerticalLine = chart.convertToPixel({ seriesIndex: 0 }, [
       currentIterationIndex,
       0,
     ])[0];
-
     chart.setOption({
       graphic: [
         {
           id: "verticalLine",
           type: "polyline",
-
           x: xForVerticalLine,
         },
       ],
     });
   }
-
-  /**
-   * Updates the y-position of the aspiration line according to the new y-value.
-   *
-   * @param chart The chart where the aspiration line is.
-   * @param newY The new y-value.
-   */
-  // function updateLine(
-  //   chart: echarts.EChartsType,
-  //   newY: number,
-  //   lineName?: string
-  // ) {
-  //   applyForMultipleLines((oldName, newName) => {
-  //     let oldLineComponentPoints = getLineComponent(chart, "oldAspLine").shape
-  //       .points;
-  //     // let teset = getLineComponent(chart, "aspLine");
-  //     oldLineComponentPoints[0][1] = newY;
-  //     oldLineComponentPoints[1][1] = newY;
-  //     if (currentIterationIndex == 0) {
-  //       chart.setOption({
-  //         graphic: [
-  //           {
-  //             id: oldName,
-  //             shape: {
-  //               points: oldLineComponentPoints,
-  //             },
-  //           },
-  //         ],
-  //       });
-  //     } else {
-  //       chart.setOption({
-  //         graphic: [
-  //           {
-  //             id: newName,
-  //             lastY: newY,
-  //             y: newY,
-  //             transition: "y",
-  //           },
-  //         ],
-  //       });
-  //     }
-  //   }, lineName);
-  // }
 
   /**
    * Updates the shape of the aspiration line so that the line before current
@@ -596,13 +537,6 @@
       ];
       if (currentIterationIndex == 1) {
         oldLinePoints[1][0] = verticalLineComponent.x;
-      } else {
-        // if old hasn't changed update to verticalLine position.
-        // if (
-        //   oldLinePoints[oldLinePoints.length - 1][0] >= verticalLineComponent.x
-        // ) {
-        //   oldLinePoints[oldLinePoints.length - 1][0] = verticalLineComponent.x;
-        // }
       }
       let newPoints = oldLinePoints;
       if (newAspLinePoints[0][0] > 0) {
@@ -613,12 +547,10 @@
         ];
         newPoints = oldLinePoints.concat(betweenLine);
       }
-
       let newY = oldLineComponent.y;
       if (newPoints.length <= 2) {
         newY = lastY;
       }
-      // Update the position of the aspiration line and make it visible
       chart.setOption({
         graphic: [
           {
@@ -635,17 +567,15 @@
   }
 
   /**
-   * Adds the draggable part of the aspiration line.
+   * Adds the draggable part of the line.
    *
-   * @param chart The chart where the aspiration line is.
+   * @param chart The chart where the line is.
    */
   function addNewLine() {
-    // Get the components of the aspiration line and the vertical line
     applyForMultipleLines((wholeNameOld, wholeNameNew) => {
       let verticalLineComponent = getLineComponent(chart, "verticalLine");
       let oldLineComponent = getLineComponent(chart, wholeNameOld);
       const lastIndex = oldLineComponent.shape.points.length - 1;
-      // const oldLineLastX = oldLineComponent.shape.points[lastIndex][0];
       const oldLineLastY = oldLineComponent.shape.points[lastIndex][1];
       const newY = oldLineComponent.lastY
         ? oldLineComponent.lastY
@@ -656,7 +586,7 @@
         [chart.getModel().getComponent("xAxis").axis.grid.getRect().width, 0],
       ];
 
-      // Update the position of the aspiration line so that it is visible (and draggable) again.
+      // Update the position of the line so that it is visible (and draggable) again.
       chart.setOption({
         graphic: {
           id: wholeNameNew,
@@ -672,10 +602,10 @@
   }
 
   /**
-   * Gets the component of the wanted part of the aspiration line.
+   * Gets the component of the wanted part of the aspiration or bound line.
    *
-   * @param chart The chart where the aspiration line is.
-   * @param lineId The id of the wanted part of the aspiration line.
+   * @param chart The chart where the line is.
+   * @param lineId The id of the wanted part of the line.
    */
   function getLineComponent(chart: echarts.EChartsType, lineId: string) {
     let graphicComponent = chart.getOption()
@@ -689,7 +619,7 @@
       );
     }
   }
-  // TODO: Divide this to 2 functions, the other could be applyForSingleLine. Then prop from first could be deleted
+  // TODO: Divide this to 2 functions, the other could be applyForSingleLine. Then prop onlylinename could be deleted
   function applyForMultipleLines(
     funToApply: (nameOld: string, nameNew: string) => void,
     onlyLinename?: string
