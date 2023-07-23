@@ -39,6 +39,9 @@
   // export let divId: string;
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
+  let lastPosition: number;
+  // let chartHeight;
+  // let chartWidth;
 
   // export function updateSelected() {
   //   updateLine();
@@ -190,7 +193,7 @@
       .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
       .getComponent("xAxis")
       .axis.grid.getRect();
-    let lastPosition: number;
+
     chart.setOption({
       // Add aspiration value line
       graphic: [
@@ -239,40 +242,7 @@
                 //   },
                 // });
                 // let test = getLineComponent(chart, "oldAspLine");
-                console.log(getLineComponent(chart, "oldAspLine").y);
-                if (
-                  event.offsetY < getLineComponent(chart, "oldBoundLine").y &&
-                  event.offsetY > 0 &&
-                  event.offsetY < 100
-                ) {
-                  selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-                    event.offsetX,
-                    event.offsetY,
-                  ])[1];
-                  lastPosition = event.offsetY;
-                  chart.setOption({
-                    graphic: {
-                      id: "oldAspLine",
-                      lastY: lastPosition,
-                      y: lastPosition,
-                    },
-                  });
-                } else {
-                  chart.setOption({
-                    graphic: {
-                      id: "oldAspLine",
-                      lastY: lastPosition,
-                      y: lastPosition,
-                      shape: {
-                        points: [
-                          [0, 0],
-                          [xAxisRect.width, 0],
-                        ],
-                      },
-                    },
-                  });
-                }
-
+                restrictDrag(event);
                 // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
 
                 // updateLine(chart, idx, event.offsetX, event.offsetY, false);
@@ -300,6 +270,7 @@
             {
               id: "newAspLine",
               type: "polyline",
+              invisible: true,
               lastY: -99,
               y: -99,
               z: 3,
@@ -320,36 +291,7 @@
                 //   },
                 // });
                 // let test = getLineComponent(chart, "oldAspLine");
-                console.log(getLineComponent(chart, "oldAspLine").y);
-                if (
-                  event.offsetY <
-                    getLineComponent(chart, "newBoundLine").lastY &&
-                  event.offsetY > 0 &&
-                  event.offsetY < 100
-                ) {
-                  console.log("yes");
-                  selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-                    event.offsetX,
-                    event.offsetY,
-                  ])[1];
-                  lastPosition = event.offsetY;
-                  chart.setOption({
-                    graphic: {
-                      id: "newAspLine",
-                      lastY: lastPosition,
-                      y: lastPosition,
-                    },
-                  });
-                } else {
-                  chart.setOption({
-                    graphic: {
-                      id: "newAspLine",
-                      lastY: lastPosition,
-                      y: lastPosition,
-                    },
-                  });
-                }
-
+                restrictDrag(event);
                 // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
 
                 // updateLine(chart, idx, event.offsetX, event.offsetY, false);
@@ -407,40 +349,10 @@
                   { seriesIndex: 0 },
                   [event.offsetX, event.offsetY]
                 )[1];
+
+                restrictDrag(event);
                 // let test = getLineComponent(chart, "oldAspLine");
-                console.log(getLineComponent(chart, "oldAspLine").y);
-                if (
-                  event.offsetY > getLineComponent(chart, "oldAspLine").y &&
-                  event.offsetY > 0 &&
-                  event.offsetY < 100
-                ) {
-                  selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-                    event.offsetX,
-                    event.offsetY,
-                  ])[1];
-                  lastPosition = event.offsetY;
-                  chart.setOption({
-                    graphic: {
-                      id: "oldBoundLine",
-                      lastY: lastPosition,
-                      y: lastPosition,
-                    },
-                  });
-                } else {
-                  chart.setOption({
-                    graphic: {
-                      id: "oldBoundLine",
-                      lastY: lastPosition,
-                      y: lastPosition,
-                      shape: {
-                        points: [
-                          [0, 0],
-                          [xAxisRect.width, 0],
-                        ],
-                      },
-                    },
-                  });
-                }
+                // restrictDrag(event)
 
                 // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
 
@@ -468,6 +380,7 @@
               id: "newBoundLine",
               type: "polyline",
               lastY: -99,
+              invisible: true,
               y: -99,
               z: 2,
               shape: {
@@ -483,7 +396,10 @@
           }, */
               draggable: "vertical",
               ondrag: function (event: echarts.ElementEvent) {
-                console.log(getLineComponent(chart, "newAspLine").y);
+                // TODO: Use applyforboth, use as function the below code?
+                // make below code named f.e. checkBounds or restrictBounds
+                //
+                /* console.log(getLineComponent(chart, "newAspLine").y);
                 if (
                   event.offsetY > getLineComponent(chart, "newAspLine").lastY &&
                   event.offsetY > 0 &&
@@ -507,7 +423,9 @@
                       y: lastPosition,
                     },
                   });
-                }
+                } */
+
+                restrictDrag(event);
 
                 selectedBoundValue = chart.convertFromPixel(
                   { seriesIndex: 0 },
@@ -521,12 +439,66 @@
     });
   }
 
+  function restrictDrag(event: echarts.ElementEvent) {
+    let newLineName = event.target.id;
+    let lineToCompare;
+    let compareLineY;
+    let dragIsValid;
+
+    let lineType = event.target?.parent?.id;
+
+    if (lineType == "aspLine") {
+      selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+        event.offsetX,
+        event.offsetY,
+      ])[1];
+      lineToCompare = getLineComponent(chart, "newBoundLine");
+      // If the aspiration line is still invisible, use the y value of the old line
+      compareLineY = lineToCompare.invisible
+        ? getLineComponent(chart, "oldBoundLine").y
+        : lineToCompare.y;
+      dragIsValid = event.offsetY < compareLineY;
+      // restrictAspirationLine(newLineName, oldLineName)
+    } else {
+      lineToCompare = getLineComponent(chart, "newAspLine");
+      // If the aspiration line is still invisible, use the y value of the old line
+      compareLineY = lineToCompare.invisible
+        ? getLineComponent(chart, "oldAspLine").y
+        : lineToCompare.y;
+      dragIsValid = event.offsetY > compareLineY;
+      // restrictBoundLine(newLineName, oldLineName)
+    }
+    if (dragIsValid && event.offsetY > 0 && event.offsetY < chart.getHeight()) {
+      console.log("yes");
+      console.log(lastPosition);
+
+      lastPosition = event.offsetY;
+      chart.setOption({
+        graphic: {
+          id: newLineName,
+          lastY: lastPosition,
+          y: lastPosition,
+        },
+      });
+    } else {
+      console.log("dont drag");
+      console.log(lastPosition);
+      chart.setOption({
+        graphic: {
+          id: newLineName,
+          lastY: lastPosition,
+          y: lastPosition,
+        },
+      });
+    }
+  }
+
   onMount(() => {
     chart = echarts.init(chartDiv);
     addNautilusBar();
   });
 
-  //TODO: step line dragging
+  //: step line dragging
   function updateStepLine() {
     let xForVerticalLine = chart.convertToPixel({ seriesIndex: 0 }, [
       currentIterationIndex,
@@ -688,6 +660,7 @@
       chart.setOption({
         graphic: {
           id: wholeNameNew,
+          invisible: false,
           lastY: newY,
           y: newY,
           shape: {
@@ -716,7 +689,7 @@
       );
     }
   }
-
+  // TODO: Divide this to 2 functions, the other could be applyForSingleLine. Then prop from first could be deleted
   function applyForMultipleLines(
     funToApply: (nameOld: string, nameNew: string) => void,
     onlyLinename?: string
