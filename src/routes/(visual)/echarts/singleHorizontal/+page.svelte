@@ -4,7 +4,7 @@
 
   $: selectedValue = 2;
   // let bar: SingleHorizontalBar;
-  $: selectedValue2 = 2;
+  // $: selectedValue2 = 2;
   // let bar2: SingleHorizontalBar;
   // let chartDiv: HTMLDivElement
 </script>
@@ -27,22 +27,20 @@
     <SingleHorizontalBar
       higherBound={10}
       lowerBound={-10}
-      solutionValue={3}
+      solutionValue={9}
       inputs={true}
     />
   </div>
   <!-- Horizontal bars without default inputs.   -->
-  <!-- Note the calling the updateSelected method -->
   <div style="margin-top: 2em;">
     <input type="number" bind:value={selectedValue} />
     <div id="hori3" style="width: 70vh; height: 2vh; min-height: 100px;">
-      <SingleHorizontalBar higherBound={5} lowerBound={0} solutionValue={3} />
-    </div>
-  </div>
-  <div style="margin-top: 2em;">
-    <input type="number" bind:value={selectedValue2} />
-    <div id="hori3" style="width: 70vh; height: 2vh; min-height: 100px;">
-      <SingleHorizontalBar higherBound={5} lowerBound={0} solutionValue={3} />
+      <SingleHorizontalBar
+        higherBound={5}
+        lowerBound={0}
+        solutionValue={3}
+        bind:selectedValue
+      />
     </div>
   </div>
 </div>

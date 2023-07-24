@@ -28,17 +28,22 @@
 
   export let lowerBound: number;
   export let higherBound: number;
-  export let solutionValue: number;
-  export let selectedValue: number;
-  export let previousValue: number;
+  export let solutionValue: number | undefined = undefined;
+  export let selectedValue: number | undefined = undefined;
+  export let previousValue: number | undefined = undefined;
   // export let isMin = true;
   export let colorPaletteIndex = 0;
   // export let divId: string;
   export let inputs = false;
 
   $: console.log(selectedValue);
-  $: updateAspirationLine(selectedValue);
-  $: updatePreviousLine(previousValue);
+  $: if (selectedValue != null) {
+    updateAspirationLine(selectedValue);
+  }
+  // $: updateAspirationLine(selectedValue);
+  $: if (previousValue != null) {
+    updatePreviousLine(previousValue);
+  }
 
   const arrowSize = 15;
   const arrowColor = "black";
@@ -118,7 +123,7 @@
             opacity: 0.2,
           },
           type: "bar",
-          data: [[selectedValue]],
+          data: [[solutionValue]],
           barWidth: "100%",
           emphasis: {
             disabled: true,
@@ -204,10 +209,13 @@
               id: "arrow",
               type: "polygon",
               // group: "test",
-              x: chart.convertToPixel({ seriesIndex: 0 }, [
-                selectedValue,
-                0,
-              ])[0],
+              x: solutionValue
+                ? chart.convertToPixel({ seriesIndex: 0 }, [
+                    solutionValue,
+                    0,
+                  ])[0]
+                : 0,
+              invisible: solutionValue ? false : true,
               shape: {
                 points: [
                   [-arrowSize, 0],
