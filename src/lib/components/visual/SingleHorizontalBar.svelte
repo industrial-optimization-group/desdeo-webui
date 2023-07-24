@@ -40,35 +40,8 @@
   $: updateAspirationLine(selectedValue);
   $: updatePreviousLine(previousValue);
 
-  function updatePreviousLine(newValue: number) {
-    if (!chart) {
-      return;
-    }
-    updateLineOption("prevLine", newValue);
-    previousValue = newValue;
-  }
-
-  function updateLineOption(lineId: string, newValue: number) {
-    let newOption = {
-      graphic: [
-        {
-          id: lineId,
-          invisible: false,
-          x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
-        },
-      ],
-    };
-    chart.setOption(newOption);
-  }
-  // export function updateSelected() {
-  //   updateLine();
-  // }
-  // $: selectedValue
-
-  // const errColor = "red";
   const arrowSize = 15;
   const arrowColor = "black";
-
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
 
@@ -132,11 +105,7 @@
     addHorizontalBar(option);
   });
 
-  function addHorizontalBar(
-    option: echarts.EChartOption
-    // id?: string,
-    // idx?: number
-  ) {
+  function addHorizontalBar(option: echarts.EChartOption) {
     chart.setOption(option);
     chart.setOption({
       series: [
@@ -324,7 +293,7 @@
       ],
     };
     chart.setOption(graphicOptions);
-    // Add event listener which adds and updates the aspiration line on the graph.
+    // Add event listener which updates the aspiration line value.
     chart.getZr().on("click", function (params) {
       if (params.target == null) {
         return;
@@ -340,13 +309,48 @@
     });
   }
 
-  /** Updates the aspiration (preference) line on the graph. */
+  /**
+   * Updates the aspiration line value and calls the function which updates the
+   * position in the chart
+   *
+   * @param newValue The value as a real value
+   */
   function updateAspirationLine(newValue: number) {
+    selectedValue = newValue;
+    updateLinePosition("rec", newValue);
+  }
+
+  /**
+   * Updates the previous line value and calls the function which updates the
+   * position in the chart
+   *
+   * @param newValue The value as a real value
+   */
+  function updatePreviousLine(newValue: number) {
+    previousValue = newValue;
+    updateLinePosition("prevLine", newValue);
+  }
+
+  /**
+   * Updates the line to the chart according to the newValue given
+   *
+   * @param lineId The id of the line that will be updated
+   * @param newValue The value of the line
+   */
+  function updateLinePosition(lineId: string, newValue: number) {
     if (!chart) {
       return;
     }
-    updateLineOption("rec", newValue);
-    selectedValue = newValue;
+    let newOption = {
+      graphic: [
+        {
+          id: lineId,
+          invisible: false,
+          x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+        },
+      ],
+    };
+    chart.setOption(newOption);
   }
 </script>
 
