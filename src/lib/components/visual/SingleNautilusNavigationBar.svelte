@@ -41,16 +41,27 @@
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
   let lastPosition: number;
-  // let chartHeight;
-  // let chartWidth;
   $: console.log(selectedValue);
   $: console.log("bound value: " + selectedBoundValue);
+  $: currentIterationIndex;
+  $: updateOnNewStep(currentIterationIndex);
 
-  // export function updateSelected() {
-  //   updateLine();
-  // }
-
-  // let objShape: number[][] = [];
+  function updateOnNewStep(idx: number) {
+    // If chart is not initialized, do nothing
+    if (!chart) {
+      return;
+    }
+    if (idx < iterations) {
+      idx = idx + 1;
+      updateData();
+      updateStepLine();
+      if (idx > 0) {
+        splitLine();
+        addNewLine();
+      }
+      // chart.setOption({});
+    }
+  }
 
   const aspirationLineStyle = {
     stroke: "blue",
@@ -81,7 +92,6 @@
 
   function draw(
     api: echarts.EChartOption.SeriesCustom.RenderItemApi
-    // objectiveIndex: number
   ): echarts.EChartOption.SeriesCustom.RenderItemReturnPolygon {
     let points = [];
     if (!api.coord || !api.visual) {
@@ -107,15 +117,10 @@
     };
   }
 
-  /**
-   * Creates a new nautilus navigation bar.
-   *
-   * @param id The id of the div element where the chart will be drawn.
-   * @param idx The index of the objective.
-   */
+  /** Creates a new nautilus navigation bar. */
   function addNautilusBar() {
     // Default options for the chart.
-    let newOption: echarts.EChartOption = {
+    let axisOptions: echarts.EChartOption = {
       grid: {
         show: true,
         top: 0,
@@ -132,6 +137,7 @@
             formatter: function (params) {
               if (params.axisDimension === "x") {
                 return (
+                  // Show the step number as a percentage
                   Math.round((params.value / (iterations + 1)) * 100) + "%"
                 );
               }
@@ -163,7 +169,7 @@
           // showMinLabel: false,
           // showMaxLabel: false,
           inside: true,
-          formatter: function (value, index) {
+          formatter: function (value: number, index: number) {
             // console.log(chart.getOption().yAxis[0].splitNumber);
             // console.log(value, index);
             if (index === 0) {
@@ -190,13 +196,15 @@
         },
       ],
     };
-    chart.setOption(newOption);
+
+    chart.setOption(axisOptions);
 
     const xAxisRect = chart
       .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
       .getComponent("xAxis")
       .axis.grid.getRect();
 
+    // Add the default options of the aspiration and bound lines
     chart.setOption({
       // Add aspiration value line
       graphic: [
@@ -204,9 +212,9 @@
           type: "group",
           id: "aspLine",
           children: [
+            // The part of the aspiration line that shows the history
             {
               id: "oldAspLine",
-              // type: "line",
               type: "polyline",
               z: 3,
               y: xAxisRect.height / 2,
@@ -219,57 +227,9 @@
               },
               style: aspirationLineStyle,
               draggable: "vertical",
-              ondragstart: function (event) {
-                console.log(getLineComponent(chart, "oldAspLine").y);
-                chart.setOption({
-                  graphic: {
-                    id: "oldAspLine",
-                    lastY: event.offsetY,
-                    y: event.offsetY,
-                    shape: {
-                      points: [
-                        [0, 0],
-                        [xAxisRect.width, 0],
-                      ],
-                    },
-                  },
-                });
-                console.log(getLineComponent(chart, "oldAspLine").y);
-              },
-              ondrag: function (event: echarts.ElementEvent) {
-                // chart.setOption({
-                //   graphic: {
-                //     id: "oldAspLine",
-                //     lastY: event.offsetY,
-                //     y: event.offsetY,
-                //   },
-                // });
-                // let test = getLineComponent(chart, "oldAspLine");
-                restrictDrag(event);
-                // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
-
-                // updateLine(chart, idx, event.offsetX, event.offsetY, false);
-              },
+              ondrag: restrictDrag,
             },
-            {
-              id: "verticalLine",
-              type: "polyline",
-              z: 4,
-              x: chart.convertToPixel({ seriesIndex: 0 }, [
-                currentIterationIndex,
-                0,
-              ])[0],
-              shape: {
-                points: [
-                  [0, 0],
-                  [0, xAxisRect.height],
-                ],
-              },
-              style: {
-                stroke: "black",
-                lineWidth: 3,
-              },
-            },
+            // The part of the aspiration line that is on the right side of the vertical line
             {
               id: "newAspLine",
               type: "polyline",
@@ -285,20 +245,7 @@
               },
               style: aspirationLineStyle,
               draggable: "vertical",
-              ondrag: function (event: echarts.ElementEvent) {
-                // chart.setOption({
-                //   graphic: {
-                //     id: "oldAspLine",
-                //     lastY: event.offsetY,
-                //     y: event.offsetY,
-                //   },
-                // });
-                // let test = getLineComponent(chart, "oldAspLine");
-                restrictDrag(event);
-                // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
-
-                // updateLine(chart, idx, event.offsetX, event.offsetY, false);
-              },
+              ondrag: restrictDrag,
             },
           ],
         },
@@ -322,58 +269,7 @@
               },
               style: boundLineStyle,
               draggable: "vertical",
-              // ondragstart: function (event){
-              //   splitLine(chart, event.offsetX, event.offsetY);
-              // },
-              // onmousedown:function (event){
-
-              //   // addNewLine(chart, event.offsetX, event.offsetY);
-              // },
-              ondragstart: function (event) {
-                console.log(getLineComponent(chart, "oldBoundLine").y);
-                chart.setOption({
-                  graphic: {
-                    id: "oldBoundLine",
-                    lastY: event.offsetY,
-                    y: event.offsetY,
-                    shape: {
-                      points: [
-                        [0, 0],
-                        [xAxisRect.width, 0],
-                      ],
-                    },
-                  },
-                });
-                console.log(getLineComponent(chart, "oldBoundLine").y);
-              },
-              ondrag: function (event: echarts.ElementEvent) {
-                // Convert drag Y pixel value to Y real value and update the value to the aspValues (updates input field value also)
-
-                restrictDrag(event);
-                // let test = getLineComponent(chart, "oldAspLine");
-                // restrictDrag(event)
-
-                // TODO: what is the type of this? It's not CustomRenderItemParams. this.x and .y are used in documentation so should be ok to use
-
-                // updateLine(chart, idx, event.offsetX, event.offsetY, false);
-              },
-              // ondragend: function (event: echarts.ElementEvent) {
-              //   // updateLineShape(chart, event.offsetX, event.offsetY);
-              //   //   let lastY = event.offsetY;
-              //   //   chart.setOption({
-              //   //     graphic: {
-              //   //       id: "oldBoundLine",
-              //   //       lastY: lastY,
-              //   //       y: 0,
-              //   //       shape: {
-              //   //         points: [
-              //   //           [0, lastY],
-              //   //           [xAxisRect.width, lastY],
-              //   //         ],
-              //   //       },
-              //   //     },
-              //   //   });
-              // },
+              ondrag: restrictDrag,
             },
             {
               id: "newBoundLine",
@@ -389,42 +285,28 @@
                 ],
               },
               style: boundLineStyle,
-              /* style: {
-            stroke: "red",
-            lineWidth: 6,
-          }, */
               draggable: "vertical",
-              ondrag: function (event: echarts.ElementEvent) {
-                // TODO: Use applyforboth, use as function the below code?
-                // make below code named f.e. checkBounds or restrictBounds
-                //
-                /* console.log(getLineComponent(chart, "newAspLine").y);
-                if (
-                  event.offsetY > getLineComponent(chart, "newAspLine").lastY &&
-                  event.offsetY > 0 &&
-                  event.offsetY < 100
-                ) {
-                  console.log("yes");
+              ondrag: restrictDrag,
+            },
 
-                  lastPosition = event.offsetY;
-                  chart.setOption({
-                    graphic: {
-                      id: "newBoundLine",
-                      lastY: lastPosition,
-                      y: lastPosition,
-                    },
-                  });
-                } else {
-                  chart.setOption({
-                    graphic: {
-                      id: "newBoundLine",
-                      lastY: lastPosition,
-                      y: lastPosition,
-                    },
-                  });
-                } */
-
-                restrictDrag(event);
+            // The vertical line that shows the current step
+            {
+              id: "verticalLine",
+              type: "polyline",
+              z: 4,
+              x: chart.convertToPixel({ seriesIndex: 0 }, [
+                currentIterationIndex,
+                0,
+              ])[0],
+              shape: {
+                points: [
+                  [0, 0],
+                  [0, xAxisRect.height],
+                ],
+              },
+              style: {
+                stroke: "black",
+                lineWidth: 3,
               },
             },
           ],
@@ -439,10 +321,9 @@
     let compareLineY;
     let dragIsValid;
 
-    let lineType = event.target?.parent?.id;
+    let lineType = event.target.parent.id; // id type is number, but here it is used as a string
 
     if (lineType == "aspLine") {
-      // Update the selected value prop
       lineToCompare = getLineComponent(chart, "newBoundLine");
       // If the new part of the bound line is still invisible, use the y value of the old line
       compareLineY = lineToCompare.invisible
@@ -457,6 +338,7 @@
         : lineToCompare.y;
       dragIsValid = event.offsetY > compareLineY;
     }
+    // Check if drag is valid comparet to the other line and if it is inside the chart bounds
     if (dragIsValid && event.offsetY > 0 && event.offsetY < chart.getHeight()) {
       lastPosition = event.offsetY;
       if (lineType == "aspLine") {
@@ -479,6 +361,7 @@
       },
     });
   }
+
   onMount(() => {
     chart = echarts.init(chartDiv);
     addNautilusBar();
@@ -502,20 +385,17 @@
   }
 
   /**
-   * Updates the shape of the aspiration line so that the line before current
-   * iteration shows the history of the aspiration line.
-   *
-   * @param chart The chart where the aspiration line is.
+   * Updates the shape of the aspiration and bound lines so that the parts of
+   * the lines before current iteration shows as the history of the line.
    */
   function splitLine() {
     let oldLineComponent;
     let oldLinePoints;
-    // let verticalLineComponent;
     // Dont resize on the first iteration
     if (currentIterationIndex == 0) {
       return;
     }
-
+    // Apply the logic for both lines
     applyForMultipleLines((wholeNameOld, wholeNameNew) => {
       let verticalLineComponent = getLineComponent(chart, "verticalLine");
       // Get the components of the aspiration line and the vertical line
@@ -566,11 +446,7 @@
     });
   }
 
-  /**
-   * Adds the draggable part of the line.
-   *
-   * @param chart The chart where the line is.
-   */
+  /** Adds the draggable part of the line. */
   function addNewLine() {
     applyForMultipleLines((wholeNameOld, wholeNameNew) => {
       let verticalLineComponent = getLineComponent(chart, "verticalLine");
@@ -610,7 +486,6 @@
   function getLineComponent(chart: echarts.EChartsType, lineId: string) {
     let graphicComponent = chart.getOption()
       .graphic as echarts.GraphicComponentOption;
-
     // Get the component
     // Type check
     if (graphicComponent instanceof Array && graphicComponent.length > 0) {
@@ -619,7 +494,8 @@
       );
     }
   }
-  // TODO: Divide this to 2 functions, the other could be applyForSingleLine. Then prop onlylinename could be deleted
+
+  // TODO: Divide this to 2 functions, the other could be applyForSingleLine. Then the parameter onlylinename could be deleted
   function applyForMultipleLines(
     funToApply: (nameOld: string, nameNew: string) => void,
     onlyLinename?: string
@@ -639,20 +515,7 @@
 <!-- Button for simulating iterating -->
 <button
   on:click={function () {
-    if (currentIterationIndex < iterations) {
-      currentIterationIndex = currentIterationIndex + 1;
-
-      // chart.resize({width: "200", height: "200"});
-      updateData();
-      updateStepLine();
-      if (currentIterationIndex > 0) {
-        splitLine();
-        addNewLine();
-      }
-      chart.setOption({});
-    }
-
-    // console.log(currentIterationIndex);
+    currentIterationIndex += 1;
   }}>Next Iteration</button
 >
 <p>{currentIterationIndex}</p>
