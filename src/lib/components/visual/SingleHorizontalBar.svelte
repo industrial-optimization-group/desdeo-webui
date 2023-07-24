@@ -13,6 +13,13 @@
     @events
       updateSelected - Emitted when the selected value is updated. 
 -->
+<!-- 
+  TODO: Default values for selectedValue and previousValue. Selected value should be possible to select before the start of the solution process
+    - Default values should be unkwown and when unknown dont draw anything
+
+  TODO: Implement minimize/maximize coloring
+  TODO: Make the component more (svelte) reactive
+ -->
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
@@ -22,15 +29,40 @@
   export let lowerBound: number;
   export let higherBound: number;
   export let solutionValue: number;
-  export let selectedValue = solutionValue;
-  export let previousValue = 0;
+  export let selectedValue: number;
+  export let previousValue: number;
   // export let isMin = true;
   export let colorPaletteIndex = 0;
   // export let divId: string;
   export let inputs = false;
-  export function updateSelected() {
-    updateLine();
+
+  $: console.log(selectedValue);
+  $: updateAspirationLine(selectedValue);
+  $: updatePreviousLine(previousValue);
+
+  function updatePreviousLine(newValue: number) {
+    if (!chart) {
+      return;
+    }
+    updateLineOption("prevLine", newValue);
+    previousValue = newValue;
   }
+
+  function updateLineOption(lineId: string, newValue: number) {
+    let newOption = {
+      graphic: [
+        {
+          id: lineId,
+          invisible: false,
+          x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+        },
+      ],
+    };
+    chart.setOption(newOption);
+  }
+  // export function updateSelected() {
+  //   updateLine();
+  // }
   // $: selectedValue
 
   // const errColor = "red";
@@ -163,6 +195,7 @@
           type: "rect",
           x: chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0],
           y: gridRect.y,
+          invisible: selectedValue == null ? true : false,
           z: 100,
           transition: "all",
           shape: {
@@ -176,8 +209,9 @@
 
         // Add a line for previous preference
         {
-          id: "prev_line",
+          id: "prevLine",
           type: "rect",
+          invisible: previousValue == null ? true : false,
           x: chart.convertToPixel({ seriesIndex: 0 }, [previousValue, 0])[0],
           y: gridRect.y,
           z: 5,
@@ -217,7 +251,6 @@
               },
               onclick: () => {
                 selectedValue = solutionValue;
-                updateLine();
               },
             },
           ],
@@ -271,7 +304,6 @@
             } else if (targetId === "right") {
               selectedValue = higherBound;
             }
-            updateLine();
           },
         },
         // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
@@ -300,71 +332,21 @@
       const targetParentName: string = params.target.parent.name;
       // Only update the line if click has not happened on the interactive buttons
       if (targetParentName !== "interactiveButtons") {
-        updateLine(params);
-        return;
-      }
-    });
-  }
-
-  /**
-   * Updates the aspiration (preference) line on the graph.
-   *
-   * @param params The parameters of the click event.
-   * @param chart The chart object.
-   * @param idx The index of the input field value. TODO: make default chart
-   *   type
-   */
-  function updateLine(params?: echarts.ElementEvent | Event) {
-    let newOption = {};
-    let chartDiv: HTMLDivElement | HTMLCanvasElement;
-    // let chart: echarts.ECharts;
-    if (params != null) {
-      if (params instanceof Event) {
-        const target = params.target as HTMLInputElement | null;
-        const parentElem = target?.parentElement;
-        if (!target || !parentElem) {
-          return;
-        }
-        chartDiv = target.parentElement.nextElementSibling as HTMLDivElement;
-        chart = echarts.getInstanceByDom(chartDiv);
-        newOption = {
-          graphic: {
-            id: "rec",
-            x: chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0],
-          },
-        };
-      } else {
-        chartDiv = (params.event.currentTarget as HTMLDivElement)
-          .parentElement as HTMLDivElement;
-        chart = echarts.getInstanceByDom(chartDiv);
         selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
           params.offsetX,
           params.offsetY,
         ])[0];
-        newOption = {
-          graphic: [
-            {
-              id: "rec",
-              x: chart.convertToPixel({ seriesIndex: 0 }, [
-                selectedValue,
-                0,
-              ])[0],
-            },
-          ],
-        };
       }
-    } else {
-      newOption = {
-        graphic: [
-          {
-            id: "rec",
-            x: chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0],
-          },
-        ],
-      };
-    }
+    });
+  }
 
-    chart.setOption(newOption);
+  /** Updates the aspiration (preference) line on the graph. */
+  function updateAspirationLine(newValue: number) {
+    if (!chart) {
+      return;
+    }
+    updateLineOption("rec", newValue);
+    selectedValue = newValue;
   }
 </script>
 
@@ -373,18 +355,13 @@
   <div style="display: flex; margin-top:0.75em">
     <!-- Div for inputs -->
     <div>
-      <input
-        type="number"
-        bind:value={selectedValue}
-        on:change={() => updateSelected()}
-      />
+      <input type="number" bind:value={selectedValue} />
       <label for="prev">Previous preference: </label>
       <input
         name="prev"
         type="number"
         readonly
         bind:value={previousValue}
-        on:change={() => updateSelected()}
         style="border: 2; box-shadow: none;background-color: rgba(232 234 241);"
       />
     </div>

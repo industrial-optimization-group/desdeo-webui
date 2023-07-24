@@ -3,9 +3,9 @@
   // import { onMount } from "svelte";
 
   $: selectedValue = 2;
-  let bar: SingleHorizontalBar;
+  // let bar: SingleHorizontalBar;
   $: selectedValue2 = 2;
-  let bar2: SingleHorizontalBar;
+  // let bar2: SingleHorizontalBar;
   // let chartDiv: HTMLDivElement
 </script>
 
@@ -15,17 +15,16 @@
   <div id="hori" style="width: 70vh; height: 2vh; min-height: 100px;">
     <!-- Note reference to the component itself -->
     <SingleHorizontalBar
-      bind:this={bar}
       higherBound={5}
       lowerBound={0}
       solutionValue={3}
+      previousValue={2.21398}
       inputs={true}
     />
   </div>
   <div id="hori2" style="width: 70vh; height: 2vh; min-height: 100px;">
     <!-- Note reference to the component itself -->
     <SingleHorizontalBar
-      bind:this={bar}
       higherBound={10}
       lowerBound={-10}
       solutionValue={3}
@@ -35,35 +34,15 @@
   <!-- Horizontal bars without default inputs.   -->
   <!-- Note the calling the updateSelected method -->
   <div style="margin-top: 2em;">
-    <input
-      type="number"
-      bind:value={selectedValue}
-      on:change={() => bar.updateSelected()}
-    />
+    <input type="number" bind:value={selectedValue} />
     <div id="hori3" style="width: 70vh; height: 2vh; min-height: 100px;">
-      <SingleHorizontalBar
-        bind:this={bar}
-        higherBound={5}
-        lowerBound={0}
-        solutionValue={3}
-        bind:selectedValue
-      />
+      <SingleHorizontalBar higherBound={5} lowerBound={0} solutionValue={3} />
     </div>
   </div>
   <div style="margin-top: 2em;">
-    <input
-      type="number"
-      bind:value={selectedValue2}
-      on:change={() => bar2.updateSelected()}
-    />
+    <input type="number" bind:value={selectedValue2} />
     <div id="hori3" style="width: 70vh; height: 2vh; min-height: 100px;">
-      <SingleHorizontalBar
-        bind:this={bar2}
-        higherBound={5}
-        lowerBound={0}
-        solutionValue={3}
-        bind:selectedValue={selectedValue2}
-      />
+      <SingleHorizontalBar higherBound={5} lowerBound={0} solutionValue={3} />
     </div>
   </div>
 </div>
