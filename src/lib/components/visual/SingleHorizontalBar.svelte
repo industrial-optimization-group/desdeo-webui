@@ -24,15 +24,14 @@
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   // import type { SolutionData } from "./types";
-  import { colorPalette } from "./stores";
 
   export let lowerBound: number;
   export let higherBound: number;
   export let solutionValue: number | undefined = undefined;
   export let selectedValue: number | undefined = undefined;
   export let previousValue: number | undefined = undefined;
+  export let barColor = "#a6b1e1";
   // export let isMin = true;
-  export let colorPaletteIndex = 0;
   // export let divId: string;
   export let inputs = false;
 
@@ -116,10 +115,10 @@
       series: [
         {
           stack: "negative",
-          color: colorPalette[colorPaletteIndex],
+          color: barColor,
           showBackground: true,
           backgroundStyle: {
-            color: colorPalette[colorPaletteIndex],
+            color: barColor,
             opacity: 0.2,
           },
           type: "bar",
@@ -137,10 +136,10 @@
           {
             id: "lower",
             stack: "negative",
-            color: colorPalette[colorPaletteIndex],
+            color: barColor,
             showBackground: true,
             backgroundStyle: {
-              color: colorPalette[colorPaletteIndex],
+              color: barColor,
               opacity: 0.2,
             },
             type: "bar",
