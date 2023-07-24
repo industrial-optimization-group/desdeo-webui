@@ -415,9 +415,7 @@
         [0, 0],
         [0, 0],
       ];
-      if (currentIterationIndex == 1) {
-        oldLinePoints[1][0] = verticalLineComponent.x;
-      }
+
       let newPoints = oldLinePoints;
       if (newAspLinePoints[0][0] > 0) {
         newAspLinePoints[1][0] = verticalLineComponent.x;
@@ -428,6 +426,9 @@
         newPoints = oldLinePoints.concat(betweenLine);
       }
       let newY = oldLineComponent.y;
+      if (newPoints.length == 2) {
+        newPoints[1][0] = verticalLineComponent.x;
+      }
       if (newPoints.length <= 2) {
         newY = lastY;
       }
