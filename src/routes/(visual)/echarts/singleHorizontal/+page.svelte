@@ -1,7 +1,8 @@
 <script lang="ts">
   import SingleHorizontalBar from "$lib/components/visual/SingleHorizontalBar.svelte";
   // import { onMount } from "svelte";
-
+  let solutionValue: number;
+  $: solutionValue;
   $: selectedValue = 2;
   // let bar: SingleHorizontalBar;
   // $: selectedValue2 = 2;
@@ -34,11 +35,12 @@
   <!-- Horizontal bars without default inputs.   -->
   <div style="margin-top: 2em;">
     <input type="number" bind:value={selectedValue} />
+    <input type="number" bind:value={solutionValue} />
     <div id="hori3" style="width: 70vh; height: 2vh; min-height: 100px;">
       <SingleHorizontalBar
         higherBound={5}
         lowerBound={0}
-        solutionValue={3}
+        bind:solutionValue
         bind:selectedValue
       />
     </div>

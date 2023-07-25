@@ -1,6 +1,5 @@
 <!--
   @component
-    @name SingleHorizontalBar
     @description Renders a single horizontal bar chart using the ECharts library.
     @props
       @param {number} lowerBound - The lower bound of the chart.
@@ -10,15 +9,11 @@
       @param {number} previousValue - The previous value to display on the chart.
       @param {number} colorPaletteIndex - The index of the color palette to use for the chart.
       @param {boolean} inputs - Whether to display input fields for the chart.
-    @events
-      updateSelected - Emitted when the selected value is updated. 
+ 
 -->
 <!-- 
-  TODO: Default values for selectedValue and previousValue. Selected value should be possible to select before the start of the solution process
-    - Default values should be unkwown and when unknown dont draw anything
-
   TODO: Implement minimize/maximize coloring
-  TODO: Make the component more (svelte) reactive
+  TODO: Implement restricting line drawing to the chart area
  -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -42,6 +37,9 @@
   // $: updateAspirationLine(selectedValue);
   $: if (previousValue != null) {
     updatePreviousLine(previousValue);
+  }
+  $: if (solutionValue != null) {
+    updateSolutionBar(solutionValue);
   }
 
   const arrowSize = 15;
@@ -130,6 +128,7 @@
         },
       ],
     });
+    // Logic when the bar starts from a negative value (echarts does not support this by default)
     if (lowerBound < 0) {
       chart.setOption({
         series: [
@@ -154,7 +153,7 @@
       });
     }
 
-    // TODO: How to get the gridRect without using the private methods?
+    // TODO: How to get the gridRect without using the private method?
     const gridModel = chart.getModel().getComponent("grid");
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
@@ -207,7 +206,7 @@
             {
               id: "arrow",
               type: "polygon",
-              // group: "test",
+              // If the solution value is not defined, the arrow is invisible
               x: solutionValue
                 ? chart.convertToPixel({ seriesIndex: 0 }, [
                     solutionValue,
@@ -358,6 +357,24 @@
       ],
     };
     chart.setOption(newOption);
+  }
+
+  /**
+   * Updates the solution bar (the colored bar) to the chart according to the
+   * newValue given
+   *
+   * @param newValue
+   */
+  function updateSolutionBar(newValue: number) {
+    if (chart) {
+      chart.setOption({
+        series: [
+          {
+            data: [[newValue]],
+          },
+        ],
+      });
+    }
   }
 </script>
 
