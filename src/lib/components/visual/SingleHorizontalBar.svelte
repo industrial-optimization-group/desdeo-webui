@@ -374,6 +374,17 @@
           },
         ],
       });
+      // Update the reset arrow position and make it visible
+      chart.setOption({
+        graphic: [
+          {
+            id: "arrow",
+            invisible: false,
+            transition: "all",
+            x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+          },
+        ],
+      });
     }
   }
 </script>
