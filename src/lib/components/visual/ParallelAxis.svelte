@@ -10,19 +10,22 @@
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   import { createChart, updateChart } from "./stores";
-  import type { SolutionData } from "./types";
+  // import type { SolutionData } from "./types";
   import type { EChartOption } from "echarts";
 
   export let id: string;
   export let title: string;
-  export let data: SolutionData;
+  // export let data: SolutionData;
   export let values: number[][];
   export let names: string[] = [];
+
+  let data = { names: names, values: values };
 
   let option;
   $: if (values) {
     option = createOption(names, values);
     updateChart(id, option);
+    data = { names: names, values: values };
   }
 
   const selectedLineStyle = {
@@ -46,9 +49,12 @@
 
   function rearrangeNames(index1: number, index2: number) {
     const newNames = [...data.names];
-    const temp = newNames[index1];
-    newNames[index1] = newNames[index2];
-    newNames[index2] = temp;
+    if (newNames.length > 0) {
+      const temp = newNames[index1];
+      newNames[index1] = newNames[index2];
+      newNames[index2] = temp;
+      return newNames;
+    }
     return newNames;
   }
 
