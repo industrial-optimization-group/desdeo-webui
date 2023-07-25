@@ -16,6 +16,14 @@
   export let id: string;
   export let title: string;
   export let data: SolutionData;
+  export let values: number[][];
+  export let names: string[] = [];
+
+  let option;
+  $: if (values) {
+    option = createOption(names, values);
+    updateChart(id, option);
+  }
 
   const selectedLineStyle = {
     width: 7,
@@ -65,16 +73,30 @@
 
     //  Creates the names for the axes as a parallelAxis component.
     const nameAxis: object[] = [];
-
-    for (let i = 0; i < names.length; i++) {
-      let nameObj = {
-        dim: i,
-        name: names[i],
-      };
-      nameAxis.push(nameObj);
+    if (names.length > 0) {
+      for (let i = 0; i < names.length; i++) {
+        let nameObj = {
+          dim: i,
+          name: names[i],
+        };
+        nameAxis.push(nameObj);
+      }
+    } else {
+      for (let i = 0; i < values[0].length; i++) {
+        let nameObj = {
+          dim: i,
+          name: "Objective " + (i + 1),
+        };
+        nameAxis.push(nameObj);
+      }
     }
 
-    let chart = echarts.getInstanceByDom(document.getElementById(id));
+    let chart: echarts.ECharts | undefined;
+    if (typeof document !== "undefined") {
+      chart = echarts.getInstanceByDom(document.getElementById(id));
+    } else {
+      chart = undefined;
+    }
 
     const graphicData = nameAxis.map((_, index) => ({
       type: "group",
@@ -177,8 +199,8 @@
     };
   }
   onMount(() => {
-    createChart(id, createOption(data.names, data.values));
-    updateChart(id, createOption(data.names, data.values));
+    createChart(id, option);
+    // updateChart(id, createOption(data.names, data.values));
   });
 </script>
 

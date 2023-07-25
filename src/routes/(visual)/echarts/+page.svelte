@@ -41,6 +41,7 @@
       [1, 2, 3],
       [4, 5, 6],
       [7, 8, 9],
+      [7, 2, 9],
     ],
     value_ranges: [
       [0, 10],
@@ -67,10 +68,22 @@
     ],
     minimize: [true, false, true],
   };
+  let theValues = exampleData.values;
+  $: theValues;
 </script>
 
 <div class="container">
   <div>
+    <button
+      on:click={() => {
+        theValues = [
+          [1, 1, 1],
+          [4, 5, 6],
+          [7, 8, 9],
+        ];
+        console.log(theValues);
+      }}>Change values</button
+    >
     <p>
       Current solutions:
       {#each $selectedSolutions as solution}
@@ -80,6 +93,7 @@
     <BasicTable selectedSolutions={$selectedSolutions} />
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
     <ParallelAxis
+      bind:values={theValues}
       id="parallelAxis"
       title="Parallel Axis chart"
       data={exampleData}
