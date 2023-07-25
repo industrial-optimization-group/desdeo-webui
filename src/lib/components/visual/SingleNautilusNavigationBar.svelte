@@ -32,7 +32,7 @@
   export let higherBound: number;
   export let iterations: number;
   export let currentIterationIndex = 0;
-  export let selectedValue = higherBound + lowerBound / 2;
+  export let selectedValue: number | undefined = undefined;
   export let selectedBoundValue = lowerBound;
   export let uncertaintyBounds: number[][];
   // export let colorPaletteIndex =  $: selectedAspY = 0;
@@ -41,27 +41,13 @@
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
   let lastPosition: number;
-  $: console.log(selectedValue);
-  $: console.log("bound value: " + selectedBoundValue);
+  // $: console.log(selectedValue);
+  // $: console.log("bound value: " + selectedBoundValue);
+  // $: updateLine(selectedValue)
+  $: updateLine("aspiration", selectedValue);
+  $: updateLine("bound", selectedBoundValue);
   $: currentIterationIndex;
   $: updateOnNewStep(currentIterationIndex);
-
-  function updateOnNewStep(idx: number) {
-    // If chart is not initialized, do nothing
-    if (!chart) {
-      return;
-    }
-    if (idx < iterations) {
-      idx = idx + 1;
-      updateData();
-      updateStepLine();
-      if (idx > 0) {
-        splitLine();
-        addNewLine();
-      }
-      // chart.setOption({});
-    }
-  }
 
   const aspirationLineStyle = {
     stroke: "blue",
@@ -75,8 +61,14 @@
   };
 
   let objShape: number[][] = [];
+
+  onMount(() => {
+    updateData();
+    chart = echarts.init(chartDiv);
+    addNautilusBar();
+  });
+
   /** Updates the data that is used to draw the feasible region. */
-  updateData();
   function updateData() {
     for (let index = 0; index <= currentIterationIndex; index++) {
       let iterationBounds = uncertaintyBounds[index];
@@ -148,7 +140,7 @@
       // Get the max and min values from the current objective uncertainties and set them as the max and min values for the y-axis.
       yAxis: {
         // boundaryGap:["20%","20%"],
-        max: "dataMax",
+        max: higherBound,
         min: "dataMin",
         // max: Math.ceil(upperBound) ,
         // min: Math.floor(
@@ -217,7 +209,12 @@
               id: "oldAspLine",
               type: "polyline",
               z: 3,
-              y: xAxisRect.height / 2,
+              y: selectedValue
+                ? chart.convertToPixel({ seriesIndex: 0 }, [
+                    selectedValue,
+                    selectedValue,
+                  ])[1]
+                : xAxisRect.height / 2,
               lastY: xAxisRect.height / 2,
               shape: {
                 points: [
@@ -362,10 +359,42 @@
     });
   }
 
-  onMount(() => {
-    chart = echarts.init(chartDiv);
-    addNautilusBar();
-  });
+  function updateLine(type: string, newValue: number | undefined) {
+    if (!chart || newValue == null) {
+      return;
+    }
+    let newY = chart.convertToPixel({ seriesIndex: 0 }, [
+      newValue,
+      newValue,
+    ])[1];
+    let idNew = type === "aspiration" ? "newAspLine" : "newBoundLine";
+    let idOld = type === "aspiration" ? "oldAspLine" : "oldBoundLine";
+    let invisible = getLineComponent(chart, "newAspLine").invisible;
+
+    chart.setOption({
+      graphic: {
+        id: invisible ? idOld : idNew,
+        lastY: newY,
+        y: newY,
+      },
+    });
+  }
+
+  function updateOnNewStep(idx: number) {
+    // If chart is not initialized, do nothing
+    if (!chart) {
+      return;
+    }
+    if (idx < iterations) {
+      idx = idx + 1;
+      updateData();
+      updateStepLine();
+      if (idx > 0) {
+        splitLine();
+        addNewLine();
+      }
+    }
+  }
 
   //TODO: step line dragging
   function updateStepLine() {

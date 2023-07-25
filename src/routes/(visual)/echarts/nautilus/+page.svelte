@@ -1,6 +1,6 @@
 <script lang="ts">
   // import Example from "$lib/components/visual/Example.svelte";
-  import NautilusNavigationBar from "$lib/components/visual/NautilusNavigationBar.svelte";
+  // import NautilusNavigationBar from "$lib/components/visual/NautilusNavigationBar.svelte";
   import SingleNautilusNavigationBar from "$lib/components/visual/SingleNautilusNavigationBar.svelte";
   // import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
@@ -80,8 +80,13 @@
     ],
     minimize: [true, false, true],
   };
+  let selectedValue: number;
+  $: selectedValue;
 </script>
 
+<div>
+  <input type="number" bind:value={selectedValue} />
+</div>
 <!-- Single Nautilus bars -->
 <div id="hori" style="width: 70vh; height: 2vh; min-height: 100px;">
   <SingleNautilusNavigationBar
@@ -89,14 +94,15 @@
     lowerBound={0}
     iterations={10}
     currentIterationIndex={0}
+    bind:selectedValue
     uncertaintyBounds={exampleData.uncertainty[0]}
   />
 </div>
-<div class="container">
+<!-- <div class="container">
   <div>
     <NautilusNavigationBar id="nautilus" data={exampleData} />
   </div>
-</div>
+</div> -->
 <!-- <div>
   <Example></Example>
 </div> -->
