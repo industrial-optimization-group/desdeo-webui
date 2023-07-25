@@ -94,6 +94,7 @@
           name: "Objective " + (i + 1),
         };
         nameAxis.push(nameObj);
+        data.names.push("Objective " + (i + 1));
       }
     }
 

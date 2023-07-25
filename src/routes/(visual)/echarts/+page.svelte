@@ -96,7 +96,6 @@
       bind:values={theValues}
       id="parallelAxis"
       title="Parallel Axis chart"
-      data={exampleData}
     />
   </div>
   <div>
