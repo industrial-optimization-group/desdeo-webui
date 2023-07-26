@@ -18,6 +18,7 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
+  import { aspirationLineStyle } from "./stores";
   // import type { SolutionData } from "./types";
 
   export let lowerBound: number;
@@ -168,14 +169,18 @@
           x: chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0],
           y: gridRect.y,
           invisible: selectedValue == null ? true : false,
-          z: 100,
+          z: 500,
           transition: "all",
           shape: {
             height: gridRect.height,
           },
-          style: {
-            stroke: "red",
-            lineWidth: 3,
+          style: aspirationLineStyle,
+          draggable: "horizontal",
+          ondrag: function (params) {
+            selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+              params.offsetX,
+              params.offsetY,
+            ])[0];
           },
         },
 
@@ -192,7 +197,7 @@
             height: gridRect.height,
           },
           style: {
-            stroke: "blue",
+            stroke: "violet",
             lineDash: [4],
             lineWidth: 3,
           },
@@ -300,19 +305,19 @@
     };
     chart.setOption(graphicOptions);
     // Add event listener which updates the aspiration line value.
-    chart.getZr().on("click", function (params) {
-      if (params.target == null) {
-        return;
-      }
-      const targetParentName: string = params.target.parent.name;
-      // Only update the line if click has not happened on the interactive buttons
-      if (targetParentName !== "interactiveButtons") {
-        selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-          params.offsetX,
-          params.offsetY,
-        ])[0];
-      }
-    });
+    // chart.getZr().on("click", function (params) {
+    //   if (params.target == null) {
+    //     return;
+    //   }
+    //   const targetParentName: string = params.target.parent.name;
+    //   // Only update the line if click has not happened on the interactive buttons
+    //   if (targetParentName !== "interactiveButtons") {
+    //     selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+    //       params.offsetX,
+    //       params.offsetY,
+    //     ])[0];
+    //   }
+    // });
   }
 
   /**

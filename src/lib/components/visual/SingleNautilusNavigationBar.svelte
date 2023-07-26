@@ -24,6 +24,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as echarts from "echarts";
+  import { aspirationLineStyle, boundLineStyle } from "./stores";
 
   // The properties that can be passed to the component.
   // import { colorPalette } from "./stores";
@@ -48,17 +49,6 @@
   $: updateLine("bound", selectedBoundValue);
   $: currentIterationIndex;
   $: updateOnNewStep(currentIterationIndex);
-
-  const aspirationLineStyle = {
-    stroke: "blue",
-    lineDash: [4],
-    lineWidth: 3,
-  };
-  const boundLineStyle = {
-    stroke: "red",
-    // lineDash: [4],
-    lineWidth: 3,
-  };
 
   let objShape: number[][] = [];
 

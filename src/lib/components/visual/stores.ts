@@ -21,6 +21,16 @@ export const colorPalette = [
   "#ffb6b9",
 ];
 
+export const aspirationLineStyle = {
+  stroke: "blue",
+  lineDash: [4],
+  lineWidth: 3,
+};
+export const boundLineStyle = {
+  stroke: "red",
+  lineWidth: 3,
+};
+
 /**
  * Creates a chart and adds it to the chartStore.
  *
