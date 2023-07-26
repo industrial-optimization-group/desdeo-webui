@@ -211,4 +211,4 @@
   });
 </script>
 
-<div {id} style="width: 100vh; height: 40vh;" />
+<div {id} style="height:100%; width:100%" />

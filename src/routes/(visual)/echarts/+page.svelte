@@ -92,11 +92,13 @@
     </p>
     <BasicTable selectedSolutions={$selectedSolutions} />
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
-    <ParallelAxis
-      bind:values={theValues}
-      id="parallelAxis"
-      title="Parallel Axis chart"
-    />
+    <div style="height:40vh; width:100vh">
+      <ParallelAxis
+        bind:values={theValues}
+        id="parallelAxis"
+        title="Parallel Axis chart"
+      />
+    </div>
   </div>
   <div>
     <BarChart id="barChart" title="Bar chart" data={exampleData} />

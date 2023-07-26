@@ -13,7 +13,7 @@
 <!-- Horizontal bars with inputs -->
 <div class="container">
   <!-- The size of this div willbe the size of the chart -->
-  <div id="hori" style="width: 70vh; height: 2vh; min-height: 100px;">
+  <div id="hori" style="width: 100vh; height: 2vh; min-height: 100px;">
     <!-- Note reference to the component itself -->
     <SingleHorizontalBar
       higherBound={5}
@@ -23,7 +23,7 @@
       inputs={true}
     />
   </div>
-  <div id="hori2" style="width: 70vh; height: 2vh; min-height: 100px;">
+  <div id="hori2" style="width: 100vh; height: 2vh; min-height: 100px;">
     <!-- Note reference to the component itself -->
     <SingleHorizontalBar
       higherBound={10}
