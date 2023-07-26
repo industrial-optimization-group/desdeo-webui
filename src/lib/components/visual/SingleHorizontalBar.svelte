@@ -177,10 +177,35 @@
           style: aspirationLineStyle,
           draggable: "horizontal",
           ondrag: function (params) {
-            selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-              params.offsetX,
-              params.offsetY,
-            ])[0];
+            let comp = getLineComponent(chart, "valueArea");
+            let left = comp.shape.x;
+            let right = comp.shape.x + comp.shape.width;
+            let lastPosition;
+            if (params.offsetX < left) {
+              lastPosition = left;
+              selectedValue = lowerBound;
+            } else if (params.offsetX > right) {
+              lastPosition = right;
+              selectedValue = higherBound;
+            }
+
+            if (params.offsetX > left && params.offsetX < right) {
+              selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+                params.offsetX,
+                params.offsetY,
+              ])[0];
+              lastPosition = params.offsetX;
+            } else {
+              chart.setOption({
+                graphic: [
+                  {
+                    id: "rec",
+                    x: lastPosition,
+                    transition: false,
+                  },
+                ],
+              });
+            }
           },
         },
 
@@ -288,6 +313,7 @@
         },
         // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
         {
+          id: "valueArea",
           type: "rect",
           shape: {
             x: gridRect.x,
@@ -390,6 +416,24 @@
           },
         ],
       });
+    }
+  }
+
+  /**
+   * Gets the component of the wanted part of the aspiration or bound line.
+   *
+   * @param chart The chart where the line is.
+   * @param lineId The id of the wanted part of the line.
+   */
+  function getLineComponent(chart: echarts.EChartsType, lineId: string) {
+    let graphicComponent = chart.getOption()
+      .graphic as echarts.GraphicComponentOption;
+    // Get the component
+    // Type check
+    if (graphicComponent instanceof Array && graphicComponent.length > 0) {
+      return graphicComponent[0].elements.find(
+        (property: echarts.GraphicComponentOption) => property.id === lineId
+      );
     }
   }
 </script>
