@@ -9,7 +9,7 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
-  import { createChart, updateChart } from "./stores";
+  import { colorPalette, createChart, updateChart } from "./stores";
   // import type { SolutionData } from "./types";
   import type { EChartOption } from "echarts";
 
@@ -21,7 +21,7 @@
 
   let data = { names: names, values: values };
 
-  let option;
+  let option: echarts.EChartOption;
   $: if (values) {
     option = createOption(names, values);
     updateChart(id, option);
@@ -173,6 +173,8 @@
 
     // Create the option object for the whole chart.
     return {
+      color: colorPalette,
+      colorBy: "data",
       title: {
         text: title,
       },
