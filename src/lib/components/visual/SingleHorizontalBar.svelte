@@ -167,7 +167,6 @@
           id: "aspirationGroup",
           type: "group",
           x: chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0],
-          invisible: selectedValue == null ? true : false,
           // z: 1000,
           draggable: "horizontal",
           children: [
@@ -177,6 +176,7 @@
               id: "dragImage",
               z: 501,
               left: -15,
+              invisible: selectedValue == null ? true : false,
               style: {
                 image: "../src/lib/assets/leftRight.png",
                 width: 30,
@@ -190,6 +190,7 @@
               type: "circle",
               id: "dragCircle",
               z: 499,
+              invisible: true,
               shape: {
                 cy: gridRect.height / 1.15,
                 r: 10,
@@ -199,7 +200,6 @@
                 // stroke: "black",
                 lineWidth: 2,
               },
-              invisible: true,
             },
             {
               id: "rec",
@@ -209,7 +209,7 @@
               //   0,
               // ])[0],
               y: gridRect.y,
-              // invisible: selectedValue == null ? true : false,
+              invisible: selectedValue == null ? true : false,
               z: 500,
               transition: "all",
               shape: {
@@ -437,8 +437,15 @@
       graphic: [
         {
           id: lineId,
-          invisible: false,
           x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+        },
+        {
+          id: "dragImage",
+          invisible: false,
+        },
+        {
+          id: "rec",
+          invisible: false,
         },
       ],
     };
