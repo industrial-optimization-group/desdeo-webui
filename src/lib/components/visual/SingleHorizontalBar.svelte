@@ -225,19 +225,26 @@
             let left = comp.shape.x;
             let right = comp.shape.x + comp.shape.width;
             let lastPosition;
-            if (params.offsetX < left) {
+            if (this.x < left) {
               lastPosition = left;
               selectedValue = lowerBound;
-            } else if (params.offsetX > right) {
+            } else if (this.x > right) {
               lastPosition = right;
               selectedValue = higherBound;
             }
 
-            if (params.offsetX > left && params.offsetX < right) {
-              selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-                params.offsetX,
-                params.offsetY,
-              ])[0];
+            if (this.x > left && this.x < right) {
+              if (Math.abs(this.x - params.offsetX) > 2) {
+                selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+                  this.x,
+                  this.x,
+                ])[0];
+              } else {
+                selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+                  params.offsetX,
+                  params.offsetY,
+                ])[0];
+              }
               lastPosition = params.offsetX;
             } else {
               chart.setOption({
