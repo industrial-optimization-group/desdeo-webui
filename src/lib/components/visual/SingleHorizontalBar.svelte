@@ -262,19 +262,22 @@
         // Add a line for previous preference
         {
           id: "prevLine",
-          type: "rect",
+          type: "circle",
           invisible: previousValue == null ? true : false,
           x: chart.convertToPixel({ seriesIndex: 0 }, [previousValue, 0])[0],
-          y: gridRect.y,
+
           z: 5,
           transition: "all",
           shape: {
-            height: gridRect.height,
+            cy: chart.getHeight() / 2,
+            r: 5,
           },
           style: {
-            stroke: "violet",
-            lineDash: [4],
-            lineWidth: 3,
+            fill: arrowColor,
+            fillOpacity: 0.6,
+            stroke: arrowColor,
+            // lineDash: [2],
+            lineWidth: 2,
           },
         },
         {
@@ -554,17 +557,19 @@
 
 <!-- By default creates just the horizontal bar. If inputs prop is true adds input and input logic -->
 {#if inputs}
-  <div style=" height:100%; width:100%; display: flex; margin-top:0.75em">
+  <div
+    style=" height:100%; width:100%; display: flex; margin-top:2em; margin-bottom:2em"
+  >
     <!-- Div for inputs -->
-    <div style="max-height:max-content;">
-      <input type="number" bind:value={selectedValue} />
+    <div style="height:100%">
+      <input type="number" bind:value={selectedValue} step="any" />
       <label for="prev">Previous preference: </label>
       <input
         name="prev"
         type="number"
         readonly
         bind:value={previousValue}
-        style="border: 2; box-shadow: none;background-color: rgba(232 234 241);"
+        style=" border: 2; box-shadow: none;background-color: rgba(232 234 241);"
       />
     </div>
     <div style="height:100%; width:60%" bind:this={chartDiv} />

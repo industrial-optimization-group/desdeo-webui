@@ -15,7 +15,7 @@
   <!-- The size of this div willbe the size of the chart -->
   <div
     id="hori"
-    style="width: 100vh; height: 2vh; min-height: 70px; margin: 5em;"
+    style="width: 100vh; height: 2vh; min-height: 70px; margin-top: 2m; margin-bottom: 5em;"
   >
     <SingleHorizontalBar
       higherBound={5}
