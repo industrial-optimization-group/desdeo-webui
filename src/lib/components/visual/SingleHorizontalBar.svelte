@@ -164,18 +164,61 @@
       graphic: [
         // Add aspiration value line
         {
-          id: "rec",
-          type: "rect",
+          id: "aspirationGroup",
+          type: "group",
           x: chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0],
-          y: gridRect.y,
           invisible: selectedValue == null ? true : false,
-          z: 500,
-          transition: "all",
-          shape: {
-            height: gridRect.height,
-          },
-          style: aspirationLineStyle,
+          // z: 1000,
           draggable: "horizontal",
+          children: [
+            // Dragging image
+            {
+              type: "image",
+              id: "dragImage",
+              z: 501,
+              left: -15,
+              style: {
+                image: "../src/lib/assets/leftRight.png",
+                width: 30,
+                y: gridRect.height / 1.5,
+                fill: "blue",
+                stroke: "blue",
+              },
+            },
+            // Dragging circle
+            {
+              type: "circle",
+              id: "dragCircle",
+              z: 499,
+              shape: {
+                cy: gridRect.height / 1.15,
+                r: 10,
+              },
+              style: {
+                fill: "blue",
+                // stroke: "black",
+                lineWidth: 2,
+              },
+              invisible: true,
+            },
+            {
+              id: "rec",
+              type: "rect",
+              // x: chart.convertToPixel({ seriesIndex: 0 }, [
+              //   selectedValue,
+              //   0,
+              // ])[0],
+              y: gridRect.y,
+              // invisible: selectedValue == null ? true : false,
+              z: 500,
+              transition: "all",
+              shape: {
+                height: gridRect.height,
+              },
+              style: aspirationLineStyle,
+              // draggable: "horizontal",
+            },
+          ],
           ondrag: function (params) {
             let comp = getLineComponent(chart, "valueArea");
             let left = comp.shape.x;
@@ -199,7 +242,7 @@
               chart.setOption({
                 graphic: [
                   {
-                    id: "rec",
+                    id: "aspirationGroup",
                     x: lastPosition,
                     transition: false,
                   },
@@ -208,7 +251,6 @@
             }
           },
         },
-
         // Add a line for previous preference
         {
           id: "prevLine",
@@ -367,7 +409,7 @@
    */
   function updateAspirationLine(newValue: number) {
     selectedValue = newValue;
-    updateLinePosition("rec", newValue);
+    updateLinePosition("aspirationGroup", newValue);
   }
 
   /**
@@ -457,7 +499,6 @@
       graphic: [
         {
           id: compID,
-
           onmouseover: () => {
             chart.setOption({
               graphic: [
