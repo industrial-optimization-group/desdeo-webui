@@ -96,8 +96,8 @@
       show: true,
       borderWidth: 1,
       borderColor: "gray",
-      left: arrowSize * 2,
-      right: arrowSize * 2,
+      left: arrowSize * 1.3,
+      right: arrowSize * 1.3,
       top: arrowSize + 2,
       bottom: arrowSize,
     },
@@ -169,6 +169,7 @@
           x: chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0],
           // z: 1000,
           draggable: "horizontal",
+          silent: true,
           children: [
             // Dragging image
             {
@@ -317,40 +318,40 @@
           children: [
             //Left Arrow
             {
-              type: "polygon",
+              type: "polyline",
               id: "left",
-
               shape: {
                 points: [
-                  [-1, arrowSize],
-                  [-1, -arrowSize],
+                  [0, arrowSize],
                   [-arrowSize, 0],
+                  [0, -arrowSize],
                 ],
               },
               style: {
-                fill: arrowColor,
+                fill: "transparent",
                 stroke: arrowColor,
-                lineWidth: 1,
+                lineWidth: 2.5,
               },
               left: 0,
             },
             // Right Arrow
             {
-              type: "polygon",
+              type: "polyline",
               id: "right",
+              scaleX: -1,
               shape: {
                 points: [
-                  [1, arrowSize],
-                  [1, -arrowSize],
-                  [arrowSize, 0],
+                  [0, arrowSize],
+                  [-arrowSize, 0],
+                  [0, -arrowSize],
                 ],
               },
               style: {
-                fill: arrowColor,
+                fill: "transparent",
                 stroke: arrowColor,
-                lineWidth: 1,
+                lineWidth: 2.5,
               },
-              left: chart.getWidth() - arrowSize,
+              right: -chart.getWidth(),
             },
           ],
           // onclick event for the arrows
@@ -437,6 +438,7 @@
       graphic: [
         {
           id: lineId,
+          silent: false,
           x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
         },
         {
@@ -501,7 +503,15 @@
 
   // a function that changes opacity of arrow when mouse is over it
   function addOnMouseEffect(compID) {
-    // getLineComponent(chart, compID);
+    let type = getLineComponent(chart, compID).type;
+    let styleForArrow = {
+      fillOpacity: 0.5,
+    };
+    if (type === "polyline") {
+      styleForArrow = {
+        strokeOpacity: 0.5,
+      };
+    }
     chart.setOption({
       graphic: [
         {
@@ -511,9 +521,7 @@
               graphic: [
                 {
                   id: compID,
-                  style: {
-                    fillOpacity: 0.5,
-                  },
+                  style: styleForArrow,
                 },
               ],
             });
@@ -525,6 +533,7 @@
                   id: compID,
                   style: {
                     fillOpacity: 1,
+                    strokeOpacity: 1,
                   },
                 },
               ],
@@ -538,9 +547,9 @@
 
 <!-- By default creates just the horizontal bar. If inputs prop is true adds input and input logic -->
 {#if inputs}
-  <div style="display: flex; margin-top:0.75em">
+  <div style=" height:100%; width:100%; display: flex; margin-top:0.75em">
     <!-- Div for inputs -->
-    <div>
+    <div style="max-height:max-content;">
       <input type="number" bind:value={selectedValue} />
       <label for="prev">Previous preference: </label>
       <input
@@ -551,7 +560,7 @@
         style="border: 2; box-shadow: none;background-color: rgba(232 234 241);"
       />
     </div>
-    <div style="height:100%; width:100%" bind:this={chartDiv} />
+    <div style="height:100%; width:60%" bind:this={chartDiv} />
   </div>
 {:else}
   <div style="height:100%; width:100%" bind:this={chartDiv} />
