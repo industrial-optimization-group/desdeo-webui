@@ -98,7 +98,7 @@
       borderColor: "gray",
       left: arrowSize * 2,
       right: arrowSize * 2,
-      top: arrowSize,
+      top: arrowSize + 2,
       bottom: arrowSize,
     },
   };
@@ -251,8 +251,14 @@
                   [0, arrowSize],
                 ],
               },
+              scaleY: 0.85,
+              scaleX: 0.85,
+              y: 2,
               style: {
-                fill: arrowColor,
+                fill: barColor,
+                // fillOpacity: 0,
+                stroke: arrowColor,
+                lineWidth: 1,
               },
               onclick: () => {
                 selectedValue = solutionValue;
@@ -281,6 +287,8 @@
               },
               style: {
                 fill: arrowColor,
+                stroke: arrowColor,
+                lineWidth: 1,
               },
               left: 0,
             },
@@ -297,6 +305,8 @@
               },
               style: {
                 fill: arrowColor,
+                stroke: arrowColor,
+                lineWidth: 1,
               },
               left: chart.getWidth() - arrowSize,
             },
@@ -330,6 +340,9 @@
       ],
     };
     chart.setOption(graphicOptions);
+    addOnMouseEffect("left");
+    addOnMouseEffect("right");
+    addOnMouseEffect("arrow");
     // Add event listener which updates the aspiration line value.
     // chart.getZr().on("click", function (params) {
     //   if (params.target == null) {
@@ -435,6 +448,43 @@
         (property: echarts.GraphicComponentOption) => property.id === lineId
       );
     }
+  }
+
+  // a function that changes opacity of arrow when mouse is over it
+  function addOnMouseEffect(compID) {
+    // getLineComponent(chart, compID);
+    chart.setOption({
+      graphic: [
+        {
+          id: compID,
+
+          onmouseover: () => {
+            chart.setOption({
+              graphic: [
+                {
+                  id: compID,
+                  style: {
+                    fillOpacity: 0.5,
+                  },
+                },
+              ],
+            });
+          },
+          onmouseout: () => {
+            chart.setOption({
+              graphic: [
+                {
+                  id: compID,
+                  style: {
+                    fillOpacity: 1,
+                  },
+                },
+              ],
+            });
+          },
+        },
+      ],
+    });
   }
 </script>
 
