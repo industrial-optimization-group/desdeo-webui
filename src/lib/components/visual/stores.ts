@@ -23,7 +23,7 @@ export const colorPalette = [
 
 export const aspirationLineStyle = {
   stroke: "blue",
-  lineDash: [4],
+  // lineDash: [4],
   lineWidth: 3,
 };
 export const boundLineStyle = {

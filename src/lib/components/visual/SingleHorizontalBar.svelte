@@ -159,6 +159,8 @@
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
 
+    const scaleValue = gridRect.height * 0.1;
+    // const ratio = gridRect.height / scaleValue / 10;
     // This option adds the interactive custom graphic elements to the chart
     const graphicOptions = {
       graphic: [
@@ -171,36 +173,90 @@
           draggable: "horizontal",
           silent: true,
           children: [
+            // Dragging circle with arrows
+            // {
+
+            // },
+
             // Dragging image
-            {
-              type: "image",
-              id: "dragImage",
-              z: 501,
-              left: -15,
-              invisible: selectedValue == null ? true : false,
-              style: {
-                image: "../src/lib/assets/leftRight.png",
-                width: 30,
-                y: gridRect.height / 1.5,
-                fill: "blue",
-                stroke: "blue",
-              },
-            },
+            // {
+            //   type: "image",
+            //   id: "dragImage",
+            //   z: 501,
+            //   left: -15,
+            //   invisible: selectedValue == null ? true : false,
+            //   style: {
+            //     image: "../src/lib/assets/Picture2.png",
+            //     width: arrowSize,
+            //     height: arrowSize,
+            //     y: chart.getHeight() / 2 - arrowSize/2,
+            //     fill: "blue",
+            //     stroke: "blue",
+            //   },
+            // },
             // Dragging circle
             {
-              type: "circle",
-              id: "dragCircle",
-              z: 499,
-              invisible: true,
-              shape: {
-                cy: gridRect.height / 1.15,
-                r: 10,
-              },
-              style: {
-                fill: "blue",
-                // stroke: "black",
-                lineWidth: 2,
-              },
+              type: "group",
+              id: "drag",
+              y: chart.getHeight() / 2,
+              // scale: [10,10],
+              // scale: [scaleValue, scaleValue],
+
+              children: [
+                {
+                  type: "circle",
+                  id: "dragCircle",
+                  z: 499,
+                  // invisible: true,
+                  shape: {
+                    r: scaleValue * 2,
+                  },
+                  style: {
+                    fill: "blue",
+                    // stroke: "black",
+                    lineWidth: 2,
+                  },
+                },
+                {
+                  type: "polyline",
+                  // right: "0.1%",
+                  // invisible: true,
+                  z: 499,
+                  // scale: [0.5, 0.5],
+                  style: {
+                    fill: "black",
+                    stroke: "black",
+                    lineWidth: 2,
+                  },
+                  shape: {
+                    points: [
+                      [0, scaleValue],
+                      [-scaleValue, 0],
+                      [0, -scaleValue],
+                    ],
+                  },
+                },
+                {
+                  type: "polyline",
+                  // left: "0",
+                  scaleX: -1,
+                  z: 499,
+                  // scale: [-0.5, 0.5],
+                  // scaleX: -1,
+                  style: {
+                    stroke: "black",
+                    fill: "black",
+                    lineWidth: 2,
+                  },
+                  shape: {
+                    points: [
+                      [0, scaleValue],
+                      [-scaleValue, 0],
+                      [0, -scaleValue],
+                    ],
+                  },
+                },
+              ],
             },
             {
               id: "rec",
@@ -452,7 +508,8 @@
           x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
         },
         {
-          id: "dragImage",
+          // id: "dragImage",
+          id: "dragCircle",
           invisible: false,
         },
         {
