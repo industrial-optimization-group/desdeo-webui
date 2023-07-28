@@ -9,23 +9,31 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
-  import { createChart, updateChart } from "./stores";
   // import type { SolutionData } from "./types";
+  // import type { Ranges } from "./types";
   import type { EChartOption } from "echarts";
 
   export let id: string;
   export let title: string;
   // export let data: SolutionData;
   export let values: number[][];
+  // export let ranges: Ranges[]|undefined;
   export let names: string[] = [];
+  let chartDiv: HTMLDivElement;
+  let chart: echarts.ECharts | undefined;
 
   let data = { names: names, values: values };
-
-  let option;
+  $: console.log(values);
+  let option: echarts.EChartOption;
   $: if (values) {
-    option = createOption(names, values);
-    updateChart(id, option);
-    data = { names: names, values: values };
+    if (!chart) {
+      option = createOption(names, values);
+      chart?.setOption(option, true, false);
+      // data = { names: names, values: values };
+    } else {
+      option = createOption(names, values);
+      chart?.setOption(option, true, false);
+    }
   }
 
   const selectedLineStyle = {
@@ -44,7 +52,7 @@
     newData.values = rearrangeValues(index1, index2);
     data = newData;
 
-    updateChart(id, createOption(data.names, data.values));
+    chart?.setOption(createOption(newData.names, newData.values), true, false);
   }
 
   function rearrangeNames(index1: number, index2: number) {
@@ -68,6 +76,76 @@
     }
 
     return newValues;
+  }
+
+  function addSwapArrows(): echarts.EChartOption["graphic"] {
+    const graphicData = names.map((_, index) => ({
+      type: "group",
+      bottom: 20,
+      children: [
+        // Left arrow button
+        index !== 0
+          ? {
+              type: "polygon",
+              shape: {
+                points: [
+                  [-1, 15],
+                  [-1, -15],
+                  [-15, 0],
+                ],
+              },
+              style: {
+                fill: "#409EFF",
+              },
+              onclick: () => {
+                console.log("object");
+                swapAxes(index, index - 1);
+              },
+              /* Explanation of the code line below:
+                // Gets the model of parallelAxis component, which has all the axes as an array.
+                const model = chart.getModel().getComponent("parallelAxis");
+                // Gets the axesLayot which has the position info of every parallel axes
+                const axes = model.coordinateSystem._axesLayout
+                // Gets the x-coordinate of the i:th axis 
+                const xCoord = Object.values(axes)[index].position[0] 
+                */
+              x: chart
+                ? Object.values(
+                    chart.getModel().getComponent("parallelAxis")
+                      .coordinateSystem._axesLayout
+                  )[index].position[0]
+                : 0,
+            }
+          : undefined,
+
+        // Right arrow button
+        index !== names.length - 1
+          ? {
+              type: "polygon",
+              shape: {
+                points: [
+                  [1, 15],
+                  [1, -15],
+                  [15, 0],
+                ],
+              },
+              style: {
+                fill: "#409EFF",
+              },
+              onclick: () => {
+                swapAxes(index, index + 1);
+              },
+              x: chart
+                ? Object.values(
+                    chart.getModel().getComponent("parallelAxis")
+                      .coordinateSystem._axesLayout
+                  )[index].position[0]
+                : 0,
+            }
+          : undefined,
+      ],
+    }));
+    return graphicData;
   }
 
   function createOption(names: string[], values: number[][]): EChartOption {
@@ -98,78 +176,11 @@
       }
     }
 
-    let chart: echarts.ECharts | undefined;
     if (typeof document !== "undefined") {
-      chart = echarts.getInstanceByDom(document.getElementById(id));
+      // chart = echarts.getInstanceByDom(document.getElementById(id));
     } else {
-      chart = undefined;
+      // chart = undefined;
     }
-
-    const graphicData = nameAxis.map((_, index) => ({
-      type: "group",
-      bottom: 20,
-      children: [
-        // Left arrow button
-        index !== 0
-          ? {
-              type: "polygon",
-              shape: {
-                points: [
-                  [-1, 15],
-                  [-1, -15],
-                  [-15, 0],
-                ],
-              },
-              style: {
-                fill: "#409EFF",
-              },
-              onclick: () => {
-                swapAxes(index, index - 1);
-              },
-              /* Explanation of the code line below:
-                // Gets the model of parallelAxis component, which has all the axes as an array.
-                const model = chart.getModel().getComponent("parallelAxis");
-                // Gets the axesLayot which has the position info of every parallel axes
-                const axes = model.coordinateSystem._axesLayout
-                // Gets the x-coordinate of the i:th axis 
-                const xCoord = Object.values(axes)[index].position[0] 
-                */
-              x: chart
-                ? Object.values(
-                    chart.getModel().getComponent("parallelAxis")
-                      .coordinateSystem._axesLayout
-                  )[index].position[0]
-                : 0,
-            }
-          : undefined,
-
-        // Right arrow button
-        index !== nameAxis.length - 1
-          ? {
-              type: "polygon",
-              shape: {
-                points: [
-                  [1, 15],
-                  [1, -15],
-                  [15, 0],
-                ],
-              },
-              style: {
-                fill: "#409EFF",
-              },
-              onclick: () => {
-                swapAxes(index, index + 1);
-              },
-              x: chart
-                ? Object.values(
-                    chart.getModel().getComponent("parallelAxis")
-                      .coordinateSystem._axesLayout
-                  )[index].position[0]
-                : 0,
-            }
-          : undefined,
-      ],
-    }));
 
     // Create the option object for the whole chart.
     return {
@@ -203,11 +214,15 @@
           data: seriesData,
         },
       ],
-      graphic: graphicData,
+      graphic: addSwapArrows(),
     };
   }
   onMount(() => {
-    let chart = createChart(id, option);
+    chart = echarts.init(chartDiv);
+    chart.setOption(option);
+    chart.setOption({
+      graphic: addSwapArrows(),
+    });
     chart.on("axisareaselected", function () {
       var series1 = chart.getModel().getSeries()[0];
       // var series2 = chart.getModel().getSeries()[1];
@@ -216,8 +231,19 @@
       console.log(indices1);
       // console.log(indices2);
     });
+    // createChart(id, option);
+
+    chart.on("brush", function (params) {
+      console.log(this);
+      console.log(params);
+    });
+    chart.on("brushend", function (params) {
+      console.log(this);
+      console.log(params);
+    });
+
     // updateChart(id, createOption(data.names, data.values));
   });
 </script>
 
-<div {id} style="height:100%; width:100%" />
+<div {id} style="height:100%; width:100%" bind:this={chartDiv} />
