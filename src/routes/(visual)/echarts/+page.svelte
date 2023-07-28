@@ -70,11 +70,14 @@
   };
   let theValues = exampleData.values;
   $: theValues;
+  let selectedIndices: number[] = [];
+  $: selectedIndices;
 </script>
 
 <div class="container">
   <div>
     <button
+      style="background-color: lightgrey; border-style: double; border-color: black; padding: 5px; margin: 5px;"
       on:click={() => {
         theValues = [
           [1, 1, 1, 2],
@@ -83,6 +86,18 @@
         ];
         console.log(theValues);
       }}>Change values</button
+    >
+    <button
+      style="background-color: lightgrey; border-style: double; border-color: black; padding: 5px; margin: 5px;"
+      on:click={() => {
+        selectedIndices = [0, 1];
+      }}>Change selcted</button
+    >
+    <button
+      style="background-color: lightgrey; border-style: double; border-color: black; padding: 5px; margin: 5px;"
+      on:click={() => {
+        selectedIndices = [];
+      }}>Reset selections</button
     >
     <p>
       Current solutions:
@@ -97,6 +112,7 @@
         bind:values={theValues}
         id="parallelAxis"
         title="Parallel Axis chart"
+        bind:selectedIndices
       />
     </div>
   </div>

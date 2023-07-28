@@ -19,6 +19,21 @@
   export let values: number[][];
   // export let ranges: Ranges[]|undefined;
   export let names: string[] = [];
+  export let selectedIndices: number[] = [];
+  $: if (selectedIndices) {
+    if (chart) {
+      chart.dispatchAction({
+        type: "downplay",
+        seriesIndex: 0,
+      });
+      chart.dispatchAction({
+        type: "highlight",
+        seriesIndex: 0,
+        dataIndex: selectedIndices,
+      });
+    }
+  }
+
   let chartDiv: HTMLDivElement;
   let chart: echarts.ECharts | undefined;
 
