@@ -31,7 +31,7 @@
   // export let divId: string;
   export let inputs = false;
 
-  $: console.log(selectedValue);
+  // $: console.log(selectedValue);
   $: if (selectedValue != null) {
     updateAspirationLine(selectedValue);
   }
@@ -391,10 +391,10 @@
               scaleX: 0.85,
               y: 2,
               style: {
-                fill: barColor,
+                fill: "transparent",
                 // fillOpacity: 0,
                 stroke: arrowColor,
-                lineWidth: 1,
+                lineWidth: 1.25,
               },
               onclick: () => {
                 selectedValue = solutionValue;
@@ -413,6 +413,7 @@
             {
               type: "polyline",
               id: "left",
+              left: 1,
               shape: {
                 points: [
                   [0, arrowSize],
@@ -425,13 +426,13 @@
                 stroke: arrowColor,
                 lineWidth: 2.5,
               },
-              left: 0,
             },
             // Right Arrow
             {
               type: "polyline",
               id: "right",
               scaleX: -1,
+              right: -chart.getWidth() + 1,
               shape: {
                 points: [
                   [0, arrowSize],
@@ -444,7 +445,6 @@
                 stroke: arrowColor,
                 lineWidth: 2.5,
               },
-              right: -chart.getWidth(),
             },
           ],
           // onclick event for the arrows
@@ -606,16 +606,16 @@
   }
 
   // a function that changes opacity of arrow when mouse is over it
-  function addOnMouseEffect(compID) {
-    let type = getLineComponent(chart, compID).type;
+  function addOnMouseEffect(compID: string) {
+    // let type = getLineComponent(chart, compID).type;
     let styleForArrow = {
-      fillOpacity: 0.5,
+      strokeOpacity: 0.5,
     };
-    if (type === "polyline") {
-      styleForArrow = {
-        strokeOpacity: 0.5,
-      };
-    }
+    // if (type === "polyline") {
+    //   styleForArrow = {
+    //     strokeOpacity: 0.5,
+    //   };
+    // }
     chart.setOption({
       graphic: [
         {
