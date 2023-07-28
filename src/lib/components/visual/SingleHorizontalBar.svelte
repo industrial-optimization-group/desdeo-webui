@@ -159,7 +159,7 @@
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
 
-    const scaleValue = gridRect.height * 0.1;
+    const scaleValue = gridRect.height * 0.05;
     // const ratio = gridRect.height / scaleValue / 10;
     // This option adds the interactive custom graphic elements to the chart
     const graphicOptions = {
@@ -199,6 +199,7 @@
               type: "group",
               id: "drag",
               y: chart.getHeight() / 2,
+
               // scale: [10,10],
               // scale: [scaleValue, scaleValue],
 
@@ -206,20 +207,22 @@
                 {
                   type: "circle",
                   id: "dragCircle",
-                  z: 499,
+
+                  z: 498,
                   // invisible: true,
                   shape: {
-                    r: scaleValue * 2,
+                    r: scaleValue * 2 + aspirationLineStyle.lineWidth,
                   },
                   style: {
-                    fill: "blue",
+                    fill: aspirationLineStyle.stroke,
                     // stroke: "black",
                     lineWidth: 2,
+                    // opacity: 0.7,
                   },
                 },
                 {
-                  type: "polyline",
-                  // right: "0.1%",
+                  type: "polygon",
+                  right: aspirationLineStyle.lineWidth / 2,
                   // invisible: true,
                   z: 499,
                   // scale: [0.5, 0.5],
@@ -237,8 +240,8 @@
                   },
                 },
                 {
-                  type: "polyline",
-                  // left: "0",
+                  type: "polygon",
+                  left: aspirationLineStyle.lineWidth / 2,
                   scaleX: -1,
                   z: 499,
                   // scale: [-0.5, 0.5],
@@ -256,6 +259,22 @@
                     ],
                   },
                 },
+                // {
+                //   type:"line",
+                //   z: 502,
+                //   style: {
+                //     stroke: "blue",
+                //     opacity: 0.2,
+                //     lineWidth: 2,
+                //   },
+                //   shape: {
+                //     x1: 0,
+                //     y1: scaleValue,
+                //     x2: 0,
+                //     y2: -scaleValue,
+                //   },
+
+                // },
               ],
             },
             {
@@ -267,12 +286,17 @@
               // ])[0],
               y: gridRect.y,
               invisible: selectedValue == null ? true : false,
-              z: 500,
+              z: 300,
               transition: "all",
               shape: {
                 height: gridRect.height,
               },
-              style: aspirationLineStyle,
+              style: {
+                stroke: aspirationLineStyle.stroke,
+                lineWidth: aspirationLineStyle.lineWidth,
+                // opacity: 0.8,
+              },
+
               // draggable: "horizontal",
             },
           ],
