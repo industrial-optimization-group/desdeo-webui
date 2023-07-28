@@ -199,6 +199,7 @@
           emphasis: {
             lineStyle: selectedLineStyle,
           },
+          colorBy: "value",
           data: seriesData,
         },
       ],
@@ -206,7 +207,15 @@
     };
   }
   onMount(() => {
-    createChart(id, option);
+    let chart = createChart(id, option);
+    chart.on("axisareaselected", function () {
+      var series1 = chart.getModel().getSeries()[0];
+      // var series2 = chart.getModel().getSeries()[1];
+      var indices1 = series1.getRawIndicesByActiveState("active");
+      // var indices2 = series2.getRawIndicesByActiveState('active');
+      console.log(indices1);
+      // console.log(indices2);
+    });
     // updateChart(id, createOption(data.names, data.values));
   });
 </script>
