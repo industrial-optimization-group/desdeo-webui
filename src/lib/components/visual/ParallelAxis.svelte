@@ -6,6 +6,8 @@
   @param {string} title - The title of the chart.
   @param {SolutionData} data - The data for the chart.
 -->
+
+<!-- TODO: Bug on axisSwap after changing values (goes back to previous values, maybe some hardcoding?) -->
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
@@ -20,6 +22,11 @@
   // export let ranges: Ranges[]|undefined;
   export let names: string[] = [];
   export let selectedIndices: number[] = [];
+  let chartDiv: HTMLDivElement;
+  let chart: echarts.ECharts | undefined;
+  let option: echarts.EChartOption;
+  let data = { names: names, values: values };
+
   $: if (selectedIndices) {
     if (chart) {
       chart.dispatchAction({
@@ -33,13 +40,6 @@
       });
     }
   }
-
-  let chartDiv: HTMLDivElement;
-  let chart: echarts.ECharts | undefined;
-
-  let data = { names: names, values: values };
-  $: console.log(values);
-  let option: echarts.EChartOption;
   $: if (values) {
     if (!chart) {
       option = createOption(names, values);
@@ -238,6 +238,8 @@
     chart.setOption({
       graphic: addSwapArrows(),
     });
+
+    // BRUSHING debugging
     chart.on("axisareaselected", function () {
       var series1 = chart.getModel().getSeries()[0];
       // var series2 = chart.getModel().getSeries()[1];
@@ -256,8 +258,24 @@
       console.log(this);
       console.log(params);
     });
+    chart.on("click", function (params) {
+      console.log(params);
+      // Check if selectedIndices already contains the index of the clicked solution
+      if (selectedIndices.includes(params.dataIndex)) {
+        // If it does, remove it from the array (to unselect it)
+        selectedIndices.splice(selectedIndices.indexOf(params.dataIndex), 1);
+      } else {
+        // If it doesn't, add it to the array
+        selectedIndices = [...selectedIndices, params.dataIndex];
+      }
 
-    // updateChart(id, createOption(data.names, data.values));
+      selectedIndices = selectedIndices;
+      if (params.componentType === "series") {
+        console.log(params.seriesIndex);
+        console.log(params.dataIndex);
+        // selectedIndices = [params.dataIndex];
+      }
+    });
   });
 </script>
 
