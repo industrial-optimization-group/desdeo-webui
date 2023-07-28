@@ -171,7 +171,7 @@
           x: chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0],
           // z: 1000,
           draggable: "horizontal",
-          silent: true,
+          silent: selectedValue == null ? true : false,
           children: [
             // Dragging circle with arrows
             // {
@@ -209,7 +209,7 @@
                   id: "dragCircle",
 
                   z: 498,
-                  // invisible: true,
+                  invisible: selectedValue == null ? true : false,
                   shape: {
                     r: scaleValue * 2 + aspirationLineStyle.lineWidth,
                   },
@@ -222,8 +222,9 @@
                 },
                 {
                   type: "polygon",
+                  id: "dragLeft",
                   right: aspirationLineStyle.lineWidth / 2,
-                  // invisible: true,
+                  invisible: selectedValue == null ? true : false,
                   z: 499,
                   // scale: [0.5, 0.5],
                   style: {
@@ -241,9 +242,11 @@
                 },
                 {
                   type: "polygon",
+                  id: "dragRight",
                   left: aspirationLineStyle.lineWidth / 2,
                   scaleX: -1,
                   z: 499,
+                  invisible: selectedValue == null ? true : false,
                   // scale: [-0.5, 0.5],
                   // scaleX: -1,
                   style: {
@@ -524,12 +527,14 @@
     if (!chart) {
       return;
     }
+
     let newOption = {
       graphic: [
         {
           id: lineId,
           silent: false,
           x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+          invisible: true,
         },
         {
           // id: "dragImage",
@@ -538,6 +543,14 @@
         },
         {
           id: "rec",
+          invisible: false,
+        },
+        {
+          id: "dragLeft",
+          invisible: false,
+        },
+        {
+          id: "dragRight",
           invisible: false,
         },
       ],
