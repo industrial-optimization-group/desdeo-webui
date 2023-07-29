@@ -7,7 +7,6 @@
   @param {SolutionData} data - The data for the chart.
 -->
 
-<!-- TODO: Bug on axisSwap after changing values (goes back to previous values, maybe some hardcoding?) -->
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
@@ -25,8 +24,8 @@
   let chartDiv: HTMLDivElement;
   let chart: echarts.ECharts | undefined;
   let option: echarts.EChartOption;
-  let data = { names: names, values: values };
 
+  $: data = { names: names, values: values };
   $: if (selectedIndices) {
     if (chart) {
       chart.dispatchAction({
