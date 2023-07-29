@@ -11,14 +11,14 @@
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   // import type { SolutionData } from "./types";
-  // import type { Ranges } from "./types";
+  import type { Ranges } from "./types";
   import type { EChartOption } from "echarts";
 
   export let id: string;
   export let title: string;
   // export let data: SolutionData;
   export let values: number[][];
-  // export let ranges: Ranges[]|undefined;
+  export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = [];
   export let selectedIndices: number[] = [];
   let chartDiv: HTMLDivElement;
@@ -171,19 +171,33 @@
 
     //  Creates the names for the axes as a parallelAxis component.
     const nameAxis: object[] = [];
+    let min;
+    let max;
     if (names.length > 0) {
       for (let i = 0; i < names.length; i++) {
+        if (ranges) {
+          min = ranges[i] ? ranges[i].min : undefined;
+          max = ranges[i] ? ranges[i].max : undefined;
+        }
         let nameObj = {
           dim: i,
           name: names[i],
+          min: min,
+          max: max,
         };
         nameAxis.push(nameObj);
       }
     } else {
       for (let i = 0; i < values[0].length; i++) {
+        if (ranges) {
+          min = ranges[i] ? ranges[i].min : undefined;
+          max = ranges[i] ? ranges[i].max : undefined;
+        }
         let nameObj = {
           dim: i,
           name: "Objective " + (i + 1),
+          min: min,
+          max: max,
         };
         nameAxis.push(nameObj);
         data.names.push("Objective " + (i + 1));

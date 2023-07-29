@@ -113,6 +113,12 @@
         id="parallelAxis"
         title="Parallel Axis chart"
         bind:selectedIndices
+        ranges={[
+          { min: 0, max: 10 },
+          { min: -2.324, max: 10 },
+          { min: 0, max: 10 },
+          { min: undefined, max: undefined },
+        ]}
       />
     </div>
   </div>
