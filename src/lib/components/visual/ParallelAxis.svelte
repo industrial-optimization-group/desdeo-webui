@@ -15,8 +15,6 @@
   import type { Ranges } from "./types";
   import type { EChartOption } from "echarts";
 
-  export let id: string;
-  export let title: string;
   // export let data: SolutionData;
   export let values: number[][];
   export let ranges: Ranges[] | undefined = undefined;
@@ -215,9 +213,6 @@
     return {
       color: colorPalette,
       colorBy: "data",
-      title: {
-        text: title,
-      },
       tooltip: {
         formatter: function (params) {
           let result = params.name + "<br>";
@@ -295,4 +290,4 @@
   });
 </script>
 
-<div {id} style="height:100%; width:100%" bind:this={chartDiv} />
+<div style="height:100%; width:100%" bind:this={chartDiv} />
