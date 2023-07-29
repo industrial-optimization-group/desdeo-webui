@@ -6,3 +6,8 @@ export type SolutionData = {
   uncertainty: number[][][];
   minimize: boolean[];
 };
+
+export type Ranges = {
+  min: number | undefined;
+  max: number | undefined;
+};
