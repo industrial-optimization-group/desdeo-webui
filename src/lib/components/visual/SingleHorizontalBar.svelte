@@ -30,17 +30,23 @@
   // export let isMin = true;
   // export let divId: string;
   export let inputs = false;
+  export let decimalPrecision = 2;
 
   // $: console.log(selectedValue);
   $: if (selectedValue != null) {
-    updateAspirationLine(selectedValue);
+    updateAspirationLine(
+      Number.parseFloat(selectedValue.toFixed(decimalPrecision))
+    );
   }
   // $: updateAspirationLine(selectedValue);
   $: if (previousValue != null) {
-    updatePreviousLine(previousValue);
+    updatePreviousLine(
+      Number.parseFloat(previousValue.toFixed(decimalPrecision))
+    );
   }
   $: if (solutionValue != null) {
     updateSolutionBar(solutionValue);
+    //updateSolutionBar(Number.parseFloat(solutionValue.toFixed(decimalPrecision)));
   }
 
   const arrowSize = 15;
@@ -64,6 +70,7 @@
       max: higherBound,
       type: "value",
       axisPointer: {
+        z: 1000,
         show: true,
         lineStyle: {
           type: "solid",
@@ -340,9 +347,31 @@
                 ],
               });
             }
+            // Update the axispointer label to show the selected value, not the value of the mouse position
+            chart.setOption({
+              xAxis: {
+                axisPointer: {
+                  label: {
+                    formatter: () => {
+                      return "Drag value: " + selectedValue;
+                    },
+                  },
+                },
+              },
+            });
+          },
+          ondragend: function () {
+            // Reset the axispointer label
+            chart.setOption({
+              xAxis: {
+                axisPointer: {
+                  label: undefined,
+                },
+              },
+            });
           },
         },
-        // Add a line for previous preference
+        // Add a circle for previous preference
         {
           id: "prevLine",
           type: "circle",
@@ -402,7 +431,7 @@
             },
           ],
         },
-        // Add arrows
+        // Add arrows to move the aspiration value to the left or to the right
         {
           id: "leftRightGroup",
           type: "group",
