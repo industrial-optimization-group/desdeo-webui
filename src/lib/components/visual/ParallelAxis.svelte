@@ -17,6 +17,7 @@
 
   // export let data: SolutionData;
   export let values: number[][];
+  export let minimize: boolean[];
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = [];
   export let selectedIndices: number[] = [];
@@ -91,6 +92,54 @@
     return newValues;
   }
 
+  function addMinMaxIndicators() {
+    const graphicData = minimize.map((min, index) => ({
+      // Test background min/max indicating arrow
+
+      type: "polygon",
+      scaleY: -1,
+      shape: {
+        points: [
+          [0, 0],
+          [15, -80],
+          [-15, -80],
+        ],
+      },
+      style: {
+        fill: "lightgrey",
+        // opacity: 0.4,
+      },
+      z: -100,
+      y: chart
+        ? chart
+            .getModel()
+            .getComponent("parallelAxis")
+            .coordinateSystem.getRect().y
+        : 0,
+      // y: 60,
+      // y: chart
+      //   ? Object.values(
+      //       chart.getModel().getComponent("parallelAxis")
+      //         .coordinateSystem._axesLayout
+      //     )[index].position[1] - 20
+      //   : 0,
+      x: chart
+        ? Object.values(
+            chart.getModel().getComponent("parallelAxis").coordinateSystem
+              ._axesLayout
+          )[index].position[0]
+        : 0,
+    }));
+
+    const test = [
+      {
+        type: "group",
+        children: graphicData,
+      },
+    ];
+    return test;
+  }
+
   function addSwapArrows(): echarts.EChartOption["graphic"] {
     const graphicData = names.map((_, index) => ({
       type: "group",
@@ -158,7 +207,10 @@
           : undefined,
       ],
     }));
-    return graphicData;
+
+    const all = [...graphicData, ...addMinMaxIndicators()];
+    return all;
+    // return graphicData;
   }
 
   function createOption(names: string[], values: number[][]): EChartOption {
@@ -199,7 +251,7 @@
           max: max,
         };
         nameAxis.push(nameObj);
-        data.names.push("Objective " + (i + 1));
+        data.names.push("Objective " + (i + 1) + "\n (▲)");
       }
     }
 
@@ -249,6 +301,10 @@
     chart.setOption({
       graphic: addSwapArrows(),
     });
+
+    // chart.setOption({
+    //   graphic:
+    // })
 
     // BRUSHING debugging
     chart.on("axisareaselected", function () {
