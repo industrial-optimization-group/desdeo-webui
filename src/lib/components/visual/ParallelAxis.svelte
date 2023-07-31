@@ -18,6 +18,7 @@
   // export let data: SolutionData;
   export let values: number[][];
   export let minimize: boolean[];
+  export let showIndicators = false;
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = [];
   export let selectedIndices: number[] = [];
@@ -215,7 +216,9 @@
       ],
     }));
 
-    const all = [...graphicData, ...addMinMaxIndicators()];
+    const all = showIndicators
+      ? [...graphicData, ...addMinMaxIndicators()]
+      : graphicData;
     return all;
     // return graphicData;
   }
