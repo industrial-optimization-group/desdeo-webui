@@ -93,16 +93,28 @@
   }
 
   function addMinMaxIndicators() {
+    function getY(min: boolean, index: number) {
+      if (min) {
+        return Object.values(
+          chart.getModel().getComponent("parallelAxis").coordinateSystem
+            ._axesLayout
+        )[index].position[1];
+      } else {
+        return chart
+          .getModel()
+          .getComponent("parallelAxis")
+          .coordinateSystem.getRect().y;
+      }
+    }
     const graphicData = minimize.map((min, index) => ({
       // Test background min/max indicating arrow
-
       type: "polygon",
-      scaleY: -1,
+      scaleY: min ? -1 : 1,
       shape: {
         points: [
           [0, 0],
-          [15, -80],
-          [-15, -80],
+          [15, 80],
+          [-15, 80],
         ],
       },
       style: {
@@ -110,12 +122,7 @@
         // opacity: 0.4,
       },
       z: -100,
-      y: chart
-        ? chart
-            .getModel()
-            .getComponent("parallelAxis")
-            .coordinateSystem.getRect().y
-        : 0,
+      y: chart ? getY(min, index) : 0,
       // y: 60,
       // y: chart
       //   ? Object.values(
@@ -264,7 +271,7 @@
     // Create the option object for the whole chart.
     return {
       color: colorPalette,
-      colorBy: "data",
+      colorBy: "series",
       tooltip: {
         formatter: function (params) {
           let result = params.name + "<br>";
@@ -288,7 +295,7 @@
           emphasis: {
             lineStyle: selectedLineStyle,
           },
-          colorBy: "value",
+          // colorBy: "series",
           data: seriesData,
         },
       ],
