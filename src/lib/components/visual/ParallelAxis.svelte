@@ -258,7 +258,9 @@
           max: max,
         };
         nameAxis.push(nameObj);
-        data.names.push("Objective " + (i + 1) + "\n (▲)");
+        let minMaxIndicator = minimize[i] ? "\n (▼)" : "\n (▲)";
+        // let minMaxIndicator = minimize[i]? "\n (min)":"\n (max)";
+        data.names.push("Objective " + (i + 1) + minMaxIndicator);
       }
     }
 
