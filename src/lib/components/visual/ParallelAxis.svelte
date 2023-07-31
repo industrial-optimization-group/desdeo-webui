@@ -19,7 +19,7 @@
   // Props for this component:
   export let values: number[][];
   export let minimize: boolean[];
-  export let showIndicators = false;
+  export let showIndicators = true;
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = [];
   export let selectedIndices: number[] = [];
@@ -52,12 +52,13 @@
   }
 
   const selectedLineStyle = {
+    // color: "red",
     width: 7,
     opacity: 1,
   };
   const lineStyle = {
     width: 3.5,
-    opacity: 0.6,
+    opacity: 1,
   };
 
   function swapAxes(index1: number, index2: number) {
@@ -93,26 +94,41 @@
     return newValues;
   }
 
-  function addMinMaxIndicators() {
-    function getY(min: boolean, index: number) {
-      if (min) {
-        return Object.values(
-          chart.getModel().getComponent("parallelAxis").coordinateSystem
-            ._axesLayout
-        )[index].position[1];
-      } else {
-        return chart
-          .getModel()
-          .getComponent("parallelAxis")
-          .coordinateSystem.getRect().y;
-      }
+  /**
+   * A helper function that returns the y coordinate of the axis at the given
+   * index.
+   *
+   * @param minimize - A boolean value that indicates if the indicator is for
+   *   representing minimization.
+   * @param index - The index of the axis.
+   */
+  function getAxisY(minimize: boolean, index: number) {
+    if (minimize) {
+      return Object.values(
+        chart.getModel().getComponent("parallelAxis").coordinateSystem
+          ._axesLayout
+      )[index].position[1];
+    } else {
+      return chart
+        .getModel()
+        .getComponent("parallelAxis")
+        .coordinateSystem.getRect().y;
     }
-    const graphicData = minimize.map((min, index) => ({
-      // Test background min/max indicating arrow
+  }
+
+  /**
+   * Adds the min/max indicators to parallelAxes. The indicators are added as a
+   * graphic component.
+   */
+  function addMinMaxIndicators() {
+    // Add a arrow for each axis
+    const indicatorArrows = minimize.map((min, index) => ({
+      // Background min/max indicating arrow
       type: "polygon",
-      scaleY: min ? -1 : 1,
+      scaleY: min ? -1 : 1, // Flips the arrow if it is for minimization
       shape: {
         points: [
+          // TODO make arrow size dynamic (not hardcoded)
           [0, 0],
           [15, 80],
           [-15, 80],
@@ -120,17 +136,9 @@
       },
       style: {
         fill: "lightgrey",
-        // opacity: 0.4,
       },
       z: -100,
-      y: chart ? getY(min, index) : 0,
-      // y: 60,
-      // y: chart
-      //   ? Object.values(
-      //       chart.getModel().getComponent("parallelAxis")
-      //         .coordinateSystem._axesLayout
-      //     )[index].position[1] - 20
-      //   : 0,
+      y: chart ? getAxisY(min, index) : 0,
       x: chart
         ? Object.values(
             chart.getModel().getComponent("parallelAxis").coordinateSystem
@@ -139,13 +147,13 @@
         : 0,
     }));
 
-    const test = [
+    const graphicData = [
       {
         type: "group",
-        children: graphicData,
+        children: indicatorArrows,
       },
     ];
-    return test;
+    return graphicData;
   }
 
   function addSwapArrows(): echarts.EChartOption["graphic"] {
