@@ -1,27 +1,30 @@
 <!--@component
-  Creates a parallel axis chart using the ECharts library. As input, it takes a
-  title, the names of the axes, and the values for each axis. 
+  Creates a parallel axis chart using the ECharts library. This component is not linked to other components and can be used independently. 
   
-  @param {string} id - The id of the div element that will contain the chart.
-  @param {string} title - The title of the chart.
-  @param {SolutionData} data - The data for the chart.
+  @param {number[][]} values - The values for each axis. Outside arrays are the lines and inside arrays are the values of the line.
+  @param {boolean[]} minimize - An array of boolean values that indicate whether each axis should be minimized.
+  @param {boolean} [showIndicators=false] - A boolean value that indicates whether to show the min/max indicators on the chart.
+  @param {Ranges[]} [ranges=undefined] - An array of Ranges -objects that define the ranges for each axis.
+  @param {string[]} [names=[]] - An array of strings that define the names of each axis.
+  @param {number[]} [selectedIndices=[]] - An array of indices that define the selected data points (lines) on the chart.
 -->
 
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   import { colorPalette } from "./stores";
-  // import type { SolutionData } from "./types";
   import type { Ranges } from "./types";
   import type { EChartOption } from "echarts";
 
-  // export let data: SolutionData;
+  // Props for this component:
   export let values: number[][];
   export let minimize: boolean[];
   export let showIndicators = false;
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = [];
   export let selectedIndices: number[] = [];
+  // export let data: SolutionData;
+
   let chartDiv: HTMLDivElement;
   let chart: echarts.ECharts | undefined;
   let option: echarts.EChartOption;
@@ -41,13 +44,10 @@
     }
   }
   $: if (values) {
-    if (!chart) {
-      option = createOption(names, values);
-      chart?.setOption(option, true, false);
+    option = createOption(names, values);
+    if (chart) {
       // data = { names: names, values: values };
-    } else {
-      option = createOption(names, values);
-      chart?.setOption(option, true, false);
+      chart.setOption(option, true, false);
     }
   }
 
