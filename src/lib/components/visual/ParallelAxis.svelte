@@ -120,7 +120,7 @@
    * Adds the min/max indicators to parallelAxes. The indicators are added as a
    * graphic component.
    */
-  function addMinMaxIndicators() {
+  function createMinMaxIndicators() {
     // Add a arrow for each axis
     const indicatorArrows = minimize.map((min, index) => ({
       // Background min/max indicating arrow
@@ -156,8 +156,8 @@
     return graphicData;
   }
 
-  function addSwapArrows(): echarts.EChartOption["graphic"] {
-    const graphicData = names.map((_, index) => ({
+  function createSwapArrows() {
+    const graphicArrows = names.map((_, index) => ({
       type: "group",
       bottom: 20,
       children: [
@@ -223,14 +223,28 @@
           : undefined,
       ],
     }));
+    return graphicArrows;
+  }
 
-    const all = showIndicators
-      ? [...graphicData, ...addMinMaxIndicators()]
-      : graphicData;
-    return all;
+  /**
+   * Creates the graphic data object with the min/max indicators and the swap
+   * arrows.
+   */
+  function createGraphicData(): echarts.EChartOption["graphic"] {
+    // Doesn't add the min/max indicator graphics if they are not wanted.
+    const graphicData = showIndicators
+      ? [...createSwapArrows(), ...createMinMaxIndicators()]
+      : createSwapArrows();
+    return graphicData;
     // return graphicData;
   }
 
+  /**
+   * Creates the option object for the chart.
+   *
+   * @param names - The names of the axes.
+   * @param values - The values to be shown on the parallel coordinate.
+   */
   function createOption(names: string[], values: number[][]): EChartOption {
     // Creates the lines on the chart as series data.
     let seriesData: { value: number[]; name: string }[] = [];
@@ -275,12 +289,6 @@
       }
     }
 
-    if (typeof document !== "undefined") {
-      // chart = echarts.getInstanceByDom(document.getElementById(id));
-    } else {
-      // chart = undefined;
-    }
-
     // Create the option object for the whole chart.
     return {
       color: colorPalette,
@@ -312,14 +320,14 @@
           data: seriesData,
         },
       ],
-      graphic: addSwapArrows(),
+      graphic: createGraphicData(),
     };
   }
   onMount(() => {
     chart = echarts.init(chartDiv);
     chart.setOption(option);
     chart.setOption({
-      graphic: addSwapArrows(),
+      graphic: createGraphicData(),
     });
 
     // chart.setOption({
