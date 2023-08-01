@@ -2,12 +2,12 @@
   // import Example from "$lib/components/visual/Example.svelte";
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
-  import RadarChart from "$lib/components/visual/RadarChart.svelte";
-  import PetalChart from "$lib/components/visual/PetalChart.svelte";
-  import BarChart from "$lib/components/visual/BarChart.svelte";
-  import { selectedSolutions } from "$lib/components/visual/stores";
+  // import RadarChart from "$lib/components/visual/RadarChart.svelte";
+  // import PetalChart from "$lib/components/visual/PetalChart.svelte";
+  // import BarChart from "$lib/components/visual/BarChart.svelte";
+  // import { selectedSolutions } from "$lib/components/visual/stores";
+  // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
-  import BasicTable from "$lib/components/visual/BasicTable.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -99,13 +99,13 @@
         selectedIndices = [];
       }}>Reset selections</button
     >
-    <p>
+    <!-- <p>
       Current solutions:
       {#each $selectedSolutions as solution}
         <p>{solution.name}: {solution.value}</p>
       {/each}
-    </p>
-    <BasicTable selectedSolutions={$selectedSolutions} />
+    </p> -->
+    <!-- <BasicTable selectedSolutions={$selectedSolutions} /> -->
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
     <div style="height:40vh; width:100vh">
       <ParallelAxis
@@ -121,13 +121,13 @@
       />
     </div>
   </div>
-  <div>
+  <!-- <div>
     <BarChart id="barChart" title="Bar chart" data={exampleData} />
     <PetalChart id="petalChart" title="Petal chart" data={exampleData} />
   </div>
   <div>
     <RadarChart id="radarChart" title="Radar Chart" data={exampleData} />
-  </div>
+  </div> -->
   <div>
     <!-- <HorizontalAxisPlot /> -->
     <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->

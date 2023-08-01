@@ -34,13 +34,19 @@
   $: if (selectedIndices) {
     if (chart) {
       chart.dispatchAction({
-        type: "downplay",
+        type: "unselect",
         seriesIndex: 0,
+        dataIndex: chart.getModel().getSeries()[0].getSelectedDataIndices(),
       });
       chart.dispatchAction({
-        type: "highlight",
+        type: "select",
         seriesIndex: 0,
         dataIndex: selectedIndices,
+      });
+      // Downplay all after selection, for selection to show
+      chart.dispatchAction({
+        type: "downplay",
+        seriesIndex: 0,
       });
     }
   }
@@ -52,8 +58,13 @@
     }
   }
 
+  const hoverLineStyle = {
+    color: "red",
+    width: 7,
+    opacity: 0.5,
+  };
   const selectedLineStyle = {
-    // color: "red",
+    color: "red",
     width: 7,
     opacity: 1,
   };
@@ -320,8 +331,12 @@
         {
           type: "parallel",
           lineStyle: lineStyle,
-          emphasis: {
+          selectedMode: "multiple",
+          select: {
             lineStyle: selectedLineStyle,
+          },
+          emphasis: {
+            lineStyle: hoverLineStyle,
           },
           // colorBy: "series",
           data: seriesData,
@@ -331,7 +346,7 @@
     };
   }
   onMount(() => {
-    chart = echarts.init(chartDiv);
+    chart = echarts.init(chartDiv, "", { renderer: "svg" });
     chart.setOption(option);
     chart.setOption({
       graphic: createGraphicData(),
@@ -339,21 +354,21 @@
 
     // BRUSHING debugging
     chart.on("axisareaselected", function () {
-      var series1 = chart.getModel().getSeries()[0];
+      // var series1 = chart.getModel().getSeries()[0];
       // var series2 = chart.getModel().getSeries()[1];
-      var indices1 = series1.getRawIndicesByActiveState("active");
+      // var indices1 = series1.getRawIndicesByActiveState("active");
       // var indices2 = series2.getRawIndicesByActiveState('active');
-      console.log(indices1);
+      // console.log(indices1);
       // console.log(indices2);
     });
     // createChart(id, option);
 
-    chart.on("brush", function (params) {
+    chart.on("select", function (params) {
       console.log(this);
       console.log(params);
     });
-    chart.on("brushend", function (params) {
-      console.log(this);
+    chart.on("selectChanged", function (params) {
+      // console.log(this);
       console.log(params);
     });
     chart.on("click", function (params) {
