@@ -18,7 +18,7 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
-  import { aspirationLineStyle } from "./stores";
+  import { referencePointStyle } from "./stores";
   // import type { SolutionData } from "./types";
 
   export let lowerBound: number;
@@ -51,7 +51,8 @@
 
   const arrowSize = 15;
   const arrowColor = "black";
-  const dragArrowColor = "black";
+  const dragArrowColor = "white";
+  const hoverLineColor = "gray";
 
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
@@ -76,8 +77,9 @@
         show: true,
         lineStyle: {
           type: "solid",
-          width: 3,
-          color: "black",
+          width: 2,
+          color: hoverLineColor,
+          // opacity: 0.5,
         },
       },
       splitLine: {
@@ -220,10 +222,10 @@
                   z: 498,
                   invisible: selectedValue == null ? true : false,
                   shape: {
-                    r: scaleValue * 2 + aspirationLineStyle.lineWidth,
+                    r: scaleValue * 2 + referencePointStyle.lineWidth,
                   },
                   style: {
-                    fill: aspirationLineStyle.stroke,
+                    fill: referencePointStyle.stroke,
                     // stroke: "black",
                     lineWidth: 2,
                     // opacity: 0.7,
@@ -232,7 +234,7 @@
                 {
                   type: "polyline",
                   id: "dragLeft",
-                  right: aspirationLineStyle.lineWidth / 10,
+                  right: referencePointStyle.lineWidth / 10,
                   invisible: selectedValue == null ? true : false,
                   z: 499,
                   // scale: [0.5, 0.5],
@@ -252,7 +254,7 @@
                 {
                   type: "polyline",
                   id: "dragRight",
-                  left: aspirationLineStyle.lineWidth / 10,
+                  left: referencePointStyle.lineWidth / 10,
                   scaleX: -1,
                   z: 499,
                   invisible: selectedValue == null ? true : false,
@@ -304,14 +306,25 @@
                 height: gridRect.height,
               },
               style: {
-                stroke: aspirationLineStyle.stroke,
-                lineWidth: aspirationLineStyle.lineWidth,
+                stroke: referencePointStyle.stroke,
+                lineWidth: referencePointStyle.lineWidth,
                 // opacity: 0.8,
               },
 
               // draggable: "horizontal",
             },
           ],
+          ondragstart: () => {
+            chart.setOption({
+              xAxis: {
+                axisPointer: {
+                  lineStyle: {
+                    color: "transparent",
+                  },
+                },
+              },
+            });
+          },
           ondrag: function (params) {
             let comp = getLineComponent(chart, "valueArea");
             let left = comp.shape.x;
@@ -367,6 +380,9 @@
             chart.setOption({
               xAxis: {
                 axisPointer: {
+                  lineStyle: {
+                    color: hoverLineColor,
+                  },
                   label: undefined,
                 },
               },

@@ -21,14 +21,25 @@ export const colorPalette = [
   "#ffb6b9",
 ];
 
+export const referencePointStyle = {
+  stroke: "black",
+  // lineDash: [4],
+  lineWidth: 3,
+};
 export const aspirationLineStyle = {
-  stroke: "blue",
+  stroke: "#0000FF",
   // lineDash: [4],
   lineWidth: 3,
 };
 export const boundLineStyle = {
-  stroke: "red",
+  stroke: "#C00000",
   lineWidth: 3,
+};
+
+export const selectedLineStyle = {
+  color: "#72082B",
+  width: 7,
+  opacity: 1,
 };
 
 /**

@@ -13,7 +13,7 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
-  import { colorPalette } from "./stores";
+  import { colorPalette, selectedLineStyle } from "./stores";
   import type { Ranges } from "./types";
   import type { EChartOption } from "echarts";
 
@@ -59,15 +59,11 @@
   }
 
   const hoverLineStyle = {
-    color: "red",
+    color: selectedLineStyle.color,
     width: 7,
-    opacity: 0.5,
+    opacity: 0.4,
   };
-  const selectedLineStyle = {
-    color: "red",
-    width: 7,
-    opacity: 1,
-  };
+
   const lineStyle = {
     width: 3.5,
     opacity: 1,
