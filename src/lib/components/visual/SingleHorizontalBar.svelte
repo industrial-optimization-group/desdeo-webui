@@ -51,6 +51,8 @@
 
   const arrowSize = 15;
   const arrowColor = "black";
+  const dragArrowColor = "black";
+
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
 
@@ -228,15 +230,15 @@
                   },
                 },
                 {
-                  type: "polygon",
+                  type: "polyline",
                   id: "dragLeft",
-                  right: aspirationLineStyle.lineWidth / 2,
+                  right: aspirationLineStyle.lineWidth / 10,
                   invisible: selectedValue == null ? true : false,
                   z: 499,
                   // scale: [0.5, 0.5],
                   style: {
-                    fill: "black",
-                    stroke: "black",
+                    // fill: "black",
+                    stroke: dragArrowColor,
                     lineWidth: 2,
                   },
                   shape: {
@@ -248,17 +250,17 @@
                   },
                 },
                 {
-                  type: "polygon",
+                  type: "polyline",
                   id: "dragRight",
-                  left: aspirationLineStyle.lineWidth / 2,
+                  left: aspirationLineStyle.lineWidth / 10,
                   scaleX: -1,
                   z: 499,
                   invisible: selectedValue == null ? true : false,
                   // scale: [-0.5, 0.5],
                   // scaleX: -1,
                   style: {
-                    stroke: "black",
-                    fill: "black",
+                    stroke: dragArrowColor,
+                    // fill: "black",
                     lineWidth: 2,
                   },
                   shape: {
