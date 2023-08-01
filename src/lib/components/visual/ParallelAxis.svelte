@@ -8,6 +8,7 @@
   @param {string[]} [names=[]] - An array of strings that define the names of each axis.
   @param {number[]} [selectedIndices=[]] - An array of indices that define the selected data points (lines) on the chart.
 -->
+<!-- TODO: min/max text should show also when names given manually -->
 
 <script lang="ts">
   import * as echarts from "echarts";
@@ -19,9 +20,9 @@
   // Props for this component:
   export let values: number[][];
   export let minimize: boolean[];
-  export let showIndicators = true;
+  export let showIndicators = false;
   export let ranges: Ranges[] | undefined = undefined;
-  export let names: string[] = [];
+  export let names: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
   // export let data: SolutionData;
 
@@ -236,28 +237,18 @@
       ? [...createSwapArrows(), ...createMinMaxIndicators()]
       : createSwapArrows();
     return graphicData;
-    // return graphicData;
   }
 
-  /**
-   * Creates the option object for the chart.
-   *
-   * @param names - The names of the axes.
-   * @param values - The values to be shown on the parallel coordinate.
-   */
-  function createOption(names: string[], values: number[][]): EChartOption {
-    // Creates the lines on the chart as series data.
-    let seriesData: { value: number[]; name: string }[] = [];
-    for (let i = 0; i < values.length; i++) {
-      seriesData.push({ value: values[i], name: "Solution " + (i + 1) });
-    }
-
+  /** Creates the option data for the parallelAxis component. */
+  function createNameAxis() {
     //  Creates the names for the axes as a parallelAxis component.
     const nameAxis: object[] = [];
     let min;
     let max;
+    // If names are given, use them to set the names for the axes.
     if (names.length > 0) {
       for (let i = 0; i < names.length; i++) {
+        // If ranges are given, use them to set the min and max values for the axis.
         if (ranges) {
           min = ranges[i] ? ranges[i].min : undefined;
           max = ranges[i] ? ranges[i].max : undefined;
@@ -270,7 +261,9 @@
         };
         nameAxis.push(nameObj);
       }
-    } else {
+    }
+    // If names are not given, use the default names.
+    else {
       for (let i = 0; i < values[0].length; i++) {
         if (ranges) {
           min = ranges[i] ? ranges[i].min : undefined;
@@ -288,11 +281,25 @@
         data.names.push("Objective " + (i + 1) + minMaxIndicator);
       }
     }
+    return nameAxis;
+  }
+
+  /**
+   * Creates the option object for the chart.
+   *
+   * @param names - The names of the axes.
+   * @param values - The values to be shown on the parallel coordinate.
+   */
+  function createOption(names: string[], values: number[][]): EChartOption {
+    // Creates the lines on the chart as series data.
+    let seriesData: { value: number[]; name: string }[] = [];
+    for (let i = 0; i < values.length; i++) {
+      seriesData.push({ value: values[i], name: "Solution " + (i + 1) });
+    }
 
     // Create the option object for the whole chart.
     return {
       color: colorPalette,
-      colorBy: "series",
       tooltip: {
         formatter: function (params) {
           let result = params.name + "<br>";
@@ -303,7 +310,7 @@
           return result;
         },
       },
-      parallelAxis: nameAxis,
+      parallelAxis: createNameAxis(),
       brush: {
         brushMode: "multiple",
         throttleType: "debounce",
@@ -329,10 +336,6 @@
     chart.setOption({
       graphic: createGraphicData(),
     });
-
-    // chart.setOption({
-    //   graphic:
-    // })
 
     // BRUSHING debugging
     chart.on("axisareaselected", function () {
