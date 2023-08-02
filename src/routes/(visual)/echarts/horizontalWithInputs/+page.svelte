@@ -13,14 +13,16 @@
   // let chartDiv: HTMLDivElement
 </script>
 
-<HorizontalBarWithInputs
-  higherBound={5}
-  lowerBound={0}
-  objectiveName="Objective 1"
-  bind:previousValue
-  bind:solutionValue
-  bind:selectedValue
-/>
+<div style="width: 75vw; height: 20vh;">
+  <HorizontalBarWithInputs
+    higherBound={5}
+    lowerBound={0}
+    objectiveName="Objective 1 "
+    bind:previousValue
+    bind:solutionValue
+    bind:selectedValue
+  />
+</div>
 <!-- <button
   on:click={() => {
     previousValue = 2.21398;

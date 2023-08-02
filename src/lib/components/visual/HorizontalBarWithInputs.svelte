@@ -32,14 +32,14 @@
     <span>{objectiveName}</span>
     <InputWithValidation
       bind:value={selectedValue}
-      labelName="Aspiration value:"
+      labelName="Aspiration level"
       {higherBound}
       {lowerBound}
     />
   </div>
   <div class="secondPart">
     <div class="hide" id="prev">
-      <span>Previous value:</span>
+      <span style="color:gray; font-size: small; ">Previous preference</span>
       <InputWithValidation
         bind:value={previousValue}
         {higherBound}
@@ -47,13 +47,15 @@
         readonly={true}
       />
     </div>
-    <SingleHorizontalBar
-      {lowerBound}
-      {higherBound}
-      {solutionValue}
-      bind:selectedValue
-      bind:previousValue
-    />
+    <div style="margin: 0;">
+      <SingleHorizontalBar
+        {lowerBound}
+        {higherBound}
+        {solutionValue}
+        bind:selectedValue
+        bind:previousValue
+      />
+    </div>
   </div>
 </div>
 
@@ -62,7 +64,6 @@
 
   .container {
     display: flex;
-    height: fit-content;
     /* width: fit-content; */
     /* min-width: max-content; */
   }
@@ -76,6 +77,9 @@
     justify-content: space-between;
   }
   .secondPart {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5em;
     min-width: 50vw;
   }
 
@@ -84,6 +88,6 @@
     flex-direction: row;
     justify-content: right;
     margin: 0;
-    margin-bottom: 0.5em;
+    padding-bottom: 0;
   }
 </style>

@@ -35,6 +35,7 @@
     flex-direction: column;
 
     /* align-items: center; */
+    justify-items: center;
   }
   .readonly {
     background: transparent;
@@ -42,14 +43,24 @@
     overflow: visible;
     padding: 0;
     margin-left: 0.5em;
+    align-self: center;
+    font-size: small;
   }
 
   input {
     width: inherit;
-    height: 1.5em;
-    border-radius: 2px;
+    height: 1.4em;
+    border-radius: 4px;
     border: 1px solid #ccc;
     overflow: visible;
+    color: gray;
+    font-weight: 600;
+  }
+
+  label {
+    color: gray;
+    font-size: small;
+    margin-bottom: 0.25em;
   }
   /* .error{
     color: red;
