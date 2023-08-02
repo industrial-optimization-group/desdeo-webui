@@ -462,6 +462,7 @@
             id: wholeNameOld,
             lastY: lastY,
             y: newY,
+            draggable: false,
             shape: {
               points: newPoints,
             },
