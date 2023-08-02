@@ -528,19 +528,19 @@
     addOnMouseEffect("right");
     addOnMouseEffect("arrow");
     // Add event listener which updates the aspiration line value.
-    // chart.getZr().on("click", function (params) {
-    //   if (params.target == null) {
-    //     return;
-    //   }
-    //   const targetParentName: string = params.target.parent.name;
-    //   // Only update the line if click has not happened on the interactive buttons
-    //   if (targetParentName !== "interactiveButtons") {
-    //     selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-    //       params.offsetX,
-    //       params.offsetY,
-    //     ])[0];
-    //   }
-    // });
+    chart.getZr().on("click", function (params) {
+      if (params.target == null) {
+        return;
+      }
+      const targetParentName: string = params.target.parent.name;
+      // Only update the line if click has not happened on the interactive buttons
+      if (targetParentName !== "interactiveButtons") {
+        selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+          params.offsetX,
+          params.offsetY,
+        ])[0];
+      }
+    });
   }
 
   /**
