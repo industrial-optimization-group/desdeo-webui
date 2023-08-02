@@ -59,6 +59,16 @@
 
   // Create the option object for the whole chart.
   let option: echarts.EChartOption = {
+    tooltip: {
+      // show:false,
+      trigger: "none",
+      triggerOn: "none",
+      position: [20, -30],
+      // formatter: function(params) {
+      //   console.log(params);
+      //   return "jelklasdj";
+      // },
+    },
     xAxis: {
       axisLabel: {
         margin: 5,
@@ -118,6 +128,10 @@
     chart = echarts.init(chartDiv);
     addHorizontalBar(option);
     console.log(chart.getOption().graphic);
+    chart.on("showtip", function (params) {
+      console.log(params);
+      console.log(this);
+    });
   });
 
   function addHorizontalBar(option: echarts.EChartOption) {
@@ -444,7 +458,9 @@
                 stroke: arrowColor,
                 lineWidth: 1.25,
               },
+
               onclick: () => {
+                console.log("click");
                 selectedValue = solutionValue;
               },
             },
@@ -527,6 +543,11 @@
     addOnMouseEffect("left");
     addOnMouseEffect("right");
     addOnMouseEffect("arrow");
+
+    addTooltipListeners("aspirationGroup");
+    addTooltipListeners("leftRightGroup");
+    addTooltipListeners("verticalGroup");
+    addTooltipListeners("prevLine");
     // Add event listener which updates the aspiration line value.
     chart.getZr().on("click", function (params) {
       if (params.target == null) {
@@ -665,6 +686,18 @@
     }
   }
 
+  function addTooltipListeners(compID) {
+    chart.setOption({
+      graphic: [
+        {
+          id: compID,
+          onmouseover: showTooltip,
+          onmouseout: hideTooltip,
+        },
+      ],
+    });
+  }
+
   // a function that changes opacity of arrow when mouse is over it
   function addOnMouseEffect(compID: string) {
     // let type = getLineComponent(chart, compID).type;
@@ -705,6 +738,64 @@
           },
         },
       ],
+    });
+  }
+
+  function hideTooltip() {
+    chart.dispatchAction({
+      type: "hideTip",
+    });
+  }
+
+  function showTooltip(params) {
+    console.log("mouse enter");
+    let targetId = params.target.id;
+    let idToChek = targetId;
+    const parentId = params.target.parent.id;
+    if (typeof parentId === "string") {
+      idToChek = parentId;
+    }
+    let tooltipHelpText = "";
+    switch (idToChek) {
+      case "prevLine":
+        tooltipHelpText =
+          "Click this button to set the aspiration value to the previous value";
+        break;
+      case "drag":
+      case "aspirationGroup":
+        tooltipHelpText = "Drag this line to change the aspiration value";
+        break;
+      case "verticalGroup":
+        tooltipHelpText = "Click this button to reset to the solution value";
+        break;
+      case "leftRightGroup":
+        if (targetId === "left") {
+          tooltipHelpText =
+            "Click this button to set the aspiration value to the lowest possible value";
+        } else {
+          tooltipHelpText =
+            "Click this button to set the aspiration value to the highest possible value";
+        }
+        break;
+      default:
+        break;
+    }
+
+    chart.setOption({
+      tooltip: {
+        show: true,
+        trigger: "item",
+        formatter: () => {
+          return tooltipHelpText;
+        },
+      },
+    });
+    chart.dispatchAction({
+      type: "showTip",
+      seriesIndex: 0,
+      dataIndex: 0,
+      // x:0,
+      // y:0,
     });
   }
 </script>

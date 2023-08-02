@@ -12,13 +12,16 @@
 
     
 -->
-<!-- TODO: documentation
+<!-- 
+  TODO: documentation
     TODO: Fix draggable oldLines
     TODO: Make YAxis visible
-    TODO: Add validation for input fields and lines
-          - Aspiration value should be between upper and lower bounds
-          - Aspiration line should not be draggable over the bound line
-          - Bound value should be between ideal and nadir points
+    TODO: Min/Max prop
+    TODO: Color prop
+    TODO: prop for making the chart not interactive
+    TODO: 
+    TODO: 
+
   
    -->
 <script lang="ts">
