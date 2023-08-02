@@ -537,6 +537,12 @@
     }
   }
 
+  /**
+   * Updates the interactivity of lines on the chart.
+   *
+   * @param disable If true, disables the interactivity of the lines. If false,
+   *   enables it.
+   */
   function updateInteractivity(disable: boolean) {
     if (!chart) {
       return;
@@ -545,6 +551,14 @@
       graphic: [
         {
           id: "newAspLine",
+          silent: disable,
+        },
+        {
+          id: "newBoundLine",
+          silent: disable,
+        },
+        {
+          id: "verticalLine",
           silent: disable,
         },
       ],
