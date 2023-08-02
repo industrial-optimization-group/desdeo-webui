@@ -117,6 +117,7 @@
   onMount(() => {
     chart = echarts.init(chartDiv);
     addHorizontalBar(option);
+    console.log(chart.getOption().graphic);
   });
 
   function addHorizontalBar(option: echarts.EChartOption) {
@@ -575,32 +576,44 @@
       return;
     }
 
+    let opt =
+      lineId === "aspirationGroup"
+        ? [
+            {
+              id: lineId,
+              silent: false,
+              x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+              invisible: true,
+            },
+            {
+              // id: "dragImage",
+              id: "dragCircle",
+              invisible: false,
+            },
+            {
+              id: "rec",
+              invisible: false,
+            },
+            {
+              id: "dragLeft",
+              invisible: false,
+            },
+            {
+              id: "dragRight",
+              invisible: false,
+            },
+          ]
+        : [
+            {
+              id: lineId,
+              silent: false,
+              x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+              invisible: false,
+            },
+          ];
+
     let newOption = {
-      graphic: [
-        {
-          id: lineId,
-          silent: false,
-          x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
-          invisible: true,
-        },
-        {
-          // id: "dragImage",
-          id: "dragCircle",
-          invisible: false,
-        },
-        {
-          id: "rec",
-          invisible: false,
-        },
-        {
-          id: "dragLeft",
-          invisible: false,
-        },
-        {
-          id: "dragRight",
-          invisible: false,
-        },
-      ],
+      graphic: opt,
     };
     chart.setOption(newOption);
   }
