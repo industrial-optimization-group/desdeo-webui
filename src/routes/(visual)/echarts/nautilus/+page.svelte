@@ -82,6 +82,9 @@
   };
   let selectedValue: number;
   $: selectedValue;
+  let currentIterationIndex = 0;
+  $: currentIterationIndex;
+  $: disableInteraction = false;
 </script>
 
 <div>
@@ -93,10 +96,28 @@
     higherBound={5}
     lowerBound={0}
     iterations={10}
-    currentIterationIndex={0}
+    bind:currentIterationIndex
     bind:selectedValue
     uncertaintyBounds={exampleData.uncertainty[0]}
+    bind:disableInteraction
   />
+</div>
+<!-- Button for simulating iterating -->
+<div style="margin-top: 2em">
+  <button
+    on:click={function () {
+      currentIterationIndex += 1;
+    }}>Next step</button
+  >
+</div>
+<div style="margin-top: 0.5em">
+  <button
+    on:click={function () {
+      disableInteraction = !disableInteraction;
+    }}>Toggle interaction</button
+  >
+  <br />
+  <span>disableInteraction: {disableInteraction}</span>
 </div>
 <!-- <div class="container">
   <div>

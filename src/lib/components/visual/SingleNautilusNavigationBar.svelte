@@ -9,6 +9,7 @@
       @param {number} selectedValue - The aspiration value that the user has selected.
       @param {number} selectedBoundValue -The bound value that the user has selected .
       @param {Array<Array<number>>} uncertaintyBounds - The uncertainty bounds to drawn on the chart.
+      @param {boolean} disableInteraction - Controls whether the user can interact with the chart.
 
     
 -->
@@ -39,6 +40,7 @@
   export let selectedValue: number | undefined = undefined;
   export let selectedBoundValue = lowerBound;
   export let uncertaintyBounds: number[][];
+  export let disableInteraction = true;
   // export let colorPaletteIndex =  $: selectedAspY = 0;
   // export let isMin = true;
   // export let divId: string;
@@ -52,7 +54,7 @@
   $: updateLine("bound", selectedBoundValue);
   $: currentIterationIndex;
   $: updateOnNewStep(currentIterationIndex);
-
+  $: updateInteractivity(disableInteraction);
   let objShape: number[][] = [];
 
   onMount(() => {
@@ -533,14 +535,21 @@
       });
     }
   }
+
+  function updateInteractivity(disable: boolean) {
+    if (!chart) {
+      return;
+    }
+    chart.setOption({
+      graphic: [
+        {
+          id: "newAspLine",
+          silent: disable,
+        },
+      ],
+    });
+  }
 </script>
 
-<!-- Button for simulating iterating -->
-<button
-  on:click={function () {
-    currentIterationIndex += 1;
-  }}>Next Iteration</button
->
-<p>{currentIterationIndex}</p>
 <!--The div where the chart will be rendered. Must have width and height values for the chart to show.-->
-<div style="height:100%; width:100%" bind:this={chartDiv} />
+<div style="height:100%; width:100%;" bind:this={chartDiv} />
