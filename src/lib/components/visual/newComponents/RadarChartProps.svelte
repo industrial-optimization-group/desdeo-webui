@@ -8,6 +8,10 @@
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
   import { selectedLineStyle } from "../stores";
+  import {
+    handleClickSelection,
+    handleSelectionChange,
+  } from "../helperFunctions";
 
   export let values: number[][];
   // export let minimize: boolean[];
@@ -20,21 +24,7 @@
   let chart: echarts.EChartsType;
   $: if (selectedIndices) {
     if (chart) {
-      chart.dispatchAction({
-        type: "unselect",
-        seriesIndex: 0,
-        dataIndex: chart.getModel().getSeries()[0].getSelectedDataIndices(),
-      });
-      chart.dispatchAction({
-        type: "select",
-        seriesIndex: 0,
-        dataIndex: selectedIndices,
-      });
-      // Downplay all after selection, for selection to show
-      chart.dispatchAction({
-        type: "downplay",
-        seriesIndex: 0,
-      });
+      handleSelectionChange(chart, selectedIndices);
     }
   }
 
@@ -85,24 +75,17 @@
     // createChart(id, option);
     chart = echarts.init(chartDiv, "", { renderer: "svg" });
     chart.setOption(option);
-    chart.on("click", function (params) {
-      console.log(params);
-      // Check if selectedIndices already contains the index of the clicked solution
-      if (selectedIndices.includes(params.dataIndex)) {
-        // If it does, remove it from the array (to unselect it)
-        selectedIndices.splice(selectedIndices.indexOf(params.dataIndex), 1);
-      } else {
-        // If it doesn't, add it to the array
-        selectedIndices = [...selectedIndices, params.dataIndex];
+    chart.on(
+      "click",
+      function (params: {
+        dataIndex: number;
+        componentType: string;
+        seriesIndex: number;
+      }) {
+        console.log(params);
+        selectedIndices = handleClickSelection(params, selectedIndices);
       }
-
-      selectedIndices = selectedIndices;
-      if (params.componentType === "series") {
-        console.log(params.seriesIndex);
-        console.log(params.dataIndex);
-        // selectedIndices = [params.dataIndex];
-      }
-    });
+    );
   });
 </script>
 
