@@ -7,7 +7,7 @@
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
-  import { selectedLineStyle } from "./stores";
+  import { selectedLineStyle } from "../stores";
 
   export let values: number[][];
   // export let minimize: boolean[];
@@ -85,6 +85,24 @@
     // createChart(id, option);
     chart = echarts.init(chartDiv, "", { renderer: "svg" });
     chart.setOption(option);
+    chart.on("click", function (params) {
+      console.log(params);
+      // Check if selectedIndices already contains the index of the clicked solution
+      if (selectedIndices.includes(params.dataIndex)) {
+        // If it does, remove it from the array (to unselect it)
+        selectedIndices.splice(selectedIndices.indexOf(params.dataIndex), 1);
+      } else {
+        // If it doesn't, add it to the array
+        selectedIndices = [...selectedIndices, params.dataIndex];
+      }
+
+      selectedIndices = selectedIndices;
+      if (params.componentType === "series") {
+        console.log(params.seriesIndex);
+        console.log(params.dataIndex);
+        // selectedIndices = [params.dataIndex];
+      }
+    });
   });
 </script>
 
