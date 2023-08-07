@@ -368,3 +368,31 @@ export function get_saved_problems(): Promise<SavedProblem[]> {
       return (<_SavedProblem[]>response.data).map(transformProblem);
     });
 }
+
+export function get_problem(problem_id: number): Promise<SavedProblem> {
+  return with_access_token()
+    .post("/problem/access", { problem_id })
+    .then((response) => {
+      // TODO: Check that the data has the expected form?
+      return transformProblem(response.data);
+    });
+}
+
+export function startMethod() {
+  return with_access_token().get("/method/control");
+}
+
+export function setup_referencePointMethod(problemId: number) {
+  return with_access_token().post("/method/create", {
+    problem_id: problemId,
+    method: "reference_point_method",
+  });
+}
+
+export function iterate_referencePointMethod(referencePoint: number[]) {
+  return with_access_token().post("/method/control", {
+    response: {
+      reference_point: referencePoint,
+    },
+  });
+}
