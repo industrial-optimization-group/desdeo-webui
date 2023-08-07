@@ -54,6 +54,6 @@
     "typescript-svelte-plugin": "^0.3.26",
     "unplugin-icons": "^0.16.5",
     "vite": "^4.3.0",
-    "vitest": "^0.33.0"
+    "vitest": "^0.34.1"
   }
 }
