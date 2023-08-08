@@ -47,6 +47,7 @@
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
   let lastPosition: number;
+  $: stepBack = false;
   // $: console.log(selectedValue);
   // $: console.log("bound value: " + selectedBoundValue);
   // $: updateLine(selectedValue)
@@ -65,6 +66,7 @@
 
   /** Updates the data that is used to draw the feasible region. */
   function updateData() {
+    objShape = [];
     for (let index = 0; index <= currentIterationIndex; index++) {
       let iterationBounds = uncertaintyBounds[index];
       const lowerBound = iterationBounds[0];
@@ -80,6 +82,7 @@
   function draw(
     api: echarts.EChartOption.SeriesCustom.RenderItemApi
   ): echarts.EChartOption.SeriesCustom.RenderItemReturnPolygon {
+    updateData();
     let points = [];
     if (!api.coord || !api.visual) {
       return {};
@@ -309,17 +312,22 @@
                   params.offsetX,
                   0,
                 ])[0];
-                currentIterationIndex = Math.round(step);
+                let stepRounded = Math.round(step);
+                if (stepRounded < currentIterationIndex) {
+                  stepBack = true;
+                  currentIterationIndex = stepRounded;
+                }
                 console.log(currentIterationIndex);
-                chart.setOption({
-                  graphic: {
-                    id: "verticalLine",
-                    x: chart.convertToPixel({ seriesIndex: 0 }, [
-                      currentIterationIndex,
-                      0,
-                    ])[0],
-                  },
-                });
+                updateStepLine();
+                // chart.setOption({
+                //   graphic: {
+                //     id: "verticalLine",
+                //     x: chart.convertToPixel({ seriesIndex: 0 }, [
+                //       currentIterationIndex,
+                //       0,
+                //     ])[0],
+                //   },
+                // });
               },
             },
           ],
@@ -401,13 +409,20 @@
     if (!chart) {
       return;
     }
-    if (idx < iterations) {
-      idx = idx + 1;
-      updateData();
+    if (stepBack) {
       updateStepLine();
-      if (idx > 0) {
-        splitLine();
-        addNewLine();
+      updateData();
+      resetLine();
+      stepBack = false;
+    } else {
+      if (idx < iterations) {
+        idx = idx + 1;
+        updateData();
+        updateStepLine();
+        if (idx > 0) {
+          splitLine();
+          addNewLine();
+        }
       }
     }
   }
@@ -422,7 +437,6 @@
       graphic: [
         {
           id: "verticalLine",
-          type: "polyline",
           x: xForVerticalLine,
         },
       ],
@@ -584,6 +598,35 @@
         },
       ],
     });
+  }
+
+  function resetLine() {
+    applyForMultipleLines((wholeNameOld) => {
+      let currentX = chart.convertToPixel({ seriesIndex: 0 }, [
+        currentIterationIndex,
+        0,
+      ])[0];
+      let old = getLineComponent(chart, wholeNameOld).shape;
+      let val: number[][] = old.points;
+      let end = val.length - 1;
+      for (let i = 0; i < val.length; i++) {
+        const point: number[] = val[i];
+        if (point[0] === currentX) {
+          end = i + 1;
+          break;
+        }
+      }
+      let test = val.slice(0, end);
+      chart.setOption({
+        graphic: {
+          id: wholeNameOld,
+          shape: {
+            points: test,
+          },
+        },
+      });
+    });
+    addNewLine();
   }
 </script>
 
