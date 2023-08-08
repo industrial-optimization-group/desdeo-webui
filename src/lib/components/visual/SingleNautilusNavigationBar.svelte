@@ -490,6 +490,7 @@
   }
 
   function setDefaultGraphicOptions() {
+    // currentIterationIndex = 0;
     const xAxisRect = chart
       .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
       .getComponent("xAxis")
@@ -555,7 +556,12 @@
               // type: "line",
               type: "polyline",
               z: 3,
-              y: xAxisRect.height - 2,
+              y: selectedBoundValue
+                ? chart.convertToPixel({ seriesIndex: 0 }, [
+                    selectedBoundValue,
+                    selectedBoundValue,
+                  ])[1]
+                : xAxisRect.height - 2,
               lastY: xAxisRect.height - 2,
               shape: {
                 points: [
@@ -640,3 +646,4 @@
 
 <!--The div where the chart will be rendered. Must have width and height values for the chart to show.-->
 <div style="height:100%; width:100%;" bind:this={chartDiv} />
+<button on:click={setDefaultGraphicOptions}>Reset lines</button>

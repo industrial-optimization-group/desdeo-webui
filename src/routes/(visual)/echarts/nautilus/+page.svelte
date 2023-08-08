@@ -85,10 +85,14 @@
   let currentIterationIndex = 0;
   $: currentIterationIndex;
   $: disableInteraction = false;
+  $: boundValue = -2;
 </script>
 
 <div>
   <input type="number" bind:value={selectedValue} />
+</div>
+<div>
+  <input type="number" bind:value={boundValue} />
 </div>
 <!-- Single Nautilus bars -->
 <div id="hori" style="width: 70vh; height: 2vh; min-height: 100px;">
@@ -98,6 +102,7 @@
     iterations={10}
     bind:currentIterationIndex
     bind:selectedValue
+    bind:selectedBoundValue={boundValue}
     uncertaintyBounds={exampleData.uncertainty[0]}
     bind:disableInteraction
   />
