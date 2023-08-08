@@ -189,151 +189,7 @@
 
     chart.setOption(axisOptions);
 
-    const xAxisRect = chart
-      .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
-      .getComponent("xAxis")
-      .axis.grid.getRect();
-
-    // Add the default options of the aspiration and bound lines
-    chart.setOption({
-      // Add aspiration value line
-      graphic: [
-        {
-          type: "group",
-          id: "aspLine",
-          children: [
-            // The part of the aspiration line that shows the history
-            {
-              id: "oldAspLine",
-              type: "polyline",
-              z: 3,
-              y: selectedValue
-                ? chart.convertToPixel({ seriesIndex: 0 }, [
-                    selectedValue,
-                    selectedValue,
-                  ])[1]
-                : xAxisRect.height / 2,
-              lastY: xAxisRect.height / 2,
-              shape: {
-                points: [
-                  [0, 0],
-                  [xAxisRect.width, 0],
-                ],
-              },
-              style: aspirationLineStyle,
-              draggable: "vertical",
-              ondrag: restrictDrag,
-            },
-            // The part of the aspiration line that is on the right side of the vertical line
-            {
-              id: "newAspLine",
-              type: "polyline",
-              invisible: true,
-              lastY: -99,
-              y: -99,
-              z: 3,
-              shape: {
-                points: [
-                  [0, 0],
-                  [xAxisRect.width, 0],
-                ],
-              },
-              style: aspirationLineStyle,
-              draggable: "vertical",
-              ondrag: restrictDrag,
-            },
-          ],
-        },
-        // Bound line options
-        {
-          type: "group",
-          id: "boundLine",
-          children: [
-            {
-              id: "oldBoundLine",
-              // type: "line",
-              type: "polyline",
-              z: 3,
-              y: xAxisRect.height - 2,
-              lastY: xAxisRect.height - 2,
-              shape: {
-                points: [
-                  [0, 0],
-                  [xAxisRect.width, 0],
-                ],
-              },
-              style: boundLineStyle,
-              draggable: "vertical",
-              ondrag: restrictDrag,
-            },
-            {
-              id: "newBoundLine",
-              type: "polyline",
-              lastY: -99,
-              invisible: true,
-              y: -99,
-              z: 2,
-              shape: {
-                points: [
-                  [0, 0],
-                  [xAxisRect.width, 0],
-                ],
-              },
-              style: boundLineStyle,
-              draggable: "vertical",
-              ondrag: restrictDrag,
-            },
-
-            // The vertical line that shows the current step
-            {
-              id: "verticalLine",
-              type: "polyline",
-              z: 4,
-              x: chart.convertToPixel({ seriesIndex: 0 }, [
-                currentIterationIndex,
-                0,
-              ])[0],
-              shape: {
-                points: [
-                  [0, 0],
-                  [0, xAxisRect.height],
-                ],
-              },
-              style: {
-                stroke: "black",
-                lineWidth: 3,
-              },
-              draggable: "horizontal",
-              ondrag: function (params) {
-                console.log(params);
-              },
-              ondragend: function (params) {
-                let step = chart.convertFromPixel({ seriesIndex: 0 }, [
-                  params.offsetX,
-                  0,
-                ])[0];
-                let stepRounded = Math.round(step);
-                if (stepRounded < currentIterationIndex) {
-                  stepBack = true;
-                  currentIterationIndex = stepRounded;
-                }
-                console.log(currentIterationIndex);
-                updateStepLine();
-                // chart.setOption({
-                //   graphic: {
-                //     id: "verticalLine",
-                //     x: chart.convertToPixel({ seriesIndex: 0 }, [
-                //       currentIterationIndex,
-                //       0,
-                //     ])[0],
-                //   },
-                // });
-              },
-            },
-          ],
-        },
-      ],
-    });
+    setDefaultGraphicOptions();
   }
 
   function restrictDrag(event: echarts.ElementEvent) {
@@ -409,13 +265,13 @@
     if (!chart) {
       return;
     }
-    if (stepBack) {
-      updateStepLine();
-      updateData();
-      resetLine();
-      stepBack = false;
-    } else {
-      if (idx < iterations) {
+    if (idx < iterations) {
+      if (stepBack) {
+        updateStepLine();
+        updateData();
+        resetLine();
+        stepBack = false;
+      } else {
         idx = idx + 1;
         updateData();
         updateStepLine();
@@ -601,32 +457,184 @@
   }
 
   function resetLine() {
-    applyForMultipleLines((wholeNameOld) => {
-      let currentX = chart.convertToPixel({ seriesIndex: 0 }, [
-        currentIterationIndex,
-        0,
-      ])[0];
-      let old = getLineComponent(chart, wholeNameOld).shape;
-      let val: number[][] = old.points;
-      let end = val.length - 1;
-      for (let i = 0; i < val.length; i++) {
-        const point: number[] = val[i];
-        if (point[0] === currentX) {
-          end = i + 1;
-          break;
+    if (currentIterationIndex === 0) {
+      setDefaultGraphicOptions();
+    } else {
+      applyForMultipleLines((wholeNameOld) => {
+        let currentX = chart.convertToPixel({ seriesIndex: 0 }, [
+          currentIterationIndex,
+          0,
+        ])[0];
+        let old = getLineComponent(chart, wholeNameOld).shape;
+        let val: number[][] = old.points;
+        let end = val.length - 1;
+        for (let i = 0; i < val.length; i++) {
+          const point: number[] = val[i];
+          if (point[0] === currentX) {
+            end = i + 1;
+            break;
+          }
         }
-      }
-      let test = val.slice(0, end);
-      chart.setOption({
-        graphic: {
-          id: wholeNameOld,
-          shape: {
-            points: test,
+        let test = val.slice(0, end);
+        chart.setOption({
+          graphic: {
+            id: wholeNameOld,
+            shape: {
+              points: test,
+            },
           },
-        },
+        });
       });
+      addNewLine();
+    }
+  }
+
+  function setDefaultGraphicOptions() {
+    const xAxisRect = chart
+      .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
+      .getComponent("xAxis")
+      .axis.grid.getRect();
+
+    // Add the default options of the aspiration and bound lines
+    chart.setOption({
+      // Add aspiration value line
+      graphic: [
+        {
+          type: "group",
+          id: "aspLine",
+          children: [
+            // The part of the aspiration line that shows the history
+            {
+              id: "oldAspLine",
+              type: "polyline",
+              z: 3,
+              y: selectedValue
+                ? chart.convertToPixel({ seriesIndex: 0 }, [
+                    selectedValue,
+                    selectedValue,
+                  ])[1]
+                : xAxisRect.height / 2,
+              lastY: xAxisRect.height / 2,
+              shape: {
+                points: [
+                  [0, 0],
+                  [xAxisRect.width, 0],
+                ],
+              },
+              style: aspirationLineStyle,
+              draggable: "vertical",
+              ondrag: restrictDrag,
+            },
+            // The part of the aspiration line that is on the right side of the vertical line
+            {
+              id: "newAspLine",
+              type: "polyline",
+              invisible: true,
+              lastY: -99,
+              y: -99,
+              z: 3,
+              shape: {
+                points: [
+                  [0, 0],
+                  [xAxisRect.width, 0],
+                ],
+              },
+              style: aspirationLineStyle,
+              draggable: "vertical",
+              ondrag: restrictDrag,
+            },
+          ],
+        },
+        // Bound line options
+        {
+          type: "group",
+          id: "boundLine",
+          children: [
+            {
+              id: "oldBoundLine",
+              // type: "line",
+              type: "polyline",
+              z: 3,
+              y: xAxisRect.height - 2,
+              lastY: xAxisRect.height - 2,
+              shape: {
+                points: [
+                  [0, 0],
+                  [xAxisRect.width, 0],
+                ],
+              },
+              style: boundLineStyle,
+              draggable: "vertical",
+              ondrag: restrictDrag,
+            },
+            {
+              id: "newBoundLine",
+              type: "polyline",
+              lastY: -99,
+              invisible: true,
+              y: -99,
+              z: 2,
+              shape: {
+                points: [
+                  [0, 0],
+                  [xAxisRect.width, 0],
+                ],
+              },
+              style: boundLineStyle,
+              draggable: "vertical",
+              ondrag: restrictDrag,
+            },
+
+            // The vertical line that shows the current step
+            {
+              id: "verticalLine",
+              type: "polyline",
+              z: 4,
+              x: chart.convertToPixel({ seriesIndex: 0 }, [
+                currentIterationIndex,
+                0,
+              ])[0],
+              shape: {
+                points: [
+                  [0, 0],
+                  [0, xAxisRect.height],
+                ],
+              },
+              style: {
+                stroke: "black",
+                lineWidth: 3,
+              },
+              draggable: "horizontal",
+              ondrag: function (params) {
+                console.log(params);
+              },
+              ondragend: function (params) {
+                let step = chart.convertFromPixel({ seriesIndex: 0 }, [
+                  params.offsetX,
+                  0,
+                ])[0];
+                let stepRounded = Math.round(step);
+                if (stepRounded < currentIterationIndex) {
+                  stepBack = true;
+                  currentIterationIndex = stepRounded;
+                }
+                console.log(currentIterationIndex);
+                updateStepLine();
+                // chart.setOption({
+                //   graphic: {
+                //     id: "verticalLine",
+                //     x: chart.convertToPixel({ seriesIndex: 0 }, [
+                //       currentIterationIndex,
+                //       0,
+                //     ])[0],
+                //   },
+                // });
+              },
+            },
+          ],
+        },
+      ],
     });
-    addNewLine();
   }
 </script>
 
