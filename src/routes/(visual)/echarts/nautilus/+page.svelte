@@ -81,7 +81,7 @@
     minimize: [true, false, true],
   };
   let selectedValue: number;
-  $: selectedValue;
+  $: selectedValue = 2;
   let currentIterationIndex = 0;
   $: currentIterationIndex;
   $: disableInteraction = false;

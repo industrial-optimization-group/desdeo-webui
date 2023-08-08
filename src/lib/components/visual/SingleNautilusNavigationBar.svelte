@@ -321,9 +321,7 @@
       let newAspLineComponent = getLineComponent(chart, wholeNameNew);
       let newAspLinePoints = newAspLineComponent.shape.points;
       let lastY =
-        newAspLineComponent.lastY < 0
-          ? oldLineComponent.lastY
-          : newAspLineComponent.lastY;
+        newAspLineComponent.y < 0 ? oldLineComponent.y : newAspLineComponent.y;
 
       // The line between the old aspiration values line and the current iteration vertical line
       let betweenLine = [
@@ -515,7 +513,12 @@
                     selectedValue,
                   ])[1]
                 : xAxisRect.height / 2,
-              lastY: xAxisRect.height / 2,
+              lastY: selectedValue
+                ? chart.convertToPixel({ seriesIndex: 0 }, [
+                    selectedValue,
+                    selectedValue,
+                  ])[1]
+                : xAxisRect.height / 2,
               shape: {
                 points: [
                   [0, 0],
@@ -562,7 +565,12 @@
                     selectedBoundValue,
                   ])[1]
                 : xAxisRect.height - 2,
-              lastY: xAxisRect.height - 2,
+              lastY: selectedBoundValue
+                ? chart.convertToPixel({ seriesIndex: 0 }, [
+                    selectedBoundValue,
+                    selectedBoundValue,
+                  ])[1]
+                : xAxisRect.height - 2,
               shape: {
                 points: [
                   [0, 0],
