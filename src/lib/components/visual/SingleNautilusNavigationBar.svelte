@@ -454,6 +454,11 @@
     });
   }
 
+  export function resetLinesToDefaults() {
+    currentIterationIndex = 0;
+    stepBack = true;
+  }
+
   function resetLine() {
     if (currentIterationIndex === 0) {
       setDefaultGraphicOptions();
@@ -654,9 +659,4 @@
 
 <!--The div where the chart will be rendered. Must have width and height values for the chart to show.-->
 <div style="height:100%; width:100%;" bind:this={chartDiv} />
-<button
-  on:click={() => {
-    currentIterationIndex = 0;
-    stepBack = true;
-  }}>Reset lines</button
->
+<button on:click={resetLinesToDefaults}>Reset lines</button>
