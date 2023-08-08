@@ -300,6 +300,27 @@
                 stroke: "black",
                 lineWidth: 3,
               },
+              draggable: "horizontal",
+              ondrag: function (params) {
+                console.log(params);
+              },
+              ondragend: function (params) {
+                let step = chart.convertFromPixel({ seriesIndex: 0 }, [
+                  params.offsetX,
+                  0,
+                ])[0];
+                currentIterationIndex = Math.round(step);
+                console.log(currentIterationIndex);
+                chart.setOption({
+                  graphic: {
+                    id: "verticalLine",
+                    x: chart.convertToPixel({ seriesIndex: 0 }, [
+                      currentIterationIndex,
+                      0,
+                    ])[0],
+                  },
+                });
+              },
             },
           ],
         },
