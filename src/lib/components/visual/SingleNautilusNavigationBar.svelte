@@ -624,9 +624,9 @@
                 lineWidth: 3,
               },
               draggable: "horizontal",
-              ondrag: function (params) {
-                console.log(params);
-              },
+              // ondrag: function (params) {
+              //   console.log(params);
+              // },
               ondragend: function (params) {
                 let step = chart.convertFromPixel({ seriesIndex: 0 }, [
                   params.offsetX,
@@ -637,7 +637,7 @@
                   stepBack = true;
                   currentIterationIndex = stepRounded;
                 }
-                console.log(currentIterationIndex);
+                // console.log(currentIterationIndex);
                 updateStepLine();
                 // chart.setOption({
                 //   graphic: {

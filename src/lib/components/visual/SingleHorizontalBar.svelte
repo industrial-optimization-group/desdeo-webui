@@ -127,11 +127,11 @@
   onMount(() => {
     chart = echarts.init(chartDiv);
     addHorizontalBar(option);
-    console.log(chart.getOption().graphic);
-    chart.on("showtip", function (params) {
-      console.log(params);
-      console.log(this);
-    });
+    // console.log(chart.getOption().graphic);
+    // chart.on("showtip", function (params) {
+    //   console.log(params);
+    //   // console.log(this);
+    // });
   });
 
   function addHorizontalBar(option: echarts.EChartOption) {
@@ -460,7 +460,7 @@
               },
 
               onclick: () => {
-                console.log("click");
+                // console.log("click");
                 selectedValue = solutionValue;
               },
             },
@@ -748,7 +748,7 @@
   }
 
   function showTooltip(params) {
-    console.log("mouse enter");
+    // console.log("mouse enter");
     let targetId = params.target.id;
     let idToChek = targetId;
     const parentId = params.target.parent.id;
