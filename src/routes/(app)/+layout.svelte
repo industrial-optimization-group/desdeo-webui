@@ -1,24 +1,14 @@
 <script lang="ts">
-  import { drawerStore } from "@skeletonlabs/skeleton";
   import { AppShell } from "@skeletonlabs/skeleton";
-  import Header from "$lib/components/main/Header.svelte";
   import Navigation from "$lib/components/main/Navigation.svelte";
+  import Header from "$lib/components/main/Header.svelte";
+  import { drawerStore } from "@skeletonlabs/skeleton";
 </script>
 
 <AppShell slotPageContent="p-20 pt-10" slotPageHeader="bg-white shadow-md">
-  <!-- (header) -->
-  <svelte:fragment slot="sidebarLeft">
-    <Navigation />
-  </svelte:fragment>
-  <!-- (sidebarRight) -->
-  <svelte:fragment slot="pageHeader">
-    <Header />
-  </svelte:fragment>
-  <!-- Router Slot -->
+  <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
+  <svelte:fragment slot="pageHeader"><Header /></svelte:fragment>
   <slot />
-  <!-- ---- / ---- -->
-  <!-- (pageFooter) -->
-  <!-- (footer) -->
 </AppShell>
 
 <button

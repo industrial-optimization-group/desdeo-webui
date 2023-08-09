@@ -1,4 +1,5 @@
 import axios from "axios";
+import { z } from "zod";
 import { derived, writable, get, readonly } from "svelte/store";
 
 // The API URL
@@ -292,13 +293,12 @@ export function register_account(username: string, password: string) {
     });
 }
 
-/** Problem data in the format provided by the API */
-type _SavedProblem = {
+/** Problem data in the format provided by the backend */
+type _Problem = {
   problem_id: number;
   problem_name: string;
   problem_type: string;
   objective_names: string[];
-  // TODO: Check if 1 means minimize and -1 maximize
   minimize: number[];
   n_objectives: number;
   variable_names: string[];
@@ -306,16 +306,8 @@ type _SavedProblem = {
   n_constraints: number;
 };
 
-export type Objective = {
-  name: string;
-  minimize: boolean;
-};
-
-export type Variable = {
-  name: string;
-};
-
-export type SavedProblem = {
+/** Problem data in the format used by the frontend */
+export type Problem = {
   id: number;
   name: string;
   type: string;
@@ -324,75 +316,157 @@ export type SavedProblem = {
   variables: Variable[];
   n_variables: number;
   n_constraints: number;
+
+  //
+  // Having the numbers of objectives, variables and constraints as properties
+  // of the problem is useful in the frontend.
+  //
 };
 
-function getObjectives(problem: _SavedProblem): Objective[] {
-  // TODO: Check that input is well-formed?
-  return problem.objective_names.map((name, i) => {
-    return {
-      name,
-      minimize: problem.minimize[i] === 1,
-    };
-  });
-}
+export type Objective = {
+  name: string;
+  minimize: boolean;
+};
 
-function getVariables(problem: _SavedProblem): Variable[] {
-  // TODO: Check that input is well-formed?
-  return problem.variable_names.map((name) => {
-    return {
-      name,
-    };
-  });
-}
+export type ObjectivePreference = {
+  name: string;
+  minimize: boolean;
 
-/** Transforms problem data to a more useful form */
-function transformProblem(problem: _SavedProblem): SavedProblem {
+  min: number /** Minimum value */;
+  max: number /** Maximum value */;
+  preference?: number;
+};
+
+export type Variable = {
+  name: string;
+};
+
+/** Transforms problem data from the backend format to the frontend format */
+function transform_problem(problem: _Problem): Problem {
+  const objectives = extract_objectives(problem);
+  const variables = extract_variables(problem);
+
   return {
     id: problem.problem_id,
     name: problem.problem_name,
     type: problem.problem_type,
-    objectives: getObjectives(problem),
-    n_objectives: problem.n_objectives,
-    variables: getVariables(problem),
-    n_variables: problem.n_variables,
+    objectives: objectives,
+    n_objectives: objectives.length,
+    variables: variables,
+    n_variables: variables.length,
     n_constraints: problem.n_constraints,
   };
 }
 
+function extract_objectives(problem: _Problem): Objective[] {
+  return problem.objective_names.map((name, i) => ({
+    name,
+    minimize: problem.minimize[i] === 1,
+  }));
+}
+
+function extract_variables(problem: _Problem): Variable[] {
+  return problem.variable_names.map((name) => ({
+    name,
+  }));
+}
+
 // TODO: Currently requires a batched version of the backend
-export function get_saved_problems(): Promise<SavedProblem[]> {
+export function get_all_problems(): Promise<Problem[]> {
   return with_access_token()
     .get("/problem/access/all")
     .then((response) => {
-      // TODO: Check that the data has the expected form?
-      return (<_SavedProblem[]>response.data).map(transformProblem);
+      // TODO: Validate data
+      return (<_Problem[]>response.data).map(transform_problem);
     });
 }
 
-export function get_problem(problem_id: number): Promise<SavedProblem> {
+export function get_problem(problem_id: number): Promise<Problem> {
   return with_access_token()
     .post("/problem/access", { problem_id })
     .then((response) => {
-      // TODO: Check that the data has the expected form?
-      return transformProblem(response.data);
+      // TODO: Validate data
+      return transform_problem(response.data);
     });
 }
 
-export function startMethod() {
-  return with_access_token().get("/method/control");
-}
+/**
+ * Method control
+ *
+ * The following section contains functions to control the solution methods.
+ */
 
-export function setup_referencePointMethod(problemId: number) {
-  return with_access_token().post("/method/create", {
-    problem_id: problemId,
-    method: "reference_point_method",
+const Point = z.array(z.number().finite());
+
+/** Response to the "start method" request */
+const StartMethod = z.object({
+  response: z.object({
+    ideal: Point,
+    nadir: Point,
+    message: z.string(),
+  }),
+});
+
+type StartMethod = z.infer<typeof StartMethod>;
+
+/**
+ * Creates a refinement of the `StartMethod` schema with the point length
+ * restricted to `n`.
+ */
+function startMethod(n: number) {
+  return z.object({
+    response: z.object({
+      ideal: Point.length(n),
+      nadir: Point.length(n),
+      message: z.string(),
+    }),
   });
 }
 
-export function iterate_referencePointMethod(referencePoint: number[]) {
+/**
+ * Starts a solution method that has previously been set up with a POST request
+ * to `/method/create`. The `n_objectives` parameter is used to validate that
+ * the ideal and nadir points in the response have correct lengths. The points
+ * are also validated to only contain finite values.
+ *
+ * @param n_objectives The number of objectives.
+ */
+async function start_method(n_objectives: number): Promise<StartMethod> {
+  const response = await with_access_token().get("/method/control");
+  return startMethod(n_objectives).parse(response.data);
+}
+
+/**
+ * Initializes or restarts the reference point method. The objectives in the
+ * returned list have their `min` and `max` properties set based on the ideal
+ * and nadir points the server returns in response to the "start method"
+ * request. The `min` and `max` properties are also validated to be finite.
+ *
+ * @param problem The problem to solve.
+ * @returns The objectives with their boundaries filled in.
+ */
+export async function initialize_reference_point_method(
+  problem: Problem
+): Promise<ObjectivePreference[]> {
+  await with_access_token().post("/method/create", {
+    problem_id: problem.id,
+    method: "reference_point_method",
+  });
+  const data = await start_method(problem.n_objectives);
+  const ideal = data.response.ideal;
+  const nadir = data.response.nadir;
+
+  return problem.objectives.map((objective, index) => ({
+    ...objective,
+    min: Math.min(ideal[index], nadir[index]),
+    max: Math.max(ideal[index], nadir[index]),
+  }));
+}
+
+export function iterate_reference_point_method(reference_point: number[]) {
   return with_access_token().post("/method/control", {
     response: {
-      reference_point: referencePoint,
+      reference_point,
     },
   });
 }

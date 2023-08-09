@@ -1,16 +1,16 @@
 <script lang="ts">
   import { Table, tableMapperValues } from "@skeletonlabs/skeleton";
-  import Card from "$lib/components/main/Card.svelte";
-  import type { SavedProblem } from "$lib/api";
+  import Card from "./Card.svelte";
+  import type { Problem } from "$lib/api";
 
-  export let problem: SavedProblem;
-  $: console.log(problem);
+  export let problem: Problem;
 
-  $: objectivesData = {
+  $: objectives = {
     head: ["Name", "Minimize"],
     body: tableMapperValues(problem.objectives, ["name", "minimize"]),
   };
-  $: variablesData = {
+
+  $: variables = {
     head: ["Name"],
     body: tableMapperValues(problem.variables, ["name"]),
   };
@@ -21,13 +21,8 @@
   <div class="flex flex-col gap-2">
     <div><span class="underline">Name:</span> {problem.name}</div>
     <div class="underline">Objectives:</div>
-    <Table source={objectivesData} />
+    <Table source={objectives} />
     <div class="underline">Variables:</div>
-    <Table source={variablesData} />
+    <Table source={variables} />
   </div>
-  <svelte:fragment slot="footer">
-    <button class="btn variant-filled-primary"
-      >Start solving with the Reference Point Method</button
-    >
-  </svelte:fragment>
 </Card>
