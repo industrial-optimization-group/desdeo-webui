@@ -38,7 +38,7 @@
     />
   </div>
   <div class="secondPart">
-    <div class="hide" id="prev">
+    <div id="prev">
       <span style="color:gray; font-size: small; ">Previous preference</span>
       <InputWithValidation
         bind:value={previousValue}
@@ -47,15 +47,13 @@
         readonly={true}
       />
     </div>
-    <div style="margin: 0;">
-      <SingleHorizontalBar
-        {lowerBound}
-        {higherBound}
-        {solutionValue}
-        bind:selectedValue
-        bind:previousValue
-      />
-    </div>
+    <SingleHorizontalBar
+      {lowerBound}
+      {higherBound}
+      {solutionValue}
+      bind:selectedValue
+      bind:previousValue
+    />
   </div>
 </div>
 
@@ -66,21 +64,24 @@
     display: flex;
     /* width: fit-content; */
     /* min-width: max-content; */
+    /* justify-content: space-between; */
+    height: 100%;
+    width: 100%;
   }
 
   div div {
     margin: 0.5em;
-  }
-  .firstPart {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
+  .firstPart {
+    width: 20%;
+  }
   .secondPart {
-    display: flex;
-    flex-direction: column;
     row-gap: 0.5em;
-    min-width: 50vw;
+    height: 100%;
+    width: 100%;
   }
 
   #prev {
