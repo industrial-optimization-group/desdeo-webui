@@ -136,18 +136,26 @@
 
   function addHorizontalBar(option: echarts.EChartOption) {
     chart.setOption(option);
+    let datalowerBar;
+    if (solutionValue) {
+      datalowerBar = higherBound < 0 ? [[solutionValue]] : [[lowerBound]];
+    } else {
+      datalowerBar = higherBound < 0 ? [[0]] : [[lowerBound]];
+    }
+
     chart.setOption({
       series: [
         {
+          id: "higher",
           stack: "negative",
-          color: barColor,
+          color: lowerBound < 0 || higherBound < 0 ? "transparent" : barColor,
           showBackground: true,
           backgroundStyle: {
             color: barColor,
             opacity: 0.2,
           },
           type: "bar",
-          data: [[solutionValue]],
+          data: solutionValue ? [[solutionValue]] : [[0]],
           barWidth: "100%",
           emphasis: {
             disabled: true,
@@ -170,7 +178,7 @@
             },
             type: "bar",
             animation: false,
-            data: [[lowerBound]],
+            data: datalowerBar,
             barWidth: "100%",
             emphasis: {
               disabled: true,

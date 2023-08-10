@@ -13,7 +13,7 @@
   // let chartDiv: HTMLDivElement
 </script>
 
-<div style="width: 50vw; height: 10vh;">
+<div style="width: 50vw; height: 50vh;">
   <HorizontalBarWithInputs
     higherBound={5}
     lowerBound={0}

@@ -2,7 +2,7 @@
   import SingleHorizontalBar from "$lib/components/visual/SingleHorizontalBar.svelte";
   // import { onMount } from "svelte";
   let solutionValue: number;
-  $: solutionValue;
+  $: solutionValue = -2;
   $: selectedValue = 2;
   // let bar: SingleHorizontalBar;
   // $: selectedValue2 = 2;
@@ -27,9 +27,17 @@
   </div>
   <div id="hori2" style="width: 100vh; height: 2vh; min-height: 100px;">
     <SingleHorizontalBar
+      higherBound={-11.234523}
+      lowerBound={-10.53453}
+      solutionValue={-11.05}
+      inputs={true}
+    />
+  </div>
+  <div id="hori3" style="width: 100vh; height: 2vh; min-height: 100px;">
+    <SingleHorizontalBar
       higherBound={10}
       lowerBound={-10}
-      solutionValue={9}
+      solutionValue={-3}
       inputs={true}
     />
   </div>
@@ -40,7 +48,7 @@
     <div id="hori3" style="width: 70vh; height: 2vh; min-height: 100px;">
       <SingleHorizontalBar
         higherBound={5}
-        lowerBound={0}
+        lowerBound={-5}
         bind:solutionValue
         bind:selectedValue
       />
