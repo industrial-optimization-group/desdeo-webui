@@ -173,11 +173,6 @@
             id: "lower",
             stack: "negative",
             color: barColor,
-            showBackground: true,
-            backgroundStyle: {
-              color: barColor,
-              opacity: 0.2,
-            },
             type: "bar",
             animation: false,
             data: datalowerBar,
