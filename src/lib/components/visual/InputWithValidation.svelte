@@ -22,6 +22,7 @@
     display: flex;
     flex-direction: column;
     justify-items: center;
+    width: 100%;
   }
 
   input {
@@ -29,7 +30,6 @@
     height: 1.4em;
     border-radius: 4px;
     border: 1px solid #ccc;
-    overflow: visible;
     color: gray;
     font-weight: 600;
   }

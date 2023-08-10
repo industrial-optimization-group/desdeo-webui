@@ -13,7 +13,7 @@
   // let chartDiv: HTMLDivElement
 </script>
 
-<div style="width: 50vw; height: 20vh;">
+<div style="width: 75vw; height: 20vh;">
   <HorizontalBarWithInputs
     higherBound={5}
     lowerBound={0}
@@ -22,7 +22,7 @@
     bind:selectedValue
   />
 </div>
-<div style="width: 50vw; height: 20vh;">
+<div style="width: 75vw; height: 20vh;">
   <HorizontalBarWithInputs
     higherBound={5.4355}
     lowerBound={5.5234}
@@ -31,7 +31,7 @@
     bind:selectedValue
   />
 </div>
-<div style="width: 50vw; height: 20vh;">
+<div style="width: 75vw; height: 20vh;">
   <HorizontalBarWithInputs
     higherBound={-2}
     lowerBound={5.5234}

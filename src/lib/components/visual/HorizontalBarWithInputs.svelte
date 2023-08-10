@@ -30,7 +30,7 @@
 <div class="container">
   <div
     class="firstPart"
-    style="--justify: {objectiveName ? 'space-between' : 'center'}"
+    style="--justify: {objectiveName ? 'space-between' : 'flex-end'}"
   >
     {#if objectiveName}
       <span>{objectiveName}</span>
@@ -59,13 +59,15 @@
         readonly={true}
       /> -->
     </div>
-    <SingleHorizontalBar
-      {lowerBound}
-      {higherBound}
-      {solutionValue}
-      bind:selectedValue
-      bind:previousValue
-    />
+    <div>
+      <SingleHorizontalBar
+        {lowerBound}
+        {higherBound}
+        {solutionValue}
+        bind:selectedValue
+        bind:previousValue
+      />
+    </div>
   </div>
 </div>
 
@@ -79,10 +81,15 @@
     /* justify-content: space-between; */
     height: 100%;
     width: 100%;
+    column-gap: 2em;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #ccc;
+    padding: 0.5em;
   }
 
   div div {
-    margin: 0.5em;
+    /* margin: 0.5em; */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -92,7 +99,6 @@
     justify-content: var(--justify);
   }
   .secondPart {
-    height: 100%;
     width: 100%;
   }
 
