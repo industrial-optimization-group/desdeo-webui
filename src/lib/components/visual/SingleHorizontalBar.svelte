@@ -51,6 +51,8 @@
 
   const arrowSize = 15;
   const arrowColor = "black";
+  const shadowSize = 5;
+  const shadowColor = "rgba(0,0,0,0.6)";
   const dragArrowColor = "white";
   const hoverLineColor = "gray";
 
@@ -117,8 +119,8 @@
       show: true,
       borderWidth: 1,
       borderColor: "gray",
-      left: arrowSize * 1.7,
-      right: arrowSize * 1.7,
+      left: arrowSize * 2,
+      right: arrowSize * 2,
       top: arrowSize + 2,
       bottom: arrowSize,
     },
@@ -489,7 +491,7 @@
             {
               type: "polyline",
               id: "left",
-              left: 1,
+              left: shadowSize,
               shape: {
                 points: [
                   [0, arrowSize],
@@ -508,7 +510,7 @@
               type: "polyline",
               id: "right",
               scaleX: -1,
-              right: -chart.getWidth() + 1,
+              right: -chart.getWidth() + shadowSize,
               shape: {
                 points: [
                   [0, arrowSize],
@@ -714,7 +716,9 @@
   function addOnMouseEffect(compID: string) {
     // let type = getLineComponent(chart, compID).type;
     let styleForArrow = {
-      strokeOpacity: 0.5,
+      strokeOpacity: 1,
+      shadowColor: shadowColor,
+      shadowBlur: shadowSize + 3,
     };
     // if (type === "polyline") {
     //   styleForArrow = {
@@ -741,8 +745,7 @@
                 {
                   id: compID,
                   style: {
-                    fillOpacity: 1,
-                    strokeOpacity: 1,
+                    shadowBlur: 0,
                   },
                 },
               ],
