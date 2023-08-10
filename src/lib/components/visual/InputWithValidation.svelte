@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let value: number;
+  export let value: number | undefined;
   export let higherBound: number;
   export let lowerBound: number;
   export let labelName = "Value: ";

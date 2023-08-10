@@ -13,7 +13,7 @@
 -->
 <!-- 
   TODO: Implement minimize/maximize coloring
-  TODO: Implement restricting line drawing to the chart area
+  TODO: BUG: When bounds are really small and close together, ex. [-1.1653, -1.1504], selected line doesnt work correctly (position is wrong)
  -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -158,6 +158,7 @@
           data: solutionValue ? [[solutionValue]] : [[0]],
           barWidth: "100%",
           emphasis: {
+            // use ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
             disabled: true,
           },
         },
@@ -181,6 +182,7 @@
             data: datalowerBar,
             barWidth: "100%",
             emphasis: {
+              // use ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
               disabled: true,
             },
           },
@@ -189,7 +191,10 @@
     }
 
     // TODO: How to get the gridRect without using the private method?
+    // use ts-ignore -- getModel is private method, but no easy workaround available. Might break in the future.
+    // TODO: Better documentation
     const gridModel = chart.getModel().getComponent("grid");
+    // use ts-ignore
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
 
@@ -348,7 +353,7 @@
               },
             });
           },
-          ondrag: function (params) {
+          ondrag: function (params: { offsetX: number; offsetY: number }) {
             let comp = getLineComponent(chart, "valueArea");
             let left = comp.shape.x;
             let right = comp.shape.x + comp.shape.width;
@@ -694,7 +699,7 @@
     }
   }
 
-  function addTooltipListeners(compID) {
+  function addTooltipListeners(compID: string) {
     chart.setOption({
       graphic: [
         {
@@ -755,7 +760,9 @@
     });
   }
 
-  function showTooltip(params) {
+  function showTooltip(params: {
+    target: { id: number | string; parent: { id: number | string } };
+  }) {
     // console.log("mouse enter");
     let targetId = params.target.id;
     let idToChek = targetId;
