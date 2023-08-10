@@ -5,7 +5,7 @@
 
   export let lowerBound: number;
   export let higherBound: number;
-  export let objectiveName = "Some objective";
+  export let objectiveName: string | undefined = undefined;
   export let solutionValue: number | undefined = undefined;
   export let selectedValue: number | undefined = undefined;
   export let previousValue: number | undefined = undefined;
@@ -28,8 +28,14 @@
 
 <!-- Horizontal bar with inputs -->
 <div class="container">
-  <div class="firstPart">
-    <span>{objectiveName}</span>
+  <div
+    class="firstPart"
+    style="--justify: {objectiveName ? 'space-between' : 'center'}"
+  >
+    {#if objectiveName}
+      <span>{objectiveName}</span>
+    {/if}
+
     <InputWithValidation
       bind:value={selectedValue}
       labelName="Aspiration level"
@@ -39,7 +45,9 @@
   </div>
   <div class="secondPart">
     <div id="prev">
-      <span style="color:gray; font-size: small; ">Previous preference</span>
+      {#if previousValue}
+        <span style="color:gray; font-size: small; ">Previous preference</span>
+      {/if}
       <InputWithValidation
         bind:value={previousValue}
         {higherBound}
@@ -77,6 +85,7 @@
   }
   .firstPart {
     width: 20%;
+    justify-content: var(--justify);
   }
   .secondPart {
     row-gap: 0.5em;

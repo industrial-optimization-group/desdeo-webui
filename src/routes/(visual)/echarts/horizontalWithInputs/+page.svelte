@@ -6,7 +6,7 @@
   $: solutionValue = 3.23;
   $: selectedValue = undefined;
   let previousValue: number | undefined = undefined;
-  $: previousValue = 2.213;
+  $: previousValue;
   // let bar: SingleHorizontalBar;
   // $: selectedValue2 = 2;
   // let bar2: SingleHorizontalBar;
@@ -17,7 +17,6 @@
   <HorizontalBarWithInputs
     higherBound={5}
     lowerBound={0}
-    objectiveName="Objective 1 "
     bind:previousValue
     bind:solutionValue
     bind:selectedValue
