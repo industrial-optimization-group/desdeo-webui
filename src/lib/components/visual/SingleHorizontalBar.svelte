@@ -158,7 +158,8 @@
           data: solutionValue ? [[solutionValue]] : [[0]],
           barWidth: "100%",
           emphasis: {
-            // use ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
+            //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
             disabled: true,
           },
         },
@@ -182,7 +183,8 @@
             data: datalowerBar,
             barWidth: "100%",
             emphasis: {
-              // use ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
+              //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
               disabled: true,
             },
           },
@@ -191,10 +193,12 @@
     }
 
     // TODO: How to get the gridRect without using the private method?
-    // use ts-ignore -- getModel is private method, but no easy workaround available. Might break in the future.
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore -- getModel is private method, but no easy workaround available. Might break in the future.
     // TODO: Better documentation
     const gridModel = chart.getModel().getComponent("grid");
-    // use ts-ignore
+    //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore -- same explanation as above
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
 
