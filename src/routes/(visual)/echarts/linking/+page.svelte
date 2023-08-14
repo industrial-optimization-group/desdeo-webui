@@ -127,10 +127,9 @@
 
   <div>
     <RadarChartProps
-      names={["d", "f", "a", "s"]}
+      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}
-      minimize={[true, false, true, false]}
     />
   </div>
 

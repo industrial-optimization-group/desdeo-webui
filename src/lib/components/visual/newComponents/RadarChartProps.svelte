@@ -16,7 +16,7 @@
   export let values: number[][];
   // export let minimize: boolean[];
   // export let showIndicators = false;
-  export let names: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
+  export let indicatorNames: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
   // export let data: SolutionData;
 
@@ -33,7 +33,7 @@
 
   // Create the indicator objects for the radar chart.
   let indObjects: { name: string }[] = [];
-  names.forEach((name) => {
+  indicatorNames.forEach((name) => {
     indObjects.push({ name: name });
   });
   // Create the series data for the radar chart.
@@ -45,9 +45,6 @@
   onMount(() => {
     // Create the option object for the whole chart.
     const option = {
-      title: {
-        text: "title",
-      },
       tooltip: {},
       radar: {
         shape: "circle",

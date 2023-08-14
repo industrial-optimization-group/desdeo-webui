@@ -308,11 +308,11 @@
         },
       },
       parallelAxis: createNameAxis(),
-      brush: {
-        brushMode: "multiple",
-        throttleType: "debounce",
-        throttleDelay: 300,
-      },
+      // brush: {
+      //   brushMode: "multiple",
+      //   throttleType: "debounce",
+      //   throttleDelay: 300,
+      // },
       series: [
         {
           type: "parallel",
