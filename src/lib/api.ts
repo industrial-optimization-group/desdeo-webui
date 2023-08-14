@@ -1,6 +1,14 @@
-import axios from "axios";
-import { z } from "zod";
+import axios, { type AxiosInstance } from "axios";
 import { derived, writable, get, readonly } from "svelte/store";
+
+/** An interface for accessing a backend server. */
+export interface Backend {
+  with_instance: () => AxiosInstance;
+}
+
+export const backend: Backend = {
+  with_instance: with_access_token,
+};
 
 // The API URL
 const baseURL = "http://localhost:5000";
@@ -388,85 +396,4 @@ export function get_problem(problem_id: number): Promise<Problem> {
       // TODO: Validate data
       return transform_problem(response.data);
     });
-}
-
-/**
- * Method control
- *
- * The following section contains functions to control the solution methods.
- */
-
-const Point = z.array(z.number().finite());
-
-/** Response to the "start method" request */
-const StartMethod = z.object({
-  response: z.object({
-    ideal: Point,
-    nadir: Point,
-    message: z.string(),
-  }),
-});
-
-type StartMethod = z.infer<typeof StartMethod>;
-
-/**
- * Creates a refinement of the `StartMethod` schema with the point length
- * restricted to `n`.
- */
-function startMethod(n: number) {
-  return z.object({
-    response: z.object({
-      ideal: Point.length(n),
-      nadir: Point.length(n),
-      message: z.string(),
-    }),
-  });
-}
-
-/**
- * Starts a solution method that has previously been set up with a POST request
- * to `/method/create`. The `n_objectives` parameter is used to validate that
- * the ideal and nadir points in the response have correct lengths. The points
- * are also validated to only contain finite values.
- *
- * @param n_objectives The number of objectives.
- */
-async function start_method(n_objectives: number): Promise<StartMethod> {
-  const response = await with_access_token().get("/method/control");
-  return startMethod(n_objectives).parse(response.data);
-}
-
-/**
- * Initializes or restarts the reference point method. The objectives in the
- * returned list have their `min` and `max` properties set based on the ideal
- * and nadir points the server returns in response to the "start method"
- * request. The `min` and `max` properties are also validated to be finite.
- *
- * @param problem The problem to solve.
- * @returns The objectives with their boundaries filled in.
- */
-export async function initialize_reference_point_method(
-  problem: Problem
-): Promise<ObjectivePreference[]> {
-  await with_access_token().post("/method/create", {
-    problem_id: problem.id,
-    method: "reference_point_method",
-  });
-  const data = await start_method(problem.n_objectives);
-  const ideal = data.response.ideal;
-  const nadir = data.response.nadir;
-
-  return problem.objectives.map((objective, index) => ({
-    ...objective,
-    min: Math.min(ideal[index], nadir[index]),
-    max: Math.max(ideal[index], nadir[index]),
-  }));
-}
-
-export function iterate_reference_point_method(reference_point: number[]) {
-  return with_access_token().post("/method/control", {
-    response: {
-      reference_point,
-    },
-  });
 }
