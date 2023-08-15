@@ -16,6 +16,7 @@
   import { colorPalette, selectedLineStyle } from "./stores";
   import type { Ranges } from "./types";
   import type { EChartOption } from "echarts";
+  import { getChartModel } from "./helperFunctions";
   import {
     handleClickSelection,
     handleSelectionChange,
@@ -103,12 +104,11 @@
   function getAxisY(minimize: boolean, index: number) {
     if (minimize) {
       return Object.values(
-        chart.getModel().getComponent("parallelAxis").coordinateSystem
+        getChartModel(chart).getComponent("parallelAxis").coordinateSystem
           ._axesLayout
       )[index].position[1];
     } else {
-      return chart
-        .getModel()
+      return getChartModel(chart as echarts.EChartsType)
         .getComponent("parallelAxis")
         .coordinateSystem.getRect().y;
     }
@@ -139,7 +139,7 @@
       y: chart ? getAxisY(min, index) : 0,
       x: chart
         ? Object.values(
-            chart.getModel().getComponent("parallelAxis").coordinateSystem
+            getChartModel(chart).getComponent("parallelAxis").coordinateSystem
               ._axesLayout
           )[index].position[0]
         : 0,
@@ -179,7 +179,7 @@
               },
               /* Explanation of the code line below:
                 // Gets the model of parallelAxis component, which has all the axes as an array.
-                const model = chart.getModel().getComponent("parallelAxis");
+                const model = getChartModel(chart).getComponent("parallelAxis");
                 // Gets the axesLayot which has the position info of every parallel axes
                 const axes = model.coordinateSystem._axesLayout
                 // Gets the x-coordinate of the i:th axis 
@@ -187,7 +187,7 @@
                 */
               x: chart
                 ? Object.values(
-                    chart.getModel().getComponent("parallelAxis")
+                    getChartModel(chart).getComponent("parallelAxis")
                       .coordinateSystem._axesLayout
                   )[index].position[0]
                 : 0,
@@ -221,6 +221,8 @@
           : undefined,
       ],
     }));
+    // let object = getChartModel(chart).getComponent("parallelAxis").coordinateSystem._axesLayout
+    // Object.values(object)[0].position[0]
     return graphicArrows;
   }
 
@@ -340,8 +342,8 @@
 
     // BRUSHING debugging
     chart.on("axisareaselected", function () {
-      // var series1 = chart.getModel().getSeries()[0];
-      // var series2 = chart.getModel().getSeries()[1];
+      // var series1 = getChartModel(chart).getSeries()[0];
+      // var series2 = getChartModel(chart).getSeries()[1];
       // var indices1 = series1.getRawIndicesByActiveState("active");
       // var indices2 = series2.getRawIndicesByActiveState('active');
       // console.log(indices1);
