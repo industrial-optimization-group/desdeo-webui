@@ -174,7 +174,7 @@
                 fill: "#409EFF",
               },
               onclick: () => {
-                console.log("object");
+                // console.log("object");
                 swapAxes(index, index - 1);
               },
               /* Explanation of the code line below:
@@ -349,14 +349,14 @@
     });
     // createChart(id, option);
 
-    chart.on("select", function (params) {
-      console.log(this);
-      console.log(params);
-    });
-    chart.on("selectChanged", function (params) {
-      // console.log(this);
-      console.log(params);
-    });
+    // chart.on("select", function (params) {
+    //   console.log(this);
+    //   console.log(params);
+    // });
+    // chart.on("selectChanged", function (params) {
+    //   // console.log(this);
+    //   console.log(params);
+    // });
     chart.on("click", function (params) {
       selectedIndices = handleClickSelection(params, selectedIndices);
     });
