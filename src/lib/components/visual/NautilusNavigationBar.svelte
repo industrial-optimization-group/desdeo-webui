@@ -16,6 +16,7 @@
   // import { chartStore } from "./chartStore";
   // import { createChart } from "./stores";
   import type { SolutionData } from "./types";
+  import { getChartModel } from "./helperFunctions";
   // import { element } from "svelte/internal";
 
   // The properties that can be passed to the component.
@@ -256,8 +257,7 @@
     };
     chart.setOption(newOption);
 
-    const xAxisRect = chart
-      .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
+    const xAxisRect = getChartModel(chart)
       .getComponent("xAxis")
       .axis.grid.getRect();
 
@@ -623,7 +623,10 @@
 
       let newAspLinePoints = [
         [verticalLineComponent.x, 0],
-        [chart.getModel().getComponent("xAxis").axis.grid.getRect().width, 0],
+        [
+          getChartModel(chart).getComponent("xAxis").axis.grid.getRect().width,
+          0,
+        ],
       ];
 
       // Update the position of the aspiration line so that it is visible (and draggable) again.
@@ -673,6 +676,22 @@
       });
     }
   }
+
+  function handleChange(
+    par: Event & {
+      currentTarget: EventTarget & HTMLInputElement;
+    },
+    i: number
+  ) {
+    const target = par.target as HTMLElement;
+    const nextSibling = target.parentElement?.nextElementSibling;
+    if (!nextSibling) {
+      return;
+    }
+    const chart = echarts.getInstanceByDom(nextSibling as HTMLDivElement);
+    let newY = chart.convertToPixel({ seriesIndex: 0 }, [0, boundValues[i]])[1];
+    updateLine(chart, newY, "BoundLine");
+  }
 </script>
 
 <!-- Button for simulating iterating -->
@@ -715,16 +734,7 @@
           max={data.value_ranges[i][1]}
           step="any"
           bind:value={aspValues[i]}
-          on:change={(par) => {
-            const chart = echarts.getInstanceByDom(
-              par.target.parentElement.nextElementSibling
-            );
-            let newY = chart.convertToPixel({ seriesIndex: 0 }, [
-              0,
-              aspValues[i],
-            ])[1];
-            updateLine(chart, newY, "AspLine");
-          }}
+          on:change={(par) => handleChange(par, i)}
         />
         <!-- on:change={(par) => handleOnchange(par, i)} -->
         <label for="bounds">Bounds </label>
@@ -735,16 +745,7 @@
           step="any"
           bind:value={boundValues[i]}
           placeholder="Set upper/lower bound here"
-          on:change={(par) => {
-            const chart = echarts.getInstanceByDom(
-              par.target.parentElement.nextElementSibling
-            );
-            let newY = chart.convertToPixel({ seriesIndex: 0 }, [
-              0,
-              boundValues[i],
-            ])[1];
-            updateLine(chart, newY, "BoundLine");
-          }}
+          on:change={(par) => handleChange(par, i)}
         />
       </div>
       <div

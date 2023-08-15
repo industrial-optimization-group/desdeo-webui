@@ -51,5 +51,8 @@ export function handleSelectionChange(
  * @returns
  */
 export function getChartModel(chart: EChartsType) {
+  // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
+  //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
   return chart.getModel();
 }

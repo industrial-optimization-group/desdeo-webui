@@ -19,6 +19,7 @@
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   import { referencePointStyle } from "./stores";
+  import { getChartModel } from "$lib/components/visual/helperFunctions";
   // import type { SolutionData } from "./types";
 
   export let lowerBound: number;
@@ -193,7 +194,7 @@
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore -- getModel is private method, but no easy workaround available. Might break in the future.
     // TODO: Better documentation
-    const gridModel = chart.getModel().getComponent("grid");
+    const gridModel = getChartModel(chart).getComponent("grid");
     //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore -- same explanation as above
     const gridView = chart.getViewOfComponentModel(gridModel);

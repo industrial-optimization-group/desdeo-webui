@@ -11,6 +11,7 @@
   import { onMount } from "svelte";
   import type { SolutionData } from "./types";
   import { colorPalette } from "./stores";
+  import { getChartModel } from "./helperFunctions";
   export let id: string;
   export let data: SolutionData;
   // function to which returns the aspiration values
@@ -128,8 +129,10 @@
       },
     });
 
-    // TODO: How to get the gridRect without using the private methods?
-    const gridModel = chart.getModel().getComponent("grid");
+    // TODO: How to get the gridRect without using the private methods? (getChartModel uses a private method)
+    const gridModel = getChartModel(chart).getComponent("grid");
+    //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
     const gridView = chart.getViewOfComponentModel(gridModel);
     const gridRect = gridView.group.getBoundingRect();
 

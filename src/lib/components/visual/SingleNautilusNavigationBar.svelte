@@ -19,16 +19,13 @@
     TODO: Make YAxis visible
     TODO: Min/Max prop
     TODO: Color prop
-    TODO: prop for making the chart not interactive
-    TODO: 
-    TODO: 
-
   
    -->
 <script lang="ts">
   import { onMount } from "svelte";
   import * as echarts from "echarts";
   import { aspirationLineStyle, boundLineStyle } from "./stores";
+  import { getChartModel } from "./helperFunctions";
 
   // The properties that can be passed to the component.
   // import { colorPalette } from "./stores";
@@ -374,7 +371,10 @@
 
       let newAspLinePoints = [
         [verticalLineComponent.x, 0],
-        [chart.getModel().getComponent("xAxis").axis.grid.getRect().width, 0],
+        [
+          getChartModel(chart).getComponent("xAxis").axis.grid.getRect().width,
+          0,
+        ],
       ];
 
       // Update the position of the line so that it is visible (and draggable) again.
@@ -494,8 +494,7 @@
 
   function setDefaultGraphicOptions() {
     // currentIterationIndex = 0;
-    const xAxisRect = chart
-      .getModel() // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
+    const xAxisRect = getChartModel(chart) // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
       .getComponent("xAxis")
       .axis.grid.getRect();
 
