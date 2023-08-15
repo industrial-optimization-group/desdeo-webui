@@ -25,7 +25,7 @@
   // Props for this component:
   export let values: number[][];
   export let minimize: boolean[];
-  export let showIndicators = false;
+  export let showIndicators = true;
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
@@ -102,16 +102,37 @@
    * @param index - The index of the axis.
    */
   function getAxisY(minimize: boolean, index: number) {
+    let parallelAxisComponent = getChartModel(
+      chart as echarts.EChartsType
+    ).getComponent("parallelAxis");
     if (minimize) {
-      return Object.values(
-        getChartModel(chart).getComponent("parallelAxis").coordinateSystem
-          ._axesLayout
-      )[index].position[1];
+      let axesLayout = parallelAxisComponent.coordinateSystem._axesLayout;
+      let singleAxisObject = Object.values(axesLayout)[index] as {
+        position: [number, number];
+      };
+      return singleAxisObject.position[1];
     } else {
-      return getChartModel(chart as echarts.EChartsType)
-        .getComponent("parallelAxis")
-        .coordinateSystem.getRect().y;
+      return parallelAxisComponent.coordinateSystem.getRect().y;
     }
+  }
+
+  /**
+   * A helper function that returns the x-coordinate of the axis at the given
+   * index.
+   *
+   * @param minimize - A boolean value that indicates if the indicator is for
+   *   representing minimization.
+   * @param index - The index of the axis.
+   */
+  function getAxisX(index: number) {
+    let parallelAxisComponent = getChartModel(
+      chart as echarts.EChartsType
+    ).getComponent("parallelAxis");
+    let axesLayout = parallelAxisComponent.coordinateSystem._axesLayout;
+    let singleAxisObject = Object.values(axesLayout)[index] as {
+      position: [number, number];
+    };
+    return singleAxisObject.position[0];
   }
 
   /**
@@ -137,12 +158,7 @@
       },
       z: -100,
       y: chart ? getAxisY(min, index) : 0,
-      x: chart
-        ? Object.values(
-            getChartModel(chart).getComponent("parallelAxis").coordinateSystem
-              ._axesLayout
-          )[index].position[0]
-        : 0,
+      x: chart ? getAxisX(index) : 0,
     }));
 
     const graphicData = [
@@ -185,12 +201,7 @@
                 // Gets the x-coordinate of the i:th axis 
                 const xCoord = Object.values(axes)[index].position[0] 
                 */
-              x: chart
-                ? Object.values(
-                    getChartModel(chart).getComponent("parallelAxis")
-                      .coordinateSystem._axesLayout
-                  )[index].position[0]
-                : 0,
+              x: chart ? getAxisX(index) : 0,
             }
           : undefined,
 
@@ -211,12 +222,7 @@
               onclick: () => {
                 swapAxes(index, index + 1);
               },
-              x: chart
-                ? Object.values(
-                    chart.getModel().getComponent("parallelAxis")
-                      .coordinateSystem._axesLayout
-                  )[index].position[0]
-                : 0,
+              x: chart ? getAxisX(index) : 0,
             }
           : undefined,
       ],
