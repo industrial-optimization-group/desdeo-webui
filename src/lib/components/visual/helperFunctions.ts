@@ -28,7 +28,7 @@ export function handleSelectionChange(
   chart.dispatchAction({
     type: "unselect",
     seriesIndex: 0,
-    dataIndex: chart.getModel().getSeries()[0].getSelectedDataIndices(),
+    dataIndex: getChartModel(chart).getSeries()[0].getSelectedDataIndices(),
   });
   chart.dispatchAction({
     type: "select",
@@ -41,4 +41,15 @@ export function handleSelectionChange(
     seriesIndex: 0,
   });
   return chart;
+}
+
+/**
+ * Returns the model of a chart. This function exists so that ts-ignore doesn't
+ * have to be mentioned in every file where getModel() is used.
+ *
+ * @param chart Chart instance to get the model from
+ * @returns
+ */
+export function getChartModel(chart: EChartsType) {
+  return chart.getModel();
 }
