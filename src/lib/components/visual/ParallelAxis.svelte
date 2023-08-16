@@ -21,7 +21,6 @@
     handleClickSelection,
     handleSelectionChange,
   } from "./helperFunctions";
-
   // Props for this component:
   export let values: number[][];
   export let minimize: boolean[];
@@ -261,9 +260,9 @@
   }
 
   /** Creates the option data for the parallelAxis component. */
-  function createNameAxis() {
+  function createParallelAxisOption() {
     //  Creates the names for the axes as a parallelAxis component.
-    const nameAxis: object[] = [];
+    const parallelAxisOption: object[] = [];
     let min;
     let max;
     // If names are given, use them to set the names for the axes.
@@ -281,7 +280,7 @@
           min: min ? min : "dataMin",
           max: max ? max : "dataMax",
         };
-        nameAxis.push(nameObj);
+        parallelAxisOption.push(nameObj);
       }
     }
     // If names are not given, use the default names.
@@ -297,13 +296,13 @@
           min: min,
           max: max,
         };
-        nameAxis.push(nameObj);
+        parallelAxisOption.push(nameObj);
         let minMaxIndicator = minimize[i] ? "\n (▼)" : "\n (▲)";
         // let minMaxIndicator = minimize[i]? "\n (min)":"\n (max)";
         data.names.push("Objective " + (i + 1) + minMaxIndicator);
       }
     }
-    return nameAxis;
+    return parallelAxisOption;
   }
 
   /**
@@ -334,7 +333,23 @@
           return result;
         },
       },
-      parallelAxis: createNameAxis(),
+      parallel: {
+        parallelAxisDefault: {
+          axisTick: {
+            show: false,
+            length: 0.8,
+            // length: -2,
+            lineStyle: {
+              cap: "round",
+              width: 4,
+            },
+          },
+          axisLabel: {
+            inside: true,
+          },
+        },
+      },
+      parallelAxis: createParallelAxisOption(),
       // brush: {
       //   brushMode: "multiple",
       //   throttleType: "debounce",
