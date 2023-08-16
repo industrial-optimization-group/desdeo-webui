@@ -75,6 +75,8 @@
   $: theValues;
   let selectedIndices: number[] = [];
   $: selectedIndices;
+  let high: number | undefined = undefined;
+  $: high;
   $: activeinteraction = true;
 </script>
 
@@ -132,6 +134,7 @@
           { min: 0, max: 10 },
           { min: undefined, max: undefined },
         ]}
+        bind:highlightedIndices={high}
       />
     </div>
   </div>
@@ -141,6 +144,7 @@
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}
+      bind:highlightedIndices={high}
     />
   </div>
 
@@ -154,6 +158,7 @@
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}
+      bind:highlightedIndices={high}
     />
   </div>
   <div>

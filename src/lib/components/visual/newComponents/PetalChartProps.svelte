@@ -1,7 +1,9 @@
 <!--@component
     @description Makes a petal chart using the ECharts library's pie option.
 -->
-<!-- TODO: Make a component for a single petal chart. This file then could create all wanted petal charts. -->
+<!-- TODO: Make a component for a single petal chart. This file then could create all wanted petal charts. 
+TODO: Selection doesn't work properly. Objectives and solutions are mixed up
+-->
 
 <script lang="ts">
   import * as echarts from "echarts";
@@ -11,6 +13,7 @@
   import type { PieSeriesOption, TitleComponentOption } from "echarts";
   import {
     handleClickSelection,
+    handleHighlightChange,
     handleSelectionChange,
   } from "../helperFunctions";
 
@@ -24,7 +27,13 @@
   export let indicatorNames: string[] = [];
   export let selectedIndices: number[] = [];
   export let title = "Test title";
+  export let highlightedIndices: number | undefined = undefined;
   // export let data: SolutionData;
+  $: {
+    if (chart) {
+      handleHighlightChange(chart, highlightedIndices);
+    }
+  }
 
   let chartDiv: HTMLDivElement;
   let chart: echarts.EChartsType;
@@ -133,6 +142,13 @@
     // let chart: echarts.EChartsType = createChart(id, option);
     chart = echarts.init(chartDiv, "", { renderer: "svg" });
     chart.setOption(option);
+    // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
+    chart.on("mouseover", function (params: { dataIndex: number }) {
+      highlightedIndices = params.dataIndex;
+    });
+    chart.on("mouseout", function () {
+      highlightedIndices = undefined;
+    });
     chart.on(
       "click",
       function (params: {

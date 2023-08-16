@@ -16,7 +16,7 @@
   import { colorPalette, selectedLineStyle } from "./stores";
   import type { Ranges } from "./types";
   import type { EChartOption } from "echarts";
-  import { getChartModel } from "./helperFunctions";
+  import { getChartModel, handleHighlightChange } from "./helperFunctions";
   import {
     handleClickSelection,
     handleSelectionChange,
@@ -28,6 +28,7 @@
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
+  export let highlightedIndices: number | undefined = undefined;
   export let disableInteraction = false;
   // export let data: SolutionData;
 
@@ -41,6 +42,13 @@
       handleSelectionChange(chart, selectedIndices);
     }
   }
+
+  $: {
+    if (chart) {
+      handleHighlightChange(chart, highlightedIndices);
+    }
+  }
+
   $: if (values) {
     option = createOption(names, values);
     if (chart) {
@@ -403,6 +411,14 @@
     //   // console.log(this);
     //   console.log(params);
     // });
+
+    // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
+    chart.on("mouseover", function (params: { dataIndex: number }) {
+      highlightedIndices = params.dataIndex;
+    });
+    chart.on("mouseout", function () {
+      highlightedIndices = undefined;
+    });
     chart.on(
       "click",
       function (params: {

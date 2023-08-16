@@ -21,6 +21,27 @@ export function handleClickSelection(
   return selectedIndices;
 }
 
+export function handleHighlightChange(
+  chart: EChartsType,
+  highlightedIndex: number | undefined
+) {
+  if (highlightedIndex === undefined) {
+    // highlightedIndex = -1;
+    chart.dispatchAction({
+      type: "downplay",
+      seriesIndex: 0,
+    });
+  } else {
+    chart.dispatchAction({
+      type: "highlight",
+      seriesIndex: 0,
+      dataIndex: highlightedIndex,
+    });
+  }
+
+  return chart;
+}
+
 export function handleSelectionChange(
   chart: EChartsType,
   selectedIndices: number[]

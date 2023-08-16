@@ -1,7 +1,9 @@
 <!--@component
     @description 
 -->
-<!-- TODO: Make a component for a single bar chart. -->
+<!-- TODO: Make a component for a single bar chart. 
+TODO: Highlighting and selection don't work properly. Most propably bug in the using of seriesIndex and dataIndex
+-->
 
 <script lang="ts">
   import { onMount } from "svelte";
@@ -12,6 +14,7 @@
   // import type { SolutionData } from "./../types";
   import {
     handleClickSelection,
+    handleHighlightChange,
     handleSelectionChange,
   } from "../helperFunctions";
 
@@ -25,6 +28,7 @@
   export let indicatorNames: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
   export let title = "Test title";
+  export let highlightedIndices: number | undefined = undefined;
   // export let data: SolutionData;
 
   const names: string[] = indicatorNames;
@@ -34,6 +38,12 @@
   $: if (selectedIndices) {
     if (chart) {
       handleSelectionChange(chart, selectedIndices);
+    }
+  }
+
+  $: {
+    if (chart) {
+      handleHighlightChange(chart, highlightedIndices);
     }
   }
 
@@ -73,6 +83,14 @@
     };
     chart = echarts.init(chartDiv, "", { renderer: "svg" });
     chart.setOption(option);
+
+    // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
+    chart.on("mouseover", function (params: { dataIndex: number }) {
+      highlightedIndices = params.dataIndex;
+    });
+    chart.on("mouseout", function () {
+      highlightedIndices = undefined;
+    });
     chart.on(
       "click",
       function (params: {

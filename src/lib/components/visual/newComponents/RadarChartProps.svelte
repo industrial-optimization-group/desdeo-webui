@@ -11,6 +11,7 @@
   import {
     handleClickSelection,
     handleSelectionChange,
+    handleHighlightChange,
   } from "../helperFunctions";
 
   export let values: number[][];
@@ -18,6 +19,7 @@
   // export let showIndicators = false;
   export let indicatorNames: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
+  export let highlightedIndices: number | undefined = undefined;
   // export let data: SolutionData;
 
   let chartDiv: HTMLDivElement;
@@ -25,6 +27,12 @@
   $: if (selectedIndices) {
     if (chart) {
       handleSelectionChange(chart, selectedIndices);
+    }
+  }
+
+  $: {
+    if (chart) {
+      handleHighlightChange(chart, highlightedIndices);
     }
   }
 
@@ -72,6 +80,12 @@
     // createChart(id, option);
     chart = echarts.init(chartDiv, "", { renderer: "svg" });
     chart.setOption(option);
+    chart.on("mouseover", function (params: { dataIndex: number }) {
+      highlightedIndices = params.dataIndex;
+    });
+    chart.on("mouseout", function () {
+      highlightedIndices = undefined;
+    });
     chart.on(
       "click",
       function (params: {
