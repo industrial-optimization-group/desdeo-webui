@@ -3,20 +3,38 @@
 -->
 
 <script lang="ts">
-  // import type * as echarts from "echarts";
+  import * as echarts from "echarts";
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "./chartStore";
-  import { createChart } from "./stores";
-  import type { SolutionData } from "./types";
   import type { PieSeriesOption, TitleComponentOption } from "echarts";
+  import {
+    handleClickSelection,
+    handleSelectionChange,
+  } from "../helperFunctions";
 
-  export let id: string;
+  // export let id: string;
+  // export let title = "Test title";
+  // export let data: SolutionData;
+
+  export let values: number[][];
+  // export let minimize: boolean[];
+  // export let showIndicators = false;
+  export let indicatorNames: string[] = [];
+  export let selectedIndices: number[] = [];
   export let title = "Test title";
-  export let data: SolutionData;
+  // export let data: SolutionData;
 
-  const names: string[] = data.names;
-  const values: number[][] = data.values;
+  let chartDiv: HTMLDivElement;
+  let chart: echarts.EChartsType;
+  $: if (selectedIndices) {
+    if (chart) {
+      handleSelectionChange(chart, selectedIndices);
+    }
+  }
+
+  const names: string[] = indicatorNames;
+  // const values: number[][] = data.values;
 
   let newSeriesObjects: PieSeriesOption[] = [];
   let subTexts: TitleComponentOption[] = [{ text: title }];
@@ -112,8 +130,20 @@
       series: newSeriesObjects,
     };
     // let chart: echarts.EChartsType = createChart(id, option);
-    createChart(id, option);
+    chart = echarts.init(chartDiv, "", { renderer: "svg" });
+    chart.setOption(option);
+    chart.on(
+      "click",
+      function (params: {
+        dataIndex: number;
+        componentType: string;
+        seriesIndex: number;
+      }) {
+        console.log(params);
+        selectedIndices = handleClickSelection(params, selectedIndices);
+      }
+    );
   });
 </script>
 
-<div {id} style="width: 100vh; height: 50vh;" />
+<div style="width: 100vh; height: 50vh;" bind:this={chartDiv} />

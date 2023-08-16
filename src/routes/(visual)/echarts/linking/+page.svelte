@@ -2,6 +2,8 @@
   // import Example from "$lib/components/visual/Example.svelte";
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
+  import BarChartProps from "$lib/components/visual/newComponents/BarChartProps.svelte";
+  import PetalChartProps from "$lib/components/visual/newComponents/PetalChartProps.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";
   import RadarChartProps from "$lib/components/visual/newComponents/RadarChartProps.svelte";
@@ -133,13 +135,18 @@
     />
   </div>
 
-  <!-- <div> 
-    <BarChart id="barChart" title="Bar chart" data={exampleData} />
-    <PetalChart id="petalChart" title="Petal chart" data={exampleData} />
-  </div>
   <div>
-    <RadarChart id="radarChart" title="Radar Chart" data={exampleData} />
-  </div> -->
+    <BarChartProps
+      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+    />
+    <PetalChartProps
+      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+    />
+  </div>
   <div>
     <!-- <HorizontalAxisPlot /> -->
     <!-- <RadarChart id="radarChart2" title="Radar chart" {names} {values} /> -->
