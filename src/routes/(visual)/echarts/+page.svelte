@@ -38,10 +38,10 @@
   let exampleData: SolutionData = {
     names: ["Objective1", "Objective2", "Objective3"],
     values: [
-      [1, 2, 3, 2],
-      [4, 5, 6, 2],
-      [7, 8, 9, 4],
-      [7, 2, 9, 8],
+      [-6, -2, -3, 0.25],
+      [-6.2, -3.3, -6, 0.2],
+      [-6.05, -3.5, -7, 0.3],
+      [-5.5, -3, -5, 0.35],
     ],
     value_ranges: [
       [0, 10],
@@ -80,7 +80,7 @@
       style="background-color: lightgrey; border-style: double; border-color: black; padding: 5px; margin: 5px;"
       on:click={() => {
         theValues = [
-          [1, 1, 1, 2],
+          [0, 1, 1, 2],
           [4, 5, 6, 3],
           [7, 8, 9, 3],
         ];
@@ -113,7 +113,7 @@
         minimize={[true, false, true, false]}
         bind:selectedIndices
         ranges={[
-          { min: 0, max: 10 },
+          { min: undefined, max: undefined },
           { min: -2.324, max: 10 },
           { min: 0, max: 10 },
           { min: undefined, max: undefined },

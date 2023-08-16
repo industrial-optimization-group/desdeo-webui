@@ -255,14 +255,15 @@
       for (let i = 0; i < names.length; i++) {
         // If ranges are given, use them to set the min and max values for the axis.
         if (ranges) {
-          min = ranges[i] ? ranges[i].min : undefined;
-          max = ranges[i] ? ranges[i].max : undefined;
+          // If the range is not given or is given undefined, use the default min and max values.
+          min = ranges[i] ? ranges[i].min : "dataMin";
+          max = ranges[i] ? ranges[i].max : "dataMax";
         }
         let nameObj = {
           dim: i,
           name: names[i],
-          min: min,
-          max: max,
+          min: min ? min : "dataMin",
+          max: max ? max : "dataMax",
         };
         nameAxis.push(nameObj);
       }

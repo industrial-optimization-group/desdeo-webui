@@ -1,6 +1,7 @@
 <!--@component
     @description Makes a petal chart using the ECharts library's pie option.
 -->
+<!-- TODO: Make a component for a single petal chart. This file then could create all wanted petal charts. -->
 
 <script lang="ts">
   import * as echarts from "echarts";

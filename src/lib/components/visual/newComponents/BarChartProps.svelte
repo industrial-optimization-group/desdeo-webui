@@ -1,6 +1,7 @@
 <!--@component
     @description 
 -->
+<!-- TODO: Make a component for a single bar chart. -->
 
 <script lang="ts">
   import { onMount } from "svelte";
