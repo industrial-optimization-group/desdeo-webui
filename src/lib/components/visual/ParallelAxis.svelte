@@ -30,6 +30,7 @@
   export let selectedIndices: number[] = [];
   export let highlightedIndices: number | undefined = undefined;
   export let disableInteraction = false;
+  export let brushInterval: Ranges | undefined = undefined;
   // export let data: SolutionData;
 
   let chartDiv: HTMLDivElement;
@@ -358,11 +359,12 @@
         },
       },
       parallelAxis: createParallelAxisOption(),
-      // brush: {
-      //   brushMode: "multiple",
-      //   throttleType: "debounce",
-      //   throttleDelay: 300,
-      // },
+      toolbox: { show: false },
+      brush: {
+        brushMode: "multiple",
+        throttleType: "debounce",
+        throttleDelay: 300,
+      },
       series: [
         {
           silent: disableInteraction,
@@ -392,23 +394,23 @@
       graphic: createGraphicData(),
     });
 
-    // BRUSHING debugging
-    chart.on("axisareaselected", function () {
-      // var series1 = getChartModel(chart).getSeries()[0];
-      // var series2 = getChartModel(chart).getSeries()[1];
-      // var indices1 = series1.getRawIndicesByActiveState("active");
-      // var indices2 = series2.getRawIndicesByActiveState('active');
-      // console.log(indices1);
-      // console.log(indices2);
+    chart.on("axisareaselected", (params: { intervals: number[][] }) => {
+      var series1 = getChartModel(chart as echarts.EChartsType).getSeries()[0];
+      var indices1 = series1.getRawIndicesByActiveState("active");
+      if (selectedIndices != indices1) {
+        selectedIndices = indices1;
+      }
+      // console.log(params);
+      brushInterval = {
+        min: params.intervals[0][0],
+        max: params.intervals[0][1],
+      };
     });
-    // createChart(id, option);
 
-    // chart.on("select", function (params) {
-    //   console.log(this);
+    // chart.on("brushend", function (params: { selected: any }) {
     //   console.log(params);
     // });
-    // chart.on("selectChanged", function (params) {
-    //   // console.log(this);
+    // chart.on("brushselected", function (params: { selected: any }) {
     //   console.log(params);
     // });
 
