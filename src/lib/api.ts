@@ -324,7 +324,6 @@ export type Problem = {
   variables: Variable[];
   n_variables: number;
   n_constraints: number;
-
   //
   // Having the numbers of objectives, variables and constraints as properties
   // of the problem is useful in the frontend.
@@ -336,13 +335,11 @@ export type Objective = {
   minimize: boolean;
 };
 
-export type ObjectivePreference = {
+export type BoundedObjective = {
   name: string;
   minimize: boolean;
-
-  min: number /** Minimum value */;
-  max: number /** Maximum value */;
-  preference?: number;
+  min: number;
+  max: number;
 };
 
 export type Variable = {
