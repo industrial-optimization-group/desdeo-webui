@@ -75,6 +75,7 @@
   $: theValues;
   let selectedIndices: number[] = [];
   $: selectedIndices;
+  $: activeinteraction = true;
 </script>
 
 <div class="container">
@@ -104,6 +105,13 @@
         selectedIndices = selectedIndices;
       }}>Reset selections</button
     >
+    <button
+      style="background-color: lightgrey; border-style: double; border-color: black; padding: 5px; margin: 5px;"
+      on:click={() => {
+        activeinteraction = !activeinteraction;
+      }}>Toggle interaction</button
+    >
+
     <!-- <p>
       Current solutions:
       {#each $selectedSolutions as solution}
@@ -114,6 +122,7 @@
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
     <div style="height:40vh; width:100vh">
       <ParallelAxis
+        bind:disableInteraction={activeinteraction}
         bind:values={theValues}
         minimize={[true, false, true, false]}
         bind:selectedIndices

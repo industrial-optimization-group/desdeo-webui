@@ -14,8 +14,8 @@ export function handleClickSelection(
   }
 
   if (params.componentType === "series") {
-    console.log(params.seriesIndex);
-    console.log(params.dataIndex);
+    // console.log(params.seriesIndex);
+    // console.log(params.dataIndex);
     // selectedIndices = [params.dataIndex];
   }
   return selectedIndices;

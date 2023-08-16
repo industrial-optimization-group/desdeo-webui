@@ -29,6 +29,7 @@
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
+  export let disableInteraction = false;
   // export let data: SolutionData;
 
   let chartDiv: HTMLDivElement;
@@ -46,6 +47,20 @@
     if (chart) {
       // data = { names: names, values: values };
       chart.setOption(option, true, false);
+    }
+  }
+
+  $: if (disableInteraction || !disableInteraction) {
+    if (chart) {
+      chart.setOption({
+        series: [
+          {
+            silent: disableInteraction,
+          },
+        ],
+
+        graphic: createGraphicData(),
+      });
     }
   }
 
@@ -174,6 +189,7 @@
     const graphicArrows = names.map((_, index) => ({
       type: "group",
       bottom: 20,
+      silent: disableInteraction,
       children: [
         // Left arrow button
         index !== 0
@@ -326,6 +342,7 @@
       // },
       series: [
         {
+          silent: disableInteraction,
           type: "parallel",
           lineStyle: lineStyle,
           selectedMode: "multiple",

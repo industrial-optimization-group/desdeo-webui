@@ -79,7 +79,7 @@
         componentType: string;
         seriesIndex: number;
       }) {
-        console.log(params);
+        // console.log(params);
         selectedIndices = handleClickSelection(params, selectedIndices);
       }
     );
