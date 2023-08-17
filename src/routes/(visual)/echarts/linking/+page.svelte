@@ -134,7 +134,7 @@
           { min: 0, max: 10 },
           { min: undefined, max: undefined },
         ]}
-        bind:highlightedIndices={high}
+        bind:highlightedIndex={high}
       />
     </div>
   </div>

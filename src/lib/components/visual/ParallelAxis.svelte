@@ -7,6 +7,11 @@
   @param {Ranges[]} [ranges=undefined] - An array of Ranges -objects that define the ranges for each axis.
   @param {string[]} [names=[]] - An array of strings that define the names of each axis.
   @param {number[]} [selectedIndices=[]] - An array of indices that define the selected data points (lines) on the chart.
+  @param {number} [highlightedIndex=undefined] - An index of the highlighted data point (line) on the chart.
+  @param {boolean} [disableInteraction=false] - A boolean value that indicates whether the user can interact with the chart.
+  @param {Ranges} [brushInterval=undefined] - A Ranges -object that defines the latest brush interval. 
+  @param {Ranges[]} [BrushIntervalPerAxis=[]] - An array of Ranges -objects that define the brush interval for each axis. 
+
 -->
 <!-- TODO: min/max text should show also when names given manually -->
 
@@ -28,9 +33,10 @@
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
-  export let highlightedIndices: number | undefined = undefined;
+  export let highlightedIndex: number | undefined = undefined;
   export let disableInteraction = false;
   export let brushInterval: Ranges | undefined = undefined;
+  export let BrushIntervalPerAxis: Ranges[] = [];
   // export let data: SolutionData;
 
   let chartDiv: HTMLDivElement;
@@ -46,7 +52,7 @@
 
   $: {
     if (chart) {
-      handleHighlightChange(chart, highlightedIndices);
+      handleHighlightChange(chart, highlightedIndex);
     }
   }
 
@@ -394,32 +400,46 @@
       graphic: createGraphicData(),
     });
 
-    chart.on("axisareaselected", (params: { intervals: number[][] }) => {
+    // TODO: How to get the parallel axis index where the brush has happened? params doesn't have the index.
+    chart.on("axisareaselected", function (params: { intervals: number[][] }) {
       var series1 = getChartModel(chart as echarts.EChartsType).getSeries()[0];
       var indices1 = series1.getRawIndicesByActiveState("active");
       if (selectedIndices != indices1) {
         selectedIndices = indices1;
       }
-      // console.log(params);
       brushInterval = {
         min: params.intervals[0][0],
         max: params.intervals[0][1],
       };
-    });
 
-    // chart.on("brushend", function (params: { selected: any }) {
-    //   console.log(params);
-    // });
-    // chart.on("brushselected", function (params: { selected: any }) {
-    //   console.log(params);
-    // });
+      // Workaround for above TODO: Go through all the axes and get the min and max values of the brush interval if it exists
+      let axesLenght = chart?.getOption().parallelAxis.length;
+      let helpArray: Ranges[] = BrushIntervalPerAxis.slice();
+      for (let i = 0; i < axesLenght; i++) {
+        const axisComponent = getChartModel(chart).getComponent(
+          "parallelAxis",
+          i
+        );
+        let activeIntervals = axisComponent.activeIntervals;
+        let interval: Ranges = {
+          min: activeIntervals.length ? activeIntervals[0][0] : undefined,
+          max: activeIntervals.length ? activeIntervals[0][1] : undefined,
+        };
+        if (helpArray.length != axesLenght) {
+          helpArray.push(interval);
+        } else {
+          helpArray[i] = interval;
+        }
+      }
+      BrushIntervalPerAxis = helpArray;
+    });
 
     // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
     chart.on("mouseover", function (params: { dataIndex: number }) {
-      highlightedIndices = params.dataIndex;
+      highlightedIndex = params.dataIndex;
     });
     chart.on("mouseout", function () {
-      highlightedIndices = undefined;
+      highlightedIndex = undefined;
     });
     chart.on(
       "click",
