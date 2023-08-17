@@ -36,7 +36,7 @@
   export let highlightedIndex: number | undefined = undefined;
   export let disableInteraction = false;
   export let brushInterval: Ranges | undefined = undefined;
-  export let BrushIntervalPerAxis: Ranges[] = [];
+  export let brushIntervalPerAxis: Ranges[] = [];
   // export let data: SolutionData;
 
   let chartDiv: HTMLDivElement;
@@ -402,8 +402,11 @@
 
     // TODO: How to get the parallel axis index where the brush has happened? params doesn't have the index.
     chart.on("axisareaselected", function (params: { intervals: number[][] }) {
-      var series1 = getChartModel(chart as echarts.EChartsType).getSeries()[0];
-      var indices1 = series1.getRawIndicesByActiveState("active");
+      if (!chart) {
+        return;
+      }
+      let series1 = getChartModel(chart as echarts.EChartsType).getSeries()[0];
+      let indices1 = series1.getRawIndicesByActiveState("active");
       if (selectedIndices != indices1) {
         selectedIndices = indices1;
       }
@@ -413,8 +416,8 @@
       };
 
       // Workaround for above TODO: Go through all the axes and get the min and max values of the brush interval if it exists
-      let axesLenght = chart?.getOption().parallelAxis.length;
-      let helpArray: Ranges[] = BrushIntervalPerAxis.slice();
+      let axesLenght = (chart.getOption().parallelAxis as object[]).length;
+      let helpArray: Ranges[] = brushIntervalPerAxis.slice();
       for (let i = 0; i < axesLenght; i++) {
         const axisComponent = getChartModel(chart).getComponent(
           "parallelAxis",
@@ -431,7 +434,7 @@
           helpArray[i] = interval;
         }
       }
-      BrushIntervalPerAxis = helpArray;
+      brushIntervalPerAxis = helpArray;
     });
 
     // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
