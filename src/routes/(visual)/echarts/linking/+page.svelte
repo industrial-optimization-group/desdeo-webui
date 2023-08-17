@@ -126,7 +126,7 @@
       <ParallelAxis
         bind:disableInteraction={activeinteraction}
         bind:values={theValues}
-        minimize={[true, false, true, false]}
+        lowerIsBetter={[true, false, true, false]}
         bind:selectedIndices
         ranges={[
           { min: 0, max: 10 },

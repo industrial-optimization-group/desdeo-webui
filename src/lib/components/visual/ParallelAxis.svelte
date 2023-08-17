@@ -2,7 +2,7 @@
   Creates a parallel axis chart using the ECharts library. This component is not linked to other components and can be used independently. 
   
   @param {number[][]} values - The values for each axis. Outside arrays are the lines and inside arrays are the values of the line.
-  @param {boolean[]} minimize - An array of boolean values that indicate whether each axis should be minimized.
+  @param {boolean[]} [lowerIsBetter=[]] - An array of boolean values that indicate whether each axis should be minimized.
   @param {boolean} [showIndicators=false] - A boolean value that indicates whether to show the min/max indicators on the chart.
   @param {Ranges[]} [ranges=undefined] - An array of Ranges -objects that define the ranges for each axis.
   @param {string[]} [names=[]] - An array of strings that define the names of each axis.
@@ -28,7 +28,7 @@
   } from "./helperFunctions";
   // Props for this component:
   export let values: number[][];
-  export let minimize: boolean[];
+  export let lowerIsBetter: boolean[] = [];
   export let showIndicators = false;
   export let ranges: Ranges[] | undefined = undefined;
   export let names: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
@@ -170,7 +170,7 @@
    */
   function createMinMaxIndicators() {
     // Add a arrow for each axis
-    const indicatorArrows = minimize.map((min, index) => ({
+    const indicatorArrows = lowerIsBetter.map((min, index) => ({
       // Background min/max indicating arrow
       type: "polygon",
       scaleY: min ? -1 : 1, // Flips the arrow if it is for minimization
@@ -312,7 +312,7 @@
           max: max,
         };
         parallelAxisOption.push(nameObj);
-        let minMaxIndicator = minimize[i] ? "\n (▼)" : "\n (▲)";
+        let minMaxIndicator = lowerIsBetter[i] ? "\n (▼)" : "\n (▲)";
         // let minMaxIndicator = minimize[i]? "\n (min)":"\n (max)";
         data.names.push("Objective " + (i + 1) + minMaxIndicator);
       }

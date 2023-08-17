@@ -110,7 +110,7 @@
     <div style="height:40vh; width:100vh">
       <ParallelAxis
         bind:values={theValues}
-        minimize={[true, false, true, false]}
+        lowerIsBetter={[true, false, true, false]}
         bind:selectedIndices
         ranges={[
           { min: undefined, max: undefined },
