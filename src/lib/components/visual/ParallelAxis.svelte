@@ -291,7 +291,7 @@
         }
         let nameObj = {
           dim: i,
-          name: names[i],
+          name: lowerIsBetter[i] ? names[i] + "\n (▼)" : names[i] + "\n (▲)",
           min: min ? min : "dataMin",
           max: max ? max : "dataMax",
         };
@@ -307,14 +307,14 @@
         }
         let nameObj = {
           dim: i,
-          name: "Objective " + (i + 1),
+          // name: "Objective " + (i + 1),
           min: min,
           max: max,
         };
         parallelAxisOption.push(nameObj);
-        let minMaxIndicator = lowerIsBetter[i] ? "\n (▼)" : "\n (▲)";
-        // let minMaxIndicator = minimize[i]? "\n (min)":"\n (max)";
-        data.names.push("Objective " + (i + 1) + minMaxIndicator);
+        // let minMaxIndicator = lowerIsBetter[i] ? "\n (▼)" : "\n (▲)";
+        // // let minMaxIndicator = minimize[i]? "\n (min)":"\n (max)";
+        // data.names.push("Objective " + (i + 1) + minMaxIndicator);
       }
     }
     return parallelAxisOption;
@@ -330,7 +330,7 @@
     // Creates the lines on the chart as series data.
     let seriesData: { value: number[]; name: string }[] = [];
     for (let i = 0; i < values.length; i++) {
-      seriesData.push({ value: values[i], name: "Solution " + (i + 1) });
+      seriesData.push({ value: values[i], name: "Alternative " + (i + 1) });
     }
 
     // Create the option object for the whole chart.

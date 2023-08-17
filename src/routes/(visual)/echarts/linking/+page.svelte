@@ -126,6 +126,7 @@
       <ParallelAxis
         bind:disableInteraction={activeinteraction}
         bind:values={theValues}
+        names={["Objective1", "Objective2", "Objective3", "Objective4"]}
         lowerIsBetter={[true, false, true, false]}
         bind:selectedIndices
         ranges={[
