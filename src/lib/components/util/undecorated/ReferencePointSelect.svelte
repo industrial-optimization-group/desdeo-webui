@@ -8,7 +8,7 @@ NOTE: Not fully functional.
 <script lang="ts">
   import type { BoundedObjective, Point } from "$lib/api";
   import { is_point } from "$lib/api";
-  import HorizontalBar from "$lib/components/visual/HorizontalBarWithInputs.svelte";
+  import HorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBarWithInputs.svelte";
 
   export let objectives: BoundedObjective[];
   export let selected_solution: Point | undefined = undefined;
@@ -47,9 +47,9 @@ NOTE: Not fully functional.
   </div>
   {#each objectives as { name, min, max }, j}
     <HorizontalBar
+      barName={name}
       lowerBound={min}
       higherBound={max}
-      objectiveName={name}
       solutionValue={selected_solution ? selected_solution[j] : undefined}
       previousValue={previous_preference ? previous_preference[j] : undefined}
       bind:selectedValue={selected_preference[j]}

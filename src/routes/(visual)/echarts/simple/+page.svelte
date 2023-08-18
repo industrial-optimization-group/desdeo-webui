@@ -129,17 +129,16 @@
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
     <div style="height:40vh; width:100vh">
       <ParallelCoordinatePlotWithSwap
-        bind:values={theValues}
+        values={theValues}
         names={["Objective1", "Objective2", "Objective3", "Objective4"]}
         lowerIsBetter={[true, false, true, false]}
-        bind:selectedIndices
         ranges={[
           { min: 0, max: 10 },
           { min: -2.324, max: 10 },
           { min: 0, max: 10 },
           { min: undefined, max: undefined },
         ]}
-        bind:highlightedIndex={high}
+        showIndicators={true}
         {disableInteraction}
       />
     </div>

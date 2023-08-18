@@ -24,8 +24,8 @@
   import type { Ranges } from "$lib/components/visual/types";
   import type { EChartOption } from "echarts";
   import {
-    getAxisY,
-    getAxisX,
+    // getAxisY,
+    // getAxisX,
     getChartModel,
     handleHighlightChange,
   } from "$lib/components/visual/helperFunctions";
@@ -81,7 +81,7 @@
           },
         ],
 
-        graphic: createGraphicData(),
+        // graphic: createGraphicData(),
       });
     }
   }
@@ -107,48 +107,48 @@
    * Adds the min/max indicators to parallelAxes. The indicators are added as a
    * graphic component.
    */
-  function createMinMaxIndicators() {
-    // Add a arrow for each axis
-    const indicatorArrows = lowerIsBetter.map((min, index) => ({
-      // Background min/max indicating arrow
-      type: "polygon",
-      scaleY: min ? -1 : 1, // Flips the arrow if it is for minimization
-      shape: {
-        points: [
-          // TODO make arrow size dynamic (not hardcoded)
-          [0, 0],
-          [15, 80],
-          [-15, 80],
-        ],
-      },
-      style: {
-        fill: "lightgrey",
-      },
-      z: -100,
-      y: chart ? getAxisY(min, index, chart) : 0,
-      x: chart ? getAxisX(index, chart) : 0,
-    }));
+  // function createMinMaxIndicators() {
+  //   // Add a arrow for each axis
+  //   const indicatorArrows = lowerIsBetter.map((min, index) => ({
+  //     // Background min/max indicating arrow
+  //     type: "polygon",
+  //     scaleY: min ? -1 : 1, // Flips the arrow if it is for minimization
+  //     shape: {
+  //       points: [
+  //         // TODO make arrow size dynamic (not hardcoded)
+  //         [0, 0],
+  //         [15, 80],
+  //         [-15, 80],
+  //       ],
+  //     },
+  //     style: {
+  //       fill: "lightgrey",
+  //     },
+  //     z: -100,
+  //     y: chart ? getAxisY(min, index, chart) : 0,
+  //     x: chart ? getAxisX(index, chart) : 0,
+  //   }));
 
-    const graphicData = [
-      {
-        type: "group",
-        children: indicatorArrows,
-      },
-    ];
-    return graphicData;
-  }
+  //   const graphicData = [
+  //     {
+  //       type: "group",
+  //       children: indicatorArrows,
+  //     },
+  //   ];
+  //   return graphicData;
+  // }
 
   /**
    * Creates the graphic data object with the min/max indicators and the swap
    * arrows.
    */
-  function createGraphicData(): echarts.EChartOption["graphic"] {
-    // Doesn't add the min/max indicator graphics if they are not wanted.
-    const graphicData = showIndicators
-      ? [...createMinMaxIndicators()]
-      : [{ type: "group", children: [] }];
-    return graphicData;
-  }
+  // function createGraphicData(): echarts.EChartOption["graphic"] {
+  //   // Doesn't add the min/max indicator graphics if they are not wanted.
+  //   const graphicData = showIndicators
+  //     ? [...createMinMaxIndicators()]
+  //     : [{ type: "group", children: [] }];
+  //   return graphicData;
+  // }
 
   /** Creates the option data for the parallelAxis component. */
   function createParallelAxisOption() {
@@ -165,9 +165,13 @@
           min = ranges[i] ? ranges[i].min : "dataMin";
           max = ranges[i] ? ranges[i].max : "dataMax";
         }
+        let nameString = names[i];
+        if (showIndicators) {
+          nameString += lowerIsBetter[i] ? "\n (▼)" : "\n (▲)";
+        }
         let nameObj = {
           dim: i,
-          name: lowerIsBetter[i] ? names[i] + "\n (▼)" : names[i] + "\n (▲)",
+          name: nameString,
           min: min ? min : "dataMin",
           max: max ? max : "dataMax",
         };
@@ -265,7 +269,7 @@
           data: seriesData,
         },
       ],
-      graphic: createGraphicData(),
+      // graphic: createGraphicData(),
     };
   }
 

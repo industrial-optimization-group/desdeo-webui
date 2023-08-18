@@ -1,11 +1,11 @@
 <script lang="ts">
-  import InputWithValidation from "$lib/components/visual/InputWithValidation.svelte";
+  import InputWithValidation from "$lib/components/visual/preference-interaction/BasicInput.svelte";
   import { onMount } from "svelte";
-  import SingleHorizontalBar from "$lib/components/visual/HorizontalBar.svelte";
+  import SingleHorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBar.svelte";
 
   export let lowerBound: number;
   export let higherBound: number;
-  export let objectiveName: string | undefined = undefined;
+  export let barName: string | undefined = undefined;
   export let solutionValue: number | undefined = undefined;
   export let selectedValue: number | undefined = undefined;
   export let previousValue: number | undefined = undefined;
@@ -30,10 +30,10 @@
 <div class="container">
   <div
     class="firstPart"
-    style="--justify: {objectiveName ? 'space-between' : 'flex-end'}"
+    style="--justify: {barName ? 'space-between' : 'flex-end'}"
   >
-    {#if objectiveName}
-      <span>{objectiveName}</span>
+    {#if barName}
+      <span>{barName}</span>
     {/if}
 
     <InputWithValidation

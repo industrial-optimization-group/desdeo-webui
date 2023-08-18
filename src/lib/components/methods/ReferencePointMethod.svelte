@@ -10,8 +10,10 @@ NOTE: Non-functional prototype.
   import type { BoundedObjective, Problem, Point } from "$lib/api";
   import Card from "../main/Card.svelte";
   import ReferencePointSelect from "../util/undecorated/ReferencePointSelect.svelte";
-  import ParallelAxis from "../visual/ParallelAxis.svelte";
+
   import ProblemDetails from "../main/ProblemDetails.svelte";
+  // import ParallelCoordinatePlotWithSwap from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
+  import ParallelCoordinatePlotBase from "../visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
 
   /** The problem to solve. */
   export let problem: Problem;
@@ -82,11 +84,11 @@ NOTE: Non-functional prototype.
     {#if solutions}
       <Card class="h-[600px]">
         <svelte:fragment slot="header">Solutions</svelte:fragment>
-        <ParallelAxis
+        <ParallelCoordinatePlotBase
           names={objective_names}
           values={solutions}
           ranges={objectives.map(({ min, max }) => ({ min, max }))}
-          minimize={objective_minimize}
+          lowerIsBetter={objective_minimize}
           showIndicators={true}
         />
       </Card>
