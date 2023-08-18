@@ -1,6 +1,6 @@
 <script lang="ts">
   // import Example from "$lib/components/visual/Example.svelte";
-  import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
+  import HorizontalAxisPlot from "$lib/components/visual/MultipleHorizontalBars.svelte";
   // import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";

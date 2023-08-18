@@ -18,9 +18,9 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
-  import { referencePointStyle } from "./stores";
+  import { referencePointStyle } from "$lib/components/visual/stores";
   import { getChartModel } from "$lib/components/visual/helperFunctions";
-  // import type { SolutionData } from "./types";
+  // import type { SolutionData } from "$lib/components/visual/types";
 
   export let lowerBound: number;
   export let higherBound: number;

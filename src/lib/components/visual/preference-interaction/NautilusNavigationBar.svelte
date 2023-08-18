@@ -24,11 +24,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as echarts from "echarts";
-  import { aspirationLineStyle, boundLineStyle } from "./stores";
-  import { getChartModel } from "./helperFunctions";
+  import {
+    aspirationLineStyle,
+    boundLineStyle,
+  } from "$lib/components/visual/stores";
+  import { getChartModel } from "$lib/components/visual/helperFunctions";
 
   // The properties that can be passed to the component.
-  // import { colorPalette } from "./stores";
+  // import { colorPalette } from "$lib/components/visual/stores";
 
   export let lowerBound: number;
   export let higherBound: number;
@@ -57,7 +60,9 @@
 
   onMount(() => {
     updateData();
-    chart = echarts.init(chartDiv);
+    chart = echarts.init(chartDiv, null, {
+      renderer: "svg",
+    });
     addNautilusBar();
   });
 

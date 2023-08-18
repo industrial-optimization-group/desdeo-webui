@@ -6,14 +6,14 @@
   import type * as echarts from "echarts";
   import type { EChartOption } from "echarts";
   // import { onDestroy } from "svelte";
-  // import { chartStore } from "./chartStore";
-  import { selectedLineStyle } from "../stores";
+  // import { chartStore } from "$lib/components/visual/chartStore";
+  import { selectedLineStyle } from "$lib/components/visual/stores";
   import {
     handleClickSelection,
     handleSelectionChange,
     handleHighlightChange,
-  } from "../helperFunctions";
-  import EchartsComponent from "./EchartsComponent.svelte";
+  } from "$lib/components/visual/helperFunctions";
+  import EchartsComponent from "$lib/components/visual/EchartsComponent.svelte";
 
   export let values: number[][];
   // export let minimize: boolean[];

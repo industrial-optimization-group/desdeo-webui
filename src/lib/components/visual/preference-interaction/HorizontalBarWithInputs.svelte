@@ -1,7 +1,7 @@
 <script lang="ts">
   import InputWithValidation from "$lib/components/visual/InputWithValidation.svelte";
   import { onMount } from "svelte";
-  import SingleHorizontalBar from "./SingleHorizontalBar.svelte";
+  import SingleHorizontalBar from "$lib/components/visual/HorizontalBar.svelte";
 
   export let lowerBound: number;
   export let higherBound: number;

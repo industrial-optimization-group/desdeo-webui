@@ -9,9 +9,9 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
-  import type { SolutionData } from "./types";
-  import { colorPalette } from "./stores";
-  import { getChartModel } from "./helperFunctions";
+  import type { SolutionData } from "$lib/components/visual/types";
+  import { colorPalette } from "$lib/components/visual/stores";
+  import { getChartModel } from "$lib/components/visual/helperFunctions";
   export let id: string;
   export let data: SolutionData;
   // function to which returns the aspiration values

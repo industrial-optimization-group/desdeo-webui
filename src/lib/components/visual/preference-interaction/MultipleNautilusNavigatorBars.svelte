@@ -13,10 +13,10 @@
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
-  // import { chartStore } from "./chartStore";
-  // import { createChart } from "./stores";
-  import type { SolutionData } from "./types";
-  import { getChartModel } from "./helperFunctions";
+  // import { chartStore } from "$lib/components/visual/chartStore";
+  // import { createChart } from "$lib/components/visual/stores";
+  import type { SolutionData } from "$lib/components/visual/types";
+  import { getChartModel } from "$lib/components/visual/helperFunctions";
   // import { element } from "svelte/internal";
 
   // The properties that can be passed to the component.

@@ -1,9 +1,9 @@
 <script lang="ts">
+  import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
+  import ParallelCoordinatePlotWithSwap from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
   // import Example from "$lib/components/visual/Example.svelte";
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   // import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
-  import ParallelWrap from "$lib/components/visual/newComponents/ParallelPlotWithSwap.svelte";
-  import CommonRadar from "$lib/components/visual/newComponents/RadarChart.svelte";
   // import BarChartProps from "$lib/components/visual/newComponents/BarChartProps.svelte";
   // import ParallelAxisPlain from "$lib/components/visual/newComponents/ParallelPlotSimpleExample.svelte";
   // import PetalChartProps from "$lib/components/visual/newComponents/PetalChartProps.svelte";
@@ -126,7 +126,7 @@
     <!-- <BasicTable selectedSolutions={$selectedSolutions} /> -->
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
     <div style="height:40vh; width:100vh">
-      <ParallelWrap
+      <ParallelCoordinatePlotWithSwap
         bind:values={theValues}
         names={["Objective1", "Objective2", "Objective3", "Objective4"]}
         lowerIsBetter={[true, false, true, false]}
@@ -143,7 +143,7 @@
   </div>
 
   <div style="height:40vh; width:100vh">
-    <CommonRadar
+    <RadarChart
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}

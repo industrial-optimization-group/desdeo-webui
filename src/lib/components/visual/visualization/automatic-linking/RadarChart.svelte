@@ -6,9 +6,9 @@
   // import type * as echarts from "echarts";
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
-  // import { chartStore } from "./chartStore";
-  import { createChart } from "./stores";
-  import type { SolutionData } from "./types";
+  // import { chartStore } from "$lib/components/visual/chartStore";
+  import { createChart } from "$lib/components/visual/stores";
+  import type { SolutionData } from "$lib/components/visual/types";
 
   export let id: string;
   export let title: string;

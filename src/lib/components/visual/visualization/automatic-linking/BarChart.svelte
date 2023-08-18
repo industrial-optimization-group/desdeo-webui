@@ -5,9 +5,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
-  import { selectedSolutionsIndices } from "./stores";
-  import { createChart } from "./stores";
-  import type { SolutionData } from "./types";
+  import { selectedSolutionsIndices } from "$lib/components/visual/stores";
+  import { createChart } from "$lib/components/visual/stores";
+  import type { SolutionData } from "$lib/components/visual/types";
 
   export let id: string;
   export let title: string;

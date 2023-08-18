@@ -1,12 +1,13 @@
 <script lang="ts">
-  import SingleHorizontalBar from "$lib/components/visual/SingleHorizontalBar.svelte";
+  import HorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBar.svelte";
+
   // import { onMount } from "svelte";
   let solutionValue: number;
   $: solutionValue = -2;
   $: selectedValue = 2;
-  // let bar: SingleHorizontalBar;
+  // let bar: HorizontalBar;
   // $: selectedValue2 = 2;
-  // let bar2: SingleHorizontalBar;
+  // let bar2: HorizontalBar;
   // let chartDiv: HTMLDivElement
 </script>
 
@@ -17,7 +18,7 @@
     id="hori"
     style="width: 100vh; height: 2vh; min-height: 70px; margin-top: 2m; margin-bottom: 5em;"
   >
-    <SingleHorizontalBar
+    <HorizontalBar
       higherBound={5}
       lowerBound={0}
       solutionValue={3}
@@ -26,7 +27,7 @@
     />
   </div>
   <div id="hori2" style="width: 100vh; height: 2vh; min-height: 100px;">
-    <SingleHorizontalBar
+    <HorizontalBar
       higherBound={-11.234523}
       lowerBound={-10.53453}
       solutionValue={-11.05}
@@ -34,7 +35,7 @@
     />
   </div>
   <div id="hori3" style="width: 100vh; height: 2vh; min-height: 100px;">
-    <SingleHorizontalBar
+    <HorizontalBar
       higherBound={10}
       lowerBound={-10}
       solutionValue={-3}
@@ -46,7 +47,7 @@
     <input type="number" bind:value={selectedValue} />
     <input type="number" bind:value={solutionValue} />
     <div id="hori3" style="width: 70vh; height: 2vh; min-height: 100px;">
-      <SingleHorizontalBar
+      <HorizontalBar
         higherBound={5}
         lowerBound={-5}
         bind:solutionValue

@@ -1,12 +1,12 @@
 <script lang="ts">
   // import Example from "$lib/components/visual/Example.svelte";
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
-  import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
-  import BarChartProps from "$lib/components/visual/newComponents/BarChartProps.svelte";
-  import PetalChartProps from "$lib/components/visual/newComponents/PetalChartProps.svelte";
+  import ParallelAxis from "$lib/components/visual/visualization/props-linking/ParallelAxis.svelte";
+  import BarChartProps from "$lib/components/visual/new-components/BarChart.svelte";
+  import PetalChartProps from "$lib/components/visual/visualization/props-linking/PetalChart.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";
-  import RadarChartProps from "$lib/components/visual/newComponents/RadarChartProps.svelte";
+  import RadarChartProps from "$lib/components/visual/new-components/RadarChartProps.svelte";
   // import BarChart from "$lib/components/visual/BarChart.svelte";
   // import { selectedSolutions } from "$lib/components/visual/stores";
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";

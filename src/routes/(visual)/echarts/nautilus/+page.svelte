@@ -1,7 +1,8 @@
 <script lang="ts">
+  import NautilusNavigationBar from "$lib/components/visual/preference-interaction/NautilusNavigationBar.svelte";
   // import Example from "$lib/components/visual/Example.svelte";
   // import NautilusNavigationBar from "$lib/components/visual/NautilusNavigationBar.svelte";
-  import SingleNautilusNavigationBar from "$lib/components/visual/SingleNautilusNavigationBar.svelte";
+
   // import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";
@@ -96,7 +97,7 @@
 </div>
 <!-- Single Nautilus bars -->
 <div id="hori" style="width: 70vh; height: 2vh; min-height: 100px;">
-  <SingleNautilusNavigationBar
+  <NautilusNavigationBar
     higherBound={5}
     lowerBound={0}
     iterations={10}

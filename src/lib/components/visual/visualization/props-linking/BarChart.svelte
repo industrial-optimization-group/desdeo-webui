@@ -10,13 +10,13 @@ TODO: Highlighting and selection don't work properly. Most propably bug in the u
   import * as echarts from "echarts";
   // import { onDestroy } from "svelte";
   // import { selectedSolutionsIndices } from "$lib/components/visual/stores";
-  // import { createChart } from "./../stores";
-  // import type { SolutionData } from "./../types";
+  // import { createChart } from "$lib/components/visual/stores";
+  // import type { SolutionData } from "$lib/components/visual/types";
   import {
     handleClickSelection,
     handleHighlightChange,
     handleSelectionChange,
-  } from "../helperFunctions";
+  } from "$lib/components/visual/helperFunctions";
 
   // export let id: string;
   // export let title: string;
