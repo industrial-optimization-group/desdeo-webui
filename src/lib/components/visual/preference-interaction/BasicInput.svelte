@@ -1,20 +1,14 @@
 <!-- TODO: Implement input value validation -->
 <script lang="ts">
   export let value: number | undefined;
-  export let higherBound: number;
-  export let lowerBound: number;
+  // export let higherBound: number|undefined = undefined;
+  // export let lowerBound: number|undefined = undefined;
   export let labelName = "Value: ";
 </script>
 
 <div class="ts">
   <label for="box"> {labelName}</label>
-  <input
-    name="box"
-    type="number"
-    min={lowerBound}
-    max={higherBound}
-    bind:value
-  />
+  <input name="box" type="number" bind:value />
 </div>
 
 <style>

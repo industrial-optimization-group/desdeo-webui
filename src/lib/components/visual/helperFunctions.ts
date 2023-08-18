@@ -203,3 +203,15 @@ export function tooltipFormatter(
   }
   return result;
 }
+
+export function roundToDecimal(num: number, precicion: number | undefined) {
+  if (precicion === undefined) {
+    precicion = getDecimalCount(num);
+  }
+  return Number.parseFloat(num.toFixed(precicion));
+}
+
+function getDecimalCount(num: number) {
+  if (Math.floor(num) === num) return 0;
+  return num.toString().split(".")[1].length || 0;
+}

@@ -19,7 +19,10 @@
   import * as echarts from "echarts";
   import { onMount } from "svelte";
   import { referencePointStyle } from "$lib/components/visual/stores";
-  import { getChartModel } from "$lib/components/visual/helperFunctions";
+  import {
+    getChartModel,
+    roundToDecimal,
+  } from "$lib/components/visual/helperFunctions";
   // import type { SolutionData } from "$lib/components/visual/types";
 
   export let lowerBound: number;
@@ -31,18 +34,18 @@
   // export let isMin = true;
   // export let divId: string;
   export let inputs = false;
-  export let decimalPrecision = 2;
+  export let decimalPrecision: number | undefined = undefined;
 
   // $: console.log(selectedValue);
   $: if (selectedValue != null) {
     updateAspirationLine(
-      Number.parseFloat(selectedValue.toFixed(decimalPrecision))
+      (selectedValue = roundToDecimal(selectedValue, decimalPrecision))
     );
   }
   // $: updateAspirationLine(selectedValue);
   $: if (previousValue != null) {
     updatePreviousLine(
-      Number.parseFloat(previousValue.toFixed(decimalPrecision))
+      (previousValue = roundToDecimal(previousValue, decimalPrecision))
     );
   }
   $: if (solutionValue != null) {

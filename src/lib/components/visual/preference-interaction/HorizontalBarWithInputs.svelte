@@ -39,8 +39,6 @@
     <InputWithValidation
       bind:value={selectedValue}
       labelName="Aspiration level"
-      {higherBound}
-      {lowerBound}
     />
   </div>
   <div class="secondPart">

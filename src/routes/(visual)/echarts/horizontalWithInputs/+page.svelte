@@ -1,5 +1,5 @@
 <script lang="ts">
-  import HorizontalBarWithInputs from "$lib/components/visual/HorizontalBarWithInputs.svelte";
+  import HorizontalBarWithInputs from "$lib/components/visual/preference-interaction/HorizontalBarWithInputs.svelte";
 
   // import { onMount } from "svelte";
   let solutionValue: number;
@@ -35,7 +35,7 @@
   <HorizontalBarWithInputs
     higherBound={-2}
     lowerBound={5.5234}
-    objectiveName="name"
+    barName="name"
     {previousValue}
     bind:solutionValue
     bind:selectedValue
