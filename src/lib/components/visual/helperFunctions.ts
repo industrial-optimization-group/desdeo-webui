@@ -1,6 +1,7 @@
-import type { EChartsType } from "echarts";
+import type { EChartOption, EChartsType } from "echarts";
 
 export function handleClickSelection(
+  chart: EChartsType,
   params: { dataIndex: number; componentType: string; seriesIndex: number },
   selectedIndices: number[],
   maxSelections: number | undefined
@@ -15,6 +16,49 @@ export function handleClickSelection(
   }
   if (maxSelections !== undefined && selectedIndices.length > maxSelections) {
     selectedIndices.splice(selectedIndices.indexOf(params.dataIndex), 1);
+    // let chart = params.
+    chart.setOption({
+      tooltip: {
+        show: true,
+        trigger: "item",
+        formatter: () => {
+          return "Maximum number of selections are selected.";
+        },
+        borderColor: "red",
+        textStyle: {
+          color: "red",
+        },
+      },
+    });
+    // chart.dispatchAction({
+    //   type: "showTip",
+    //   // seriesIndex: 0,
+    //   // dataIndex: params.dataIndex,
+    //   x:0,
+    //   y:0,
+    // });
+    setTimeout(function () {
+      chart.dispatchAction({
+        type: "hideTip",
+        // seriesIndex: 0,
+        // dataIndex: params.dataIndex,
+      });
+      chart.setOption({
+        tooltip: {
+          formatter: tooltipFormatter,
+          borderColor: "",
+          textStyle: {
+            color: "",
+          },
+        },
+      });
+    }, 2000);
+  } else {
+    chart.setOption({
+      tooltip: {
+        formatter: tooltipFormatter,
+      },
+    });
   }
   return selectedIndices;
 }
@@ -36,7 +80,15 @@ export function handleHighlightChange(
       dataIndex: highlightedIndex,
     });
   }
-
+  chart.setOption({
+    tooltip: {
+      formatter: tooltipFormatter,
+      borderColor: "",
+      textStyle: {
+        color: "",
+      },
+    },
+  });
   return chart;
 }
 
@@ -64,6 +116,7 @@ export function handleSelectionChange(
       });
     }
   }
+
   return chart;
 }
 
@@ -134,4 +187,19 @@ export function getAxisX(index: number, chart: echarts.EChartsType): number {
     position: [number, number];
   };
   return singleAxisObject.position[0];
+}
+
+export function tooltipFormatter(
+  params:
+    | EChartOption.Tooltip.Format
+    | EChartOption.Tooltip.Format[]
+    | undefined
+) {
+  const newParams: EChartOption.Tooltip.Format =
+    params as EChartOption.Tooltip.Format;
+  let result = newParams.name + "<br>";
+  for (let i = 0; i < newParams.data.value.length; i++) {
+    result += newParams.data.value[i] + "<br>";
+  }
+  return result;
 }

@@ -28,6 +28,7 @@
     // getAxisX,
     getChartModel,
     handleHighlightChange,
+    tooltipFormatter,
   } from "$lib/components/visual/helperFunctions";
   import {
     handleClickSelection,
@@ -219,15 +220,7 @@
       color: colorPalette,
       tooltip: {
         // TODO: Check if there is better way to achiece no type errors, check https://github.com/apache/echarts/issues/14723
-        formatter: function (params) {
-          let newParams: EChartOption.Tooltip.Format =
-            params as EChartOption.Tooltip.Format;
-          let result = newParams.name + "<br>";
-          for (let i = 0; i < newParams.data.value.length; i++) {
-            result += newParams.data.value[i] + "<br>";
-          }
-          return result;
-        },
+        formatter: tooltipFormatter,
       },
       parallel: {
         parallelAxisDefault: {
@@ -283,6 +276,7 @@
     }) {
       console.log(params);
       selectedIndices = handleClickSelection(
+        chart as echarts.EChartsType,
         params,
         selectedIndices,
         maxSelections

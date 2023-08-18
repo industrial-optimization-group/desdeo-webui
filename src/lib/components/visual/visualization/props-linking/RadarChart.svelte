@@ -87,7 +87,12 @@
       seriesIndex: number;
     }) {
       console.log(params);
-      selectedIndices = handleClickSelection(params, selectedIndices);
+      selectedIndices = handleClickSelection(
+        chart,
+        params,
+        selectedIndices,
+        maxSelections
+      );
     },
     mouseover: function (params: { dataIndex: number }) {
       highlightedIndices = params.dataIndex;
