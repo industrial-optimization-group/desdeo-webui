@@ -33,7 +33,8 @@
     handleClickSelection,
     handleSelectionChange,
   } from "$lib/components/visual/helperFunctions";
-  import EchartsComponent from "$lib/components/visual/EchartsComponent.svelte";
+  import EchartsComponent from "../../general/EchartsComponent.svelte";
+  // import EchartsComponent from "$lib/components/visual/EchartsComponent.svelte";
   // Props for this component:
   export let values: number[][];
   export let lowerIsBetter: boolean[] = [];
