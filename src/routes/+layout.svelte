@@ -2,8 +2,8 @@
   //
   // The selected theme
   //
-  // TODO: Implement the design with a custom theme
-  // See https://www.skeleton.dev/docs/generator
+  // TODO: Implement the design with a custom theme.
+  // See https://www.skeleton.dev/docs/generator.
   //
   import "@skeletonlabs/skeleton/themes/theme-hamlindigo.css";
 
@@ -12,6 +12,13 @@
 
   // The application's global stylesheet
   import "../app.postcss";
+
+  // Math fonts for the MathLive component
+  //
+  // TODO: Should we somehow load the sound files too to suppress the errors
+  // related to them? Or is there a way to disable the sound feature?
+  //
+  import "mathlive/fonts.css";
 
   import { Drawer, drawerStore } from "@skeletonlabs/skeleton";
   import { Toast } from "@skeletonlabs/skeleton";
@@ -52,7 +59,7 @@
   -- not be used anywhere but here. 
   --
   -- NOTE: The dismiss button's styling should be kept in sync with the general
-  -- close button's styling (`CloseButton.svelte`).
+  -- close button's styling (see `CloseButton.svelte`).
   -->
 <Toast />
 

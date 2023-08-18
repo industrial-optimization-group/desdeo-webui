@@ -21,6 +21,7 @@
     "axios": "^1.4.0",
     "echarts": "^5.4.2",
     "immer": "^10.0.2",
+    "mathlive": "^0.95.4",
     "zod": "^3.21.4"
   },
   "devDependencies": {
