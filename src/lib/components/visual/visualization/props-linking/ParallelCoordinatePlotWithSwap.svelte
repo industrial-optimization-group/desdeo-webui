@@ -17,22 +17,19 @@
 
 <script lang="ts">
   import type * as echarts from "echarts";
-  import { onMount } from "svelte";
+  // import { getAxisY, getAxisX } from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  // import getAxisY from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  // import getAxisX from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  // import { getAxisX, getAxisY } from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
   import {
     colorPalette,
     selectedLineStyle,
   } from "$lib/components/visual/stores";
   import type { Ranges } from "$lib/components/visual/types";
   import type { EChartOption } from "echarts";
-  import {
-    getChartModel,
-    handleHighlightChange,
-  } from "$lib/components/visual/helperFunctions";
-  import {
-    handleClickSelection,
-    handleSelectionChange,
-  } from "$lib/components/visual/helperFunctions";
-  import EchartsComponent from "$lib/components/visual/EchartsComponent.svelte";
+  import { getAxisY, getAxisX } from "$lib/components/visual/helperFunctions";
+  import { onMount } from "svelte";
+  import ParallelCoordinatePlotBase from "./ParallelCoordinatePlotBase.svelte";
   // Props for this component:
   export let values: number[][];
   export let lowerIsBetter: boolean[] = [];
@@ -50,37 +47,9 @@
   let option: EChartOption;
 
   $: data = { names: names, values: values };
-  $: if (selectedIndices) {
-    if (chart) {
-      handleSelectionChange(chart, selectedIndices);
-    }
-  }
-
-  $: {
-    if (chart) {
-      handleHighlightChange(chart, highlightedIndex);
-    }
-  }
-
   $: if (values) {
-    option = createOption(names, values);
-    if (chart) {
-      // data = { names: names, values: values };
-      chart.setOption(option, true, false);
-    }
-  }
-
-  $: if (disableInteraction || !disableInteraction) {
-    if (chart) {
-      chart.setOption({
-        series: [
-          {
-            silent: disableInteraction,
-          },
-        ],
-
-        graphic: createGraphicData(),
-      });
+    {
+      option = createOption(names, values);
     }
   }
 
@@ -129,48 +98,6 @@
   }
 
   /**
-   * A helper function that returns the y coordinate of the axis at the given
-   * index.
-   *
-   * @param minimize - A boolean value that indicates if the indicator is for
-   *   representing minimization.
-   * @param index - The index of the axis.
-   */
-  function getAxisY(minimize: boolean, index: number) {
-    let parallelAxisComponent = getChartModel(
-      chart as echarts.EChartsType
-    ).getComponent("parallelAxis");
-    if (minimize) {
-      let axesLayout = parallelAxisComponent.coordinateSystem._axesLayout;
-      let singleAxisObject = Object.values(axesLayout)[index] as {
-        position: [number, number];
-      };
-      return singleAxisObject.position[1];
-    } else {
-      return parallelAxisComponent.coordinateSystem.getRect().y;
-    }
-  }
-
-  /**
-   * A helper function that returns the x-coordinate of the axis at the given
-   * index.
-   *
-   * @param minimize - A boolean value that indicates if the indicator is for
-   *   representing minimization.
-   * @param index - The index of the axis.
-   */
-  function getAxisX(index: number) {
-    let parallelAxisComponent = getChartModel(
-      chart as echarts.EChartsType
-    ).getComponent("parallelAxis");
-    let axesLayout = parallelAxisComponent.coordinateSystem._axesLayout;
-    let singleAxisObject = Object.values(axesLayout)[index] as {
-      position: [number, number];
-    };
-    return singleAxisObject.position[0];
-  }
-
-  /**
    * Adds the min/max indicators to parallelAxes. The indicators are added as a
    * graphic component.
    */
@@ -192,8 +119,8 @@
         fill: "lightgrey",
       },
       z: -100,
-      y: chart ? getAxisY(min, index) : 0,
-      x: chart ? getAxisX(index) : 0,
+      y: chart ? getAxisY(min, index, chart) : 0,
+      x: chart ? getAxisX(index, chart) : 0,
     }));
 
     const graphicData = [
@@ -230,7 +157,7 @@
                 swapAxes(index, index - 1);
               },
 
-              x: chart ? getAxisX(index) : 0,
+              x: chart ? getAxisX(index, chart) : 0,
             }
           : undefined,
 
@@ -251,7 +178,7 @@
               onclick: () => {
                 swapAxes(index, index + 1);
               },
-              x: chart ? getAxisX(index) : 0,
+              x: chart ? getAxisX(index, chart) : 0,
             }
           : undefined,
       ],
@@ -335,7 +262,7 @@
     return {
       color: colorPalette,
       tooltip: {
-        // TODO: Check if there is better way to achiece no type errors, check https://github.com/apache/echarts/issues/14723
+        // TODO: Check if there is better way to achieve no type errors, check https://github.com/apache/echarts/issues/14723
         formatter: function (params) {
           let newParams: EChartOption.Tooltip.Format =
             params as EChartOption.Tooltip.Format;
@@ -391,98 +318,24 @@
       graphic: createGraphicData(),
     };
   }
+
   onMount(() => {
-    // chart.setOption({
-    //   graphic: createGraphicData(),
-    // });
-    // // TODO: How to get the parallel axis index where the brush has happened? params doesn't have the index.
-    // chart.on("axisareaselected", function (params: { intervals: number[][] }) {
-    //   if (!chart) {
-    //     return;
-    //   }
-    //   let series1 = getChartModel(chart as echarts.EChartsType).getSeries()[0];
-    //   let indices1 = series1.getRawIndicesByActiveState("active");
-    //   if (selectedIndices != indices1) {
-    //     selectedIndices = indices1;
-    //   }
-    //   brushInterval = {
-    //     min: params.intervals[0][0],
-    //     max: params.intervals[0][1],
-    //   };
-    //   // Workaround for above TODO: Go through all the axes and get the min and max values of the brush interval if it exists
-    //   let axesLenght = (chart.getOption().parallelAxis as object[]).length;
-    //   let helpArray: Ranges[] = brushIntervalPerAxis.slice();
-    //   for (let i = 0; i < axesLenght; i++) {
-    //     const axisComponent = getChartModel(chart).getComponent(
-    //       "parallelAxis",
-    //       i
-    //     );
-    //     let activeIntervals = axisComponent.activeIntervals;
-    //     let interval: Ranges = {
-    //       min: activeIntervals.length ? activeIntervals[0][0] : undefined,
-    //       max: activeIntervals.length ? activeIntervals[0][1] : undefined,
-    //     };
-    //     if (helpArray.length != axesLenght) {
-    //       helpArray.push(interval);
-    //     } else {
-    //       helpArray[i] = interval;
-    //     }
-    //   }
-    //   brushIntervalPerAxis = helpArray;
-    // });
-    // // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
+    option = createOption(names, values);
+    console.log("object");
   });
-  let events = {
-    click: function (params: {
-      dataIndex: number;
-      componentType: string;
-      seriesIndex: number;
-    }) {
-      console.log(params);
-      selectedIndices = handleClickSelection(params, selectedIndices);
-    },
-    mouseover: function (params: { dataIndex: number }) {
-      highlightedIndex = params.dataIndex;
-    },
-    mouseout: function () {
-      highlightedIndex = undefined;
-    },
-    axisareaselected: function (params: { intervals: number[][] }) {
-      if (!chart) {
-        return;
-      }
-      let series1 = getChartModel(chart as echarts.EChartsType).getSeries()[0];
-      let indices1 = series1.getRawIndicesByActiveState("active");
-      if (selectedIndices != indices1) {
-        selectedIndices = indices1;
-      }
-      brushInterval = {
-        min: params.intervals[0][0],
-        max: params.intervals[0][1],
-      };
-      // TODO: How to get the parallel axis index where the brush has happened? params doesn't have the index.
-      // Workaround for above TODO: Go through all the axes and get the min and max values of the brush interval if it exists
-      let axesLenght = (chart.getOption().parallelAxis as object[]).length;
-      let helpArray: Ranges[] = brushIntervalPerAxis.slice();
-      for (let i = 0; i < axesLenght; i++) {
-        const axisComponent = getChartModel(chart).getComponent(
-          "parallelAxis",
-          i
-        );
-        let activeIntervals = axisComponent.activeIntervals;
-        let interval: Ranges = {
-          min: activeIntervals.length ? activeIntervals[0][0] : undefined,
-          max: activeIntervals.length ? activeIntervals[0][1] : undefined,
-        };
-        if (helpArray.length != axesLenght) {
-          helpArray.push(interval);
-        } else {
-          helpArray[i] = interval;
-        }
-      }
-      brushIntervalPerAxis = helpArray;
-    },
-  };
 </script>
 
-<EchartsComponent bind:chart {option} {events} />
+<ParallelCoordinatePlotBase
+  newOptions={option}
+  {values}
+  bind:selectedIndices
+  bind:highlightedIndex
+  bind:brushInterval
+  bind:brushIntervalPerAxis
+  bind:names
+  bind:lowerIsBetter
+  bind:showIndicators
+  bind:ranges
+  bind:disableInteraction
+  bind:chart
+/>

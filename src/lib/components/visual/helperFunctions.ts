@@ -86,3 +86,49 @@ export function getChartModel(chart: EChartsType) {
 
   return chart.getModel();
 }
+
+/**
+ * A helper function that returns the y coordinate of the axis at the given
+ * index.
+ *
+ * @param minimize - A boolean value that indicates if the indicator is for
+ *   representing minimization.
+ * @param index - The index of the axis.
+ */
+export function getAxisY(
+  minimize: boolean,
+  index: number,
+  chart: echarts.EChartsType
+): number {
+  const parallelAxisComponent = getChartModel(
+    chart as echarts.EChartsType
+  ).getComponent("parallelAxis");
+  if (minimize) {
+    const axesLayout = parallelAxisComponent.coordinateSystem._axesLayout;
+    const singleAxisObject = Object.values(axesLayout)[index] as {
+      position: [number, number];
+    };
+    return singleAxisObject.position[1];
+  } else {
+    return parallelAxisComponent.coordinateSystem.getRect().y;
+  }
+}
+
+/**
+ * A helper function that returns the x-coordinate of the axis at the given
+ * index.
+ *
+ * @param minimize - A boolean value that indicates if the indicator is for
+ *   representing minimization.
+ * @param index - The index of the axis.
+ */
+export function getAxisX(index: number, chart: echarts.EChartsType): number {
+  const parallelAxisComponent = getChartModel(
+    chart as echarts.EChartsType
+  ).getComponent("parallelAxis");
+  const axesLayout = parallelAxisComponent.coordinateSystem._axesLayout;
+  const singleAxisObject = Object.values(axesLayout)[index] as {
+    position: [number, number];
+  };
+  return singleAxisObject.position[0];
+}

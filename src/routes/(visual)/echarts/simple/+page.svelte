@@ -14,6 +14,8 @@
   // import { selectedSolutions } from "$lib/components/visual/stores";
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
+  // import ParallelCoordinatePlot from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -80,7 +82,7 @@
   $: selectedIndices;
   let high: number | undefined = undefined;
   $: high;
-  $: activeinteraction = true;
+  $: disableInteraction = false;
 </script>
 
 <div class="container">
@@ -113,7 +115,7 @@
     <button
       style="background-color: lightgrey; border-style: double; border-color: black; padding: 5px; margin: 5px;"
       on:click={() => {
-        activeinteraction = !activeinteraction;
+        disableInteraction = !disableInteraction;
       }}>Toggle interaction</button
     >
 
@@ -138,8 +140,17 @@
           { min: undefined, max: undefined },
         ]}
         bind:highlightedIndex={high}
+        {disableInteraction}
       />
     </div>
+  </div>
+
+  <div style="height:40vh; width:100vh">
+    <ParallelCoordinatePlotBase
+      values={theValues}
+      names={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      disableInteraction={false}
+    />
   </div>
 
   <div style="height:40vh; width:100vh">

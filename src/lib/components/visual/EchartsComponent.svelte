@@ -11,6 +11,7 @@
           dataIndex: number;
           componentType: string;
           seriesIndex: number;
+          intervals: number[][];
         }) => void;
       }
     | undefined = undefined;
