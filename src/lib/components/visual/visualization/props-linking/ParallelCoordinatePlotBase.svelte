@@ -47,6 +47,7 @@
   export let brushInterval: Ranges | undefined = undefined;
   export let brushIntervalPerAxis: Ranges[] = [];
   export let newOptions: EChartOption | undefined = undefined;
+  export let maxSelections: number | undefined = undefined;
   // export let data: SolutionData;
 
   export let chart: echarts.ECharts | undefined = undefined;
@@ -55,7 +56,7 @@
 
   $: if (selectedIndices) {
     if (chart) {
-      handleSelectionChange(chart, selectedIndices);
+      handleSelectionChange(chart, selectedIndices, maxSelections);
     }
   }
 
@@ -281,7 +282,11 @@
       seriesIndex: number;
     }) {
       console.log(params);
-      selectedIndices = handleClickSelection(params, selectedIndices);
+      selectedIndices = handleClickSelection(
+        params,
+        selectedIndices,
+        maxSelections
+      );
     },
     mouseover: function (params: { dataIndex: number }) {
       highlightedIndex = params.dataIndex;

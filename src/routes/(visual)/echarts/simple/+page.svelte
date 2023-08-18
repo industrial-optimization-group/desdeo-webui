@@ -149,6 +149,7 @@
       values={theValues}
       names={["Objective1", "Objective2", "Objective3", "Objective4"]}
       disableInteraction={false}
+      maxSelections={2}
     />
   </div>
 

@@ -2,7 +2,8 @@ import type { EChartsType } from "echarts";
 
 export function handleClickSelection(
   params: { dataIndex: number; componentType: string; seriesIndex: number },
-  selectedIndices: number[]
+  selectedIndices: number[],
+  maxSelections: number | undefined
 ) {
   // Check if selectedIndices already contains the index of the clicked solution
   if (selectedIndices.includes(params.dataIndex)) {
@@ -12,11 +13,8 @@ export function handleClickSelection(
     // If it doesn't, add it to the array
     selectedIndices = [...selectedIndices, params.dataIndex];
   }
-
-  if (params.componentType === "series") {
-    // console.log(params.seriesIndex);
-    // console.log(params.dataIndex);
-    // selectedIndices = [params.dataIndex];
+  if (maxSelections !== undefined && selectedIndices.length > maxSelections) {
+    selectedIndices.splice(selectedIndices.indexOf(params.dataIndex), 1);
   }
   return selectedIndices;
 }
@@ -44,23 +42,28 @@ export function handleHighlightChange(
 
 export function handleSelectionChange(
   chart: EChartsType,
-  selectedIndices: number[]
+  selectedIndices: number[],
+  maxSelections: number | undefined
 ) {
-  chart.dispatchAction({
-    type: "unselect",
-    seriesIndex: 0,
-    dataIndex: getChartModel(chart).getSeries()[0].getSelectedDataIndices(),
-  });
-  chart.dispatchAction({
-    type: "select",
-    seriesIndex: 0,
-    dataIndex: selectedIndices,
-  });
-  // Downplay all after selection, for selection to show
-  chart.dispatchAction({
-    type: "downplay",
-    seriesIndex: 0,
-  });
+  if (maxSelections !== undefined && selectedIndices.length <= maxSelections) {
+    chart.dispatchAction({
+      type: "unselect",
+      seriesIndex: 0,
+      dataIndex: getChartModel(chart).getSeries()[0].getSelectedDataIndices(),
+    });
+    chart.dispatchAction({
+      type: "select",
+      seriesIndex: 0,
+      dataIndex: selectedIndices,
+    });
+    if (selectedIndices.length < maxSelections) {
+      // Downplay all after selection, for selection to show
+      chart.dispatchAction({
+        type: "downplay",
+        seriesIndex: 0,
+      });
+    }
+  }
   return chart;
 }
 

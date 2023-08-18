@@ -13,7 +13,7 @@
     handleSelectionChange,
     handleHighlightChange,
   } from "$lib/components/visual/helperFunctions";
-  import EchartsComponent from "$lib/components/visual/EchartsComponent.svelte";
+  import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
 
   export let values: number[][];
   // export let minimize: boolean[];
@@ -21,12 +21,13 @@
   export let indicatorNames: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
   export let highlightedIndices: number | undefined = undefined;
+  export let maxSelections: number | undefined = undefined;
   // export let data: SolutionData;
 
   let chart: echarts.EChartsType;
   $: if (selectedIndices) {
     if (chart) {
-      handleSelectionChange(chart, selectedIndices);
+      handleSelectionChange(chart, selectedIndices, maxSelections);
     }
   }
 
