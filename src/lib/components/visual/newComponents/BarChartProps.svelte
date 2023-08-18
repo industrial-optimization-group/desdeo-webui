@@ -47,7 +47,7 @@ TODO: Highlighting and selection don't work properly. Most propably bug in the u
     }
   }
 
-  let series = [];
+  let series: { type: string }[] = [];
 
   // Set the column names
   let dataSet = [["Solution", ...names]];
@@ -59,12 +59,16 @@ TODO: Highlighting and selection don't work properly. Most propably bug in the u
   }
   onMount(() => {
     // Create the option object for the whole chart.
-    const option = {
+    const option: echarts.EChartOption = {
       title: {
         text: title,
       },
       tooltip: {
-        formatter: (params) => {
+        formatter: (params: {
+          seriesName: string;
+          data: { [x: string]: string };
+          seriesIndex: number;
+        }) => {
           let result = params.seriesName + "<br>";
           // +1 Because the first value in the list is the name of the objective.
           return result + "Value: " + params.data[params.seriesIndex + 1];

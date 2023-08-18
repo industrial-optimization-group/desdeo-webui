@@ -72,8 +72,17 @@ export function handleSelectionChange(
  * @returns
  */
 export function getChartModel(chart: EChartsType) {
+  /* Explanation of the code line below:
+                // Gets the model of parallelAxis component, which has all the axes as an array.
+                const model = getChartModel(chart).getComponent("parallelAxis");
+                // Gets the axesLayot which has the position info of every parallel axes
+                const axes = model.coordinateSystem._axesLayout
+                // Gets the x-coordinate of the i:th axis 
+                const xCoord = Object.values(axes)[index].position[0] 
+                */
   // TODO: How to get info needed without getModel. This is a private method and it can break in the future!!https://github.com/apache/echarts/issues/16479
   //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
+
   return chart.getModel();
 }

@@ -16,16 +16,17 @@
 <!-- TODO: min/max text should show also when names given manually -->
 
 <script lang="ts">
-  import * as echarts from "echarts";
+  import type * as echarts from "echarts";
   import { onMount } from "svelte";
-  import { colorPalette, selectedLineStyle } from "./stores";
-  import type { Ranges } from "./types";
+  import { colorPalette, selectedLineStyle } from "../stores";
+  import type { Ranges } from "../types";
   import type { EChartOption } from "echarts";
-  import { getChartModel, handleHighlightChange } from "./helperFunctions";
+  import { getChartModel, handleHighlightChange } from "../helperFunctions";
   import {
     handleClickSelection,
     handleSelectionChange,
-  } from "./helperFunctions";
+  } from "../helperFunctions";
+  import EchartsComponent from "./EchartsComponent.svelte";
   // Props for this component:
   export let values: number[][];
   export let lowerIsBetter: boolean[] = [];
@@ -39,9 +40,8 @@
   export let brushIntervalPerAxis: Ranges[] = [];
   // export let data: SolutionData;
 
-  let chartDiv: HTMLDivElement;
   let chart: echarts.ECharts | undefined;
-  let option: echarts.EChartOption;
+  let option: EChartOption;
 
   $: data = { names: names, values: values };
   $: if (selectedIndices) {
@@ -325,7 +325,6 @@
     for (let i = 0; i < values.length; i++) {
       seriesData.push({ value: values[i], name: "Alternative " + (i + 1) });
     }
-
     // Create the option object for the whole chart.
     return {
       color: colorPalette,
@@ -387,14 +386,62 @@
     };
   }
   onMount(() => {
-    chart = echarts.init(chartDiv, "", { renderer: "svg" });
-    chart.setOption(option);
-    chart.setOption({
-      graphic: createGraphicData(),
-    });
-
-    // TODO: How to get the parallel axis index where the brush has happened? params doesn't have the index.
-    chart.on("axisareaselected", function (params: { intervals: number[][] }) {
+    // chart.setOption({
+    //   graphic: createGraphicData(),
+    // });
+    // // TODO: How to get the parallel axis index where the brush has happened? params doesn't have the index.
+    // chart.on("axisareaselected", function (params: { intervals: number[][] }) {
+    //   if (!chart) {
+    //     return;
+    //   }
+    //   let series1 = getChartModel(chart as echarts.EChartsType).getSeries()[0];
+    //   let indices1 = series1.getRawIndicesByActiveState("active");
+    //   if (selectedIndices != indices1) {
+    //     selectedIndices = indices1;
+    //   }
+    //   brushInterval = {
+    //     min: params.intervals[0][0],
+    //     max: params.intervals[0][1],
+    //   };
+    //   // Workaround for above TODO: Go through all the axes and get the min and max values of the brush interval if it exists
+    //   let axesLenght = (chart.getOption().parallelAxis as object[]).length;
+    //   let helpArray: Ranges[] = brushIntervalPerAxis.slice();
+    //   for (let i = 0; i < axesLenght; i++) {
+    //     const axisComponent = getChartModel(chart).getComponent(
+    //       "parallelAxis",
+    //       i
+    //     );
+    //     let activeIntervals = axisComponent.activeIntervals;
+    //     let interval: Ranges = {
+    //       min: activeIntervals.length ? activeIntervals[0][0] : undefined,
+    //       max: activeIntervals.length ? activeIntervals[0][1] : undefined,
+    //     };
+    //     if (helpArray.length != axesLenght) {
+    //       helpArray.push(interval);
+    //     } else {
+    //       helpArray[i] = interval;
+    //     }
+    //   }
+    //   brushIntervalPerAxis = helpArray;
+    // });
+    // // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
+  });
+  let events = {
+    click: function (params: {
+      dataIndex: number;
+      componentType: string;
+      seriesIndex: number;
+    }) {
+      console.log(params);
+      selectedIndices = handleClickSelection(params, selectedIndices);
+    },
+    mouseover: function (params: { dataIndex: number }) {
+      highlightedIndex = params.dataIndex;
+    },
+    mouseout: function () {
+      highlightedIndex = undefined;
+    },
+    axisareaselected: function (params: { intervals: number[][] }) {
       if (!chart) {
         return;
       }
@@ -407,7 +454,7 @@
         min: params.intervals[0][0],
         max: params.intervals[0][1],
       };
-
+      // TODO: How to get the parallel axis index where the brush has happened? params doesn't have the index.
       // Workaround for above TODO: Go through all the axes and get the min and max values of the brush interval if it exists
       let axesLenght = (chart.getOption().parallelAxis as object[]).length;
       let helpArray: Ranges[] = brushIntervalPerAxis.slice();
@@ -428,26 +475,8 @@
         }
       }
       brushIntervalPerAxis = helpArray;
-    });
-
-    // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
-    chart.on("mouseover", function (params: { dataIndex: number }) {
-      highlightedIndex = params.dataIndex;
-    });
-    chart.on("mouseout", function () {
-      highlightedIndex = undefined;
-    });
-    chart.on(
-      "click",
-      function (params: {
-        dataIndex: number;
-        componentType: string;
-        seriesIndex: number;
-      }) {
-        selectedIndices = handleClickSelection(params, selectedIndices);
-      }
-    );
-  });
+    },
+  };
 </script>
 
-<div style="height:100%; width:100%" bind:this={chartDiv} />
+<EchartsComponent bind:chart {option} {events} />
