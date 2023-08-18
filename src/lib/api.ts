@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance } from "axios";
+import { z } from "zod";
 import { derived, writable, get, readonly } from "svelte/store";
 
 /** An interface for accessing a backend server. */
@@ -301,6 +302,27 @@ export function register_account(username: string, password: string) {
     });
 }
 
+export const PointS = z.array(z.number().finite());
+export type Point = z.infer<typeof PointS>;
+
+/**
+ * Checks whether `value` is a finite point in the sense that it is an (possibly
+ * empty) array of finite numbers.
+ */
+export function is_point(value: unknown): value is Point {
+  const { success } = PointS.safeParse(value);
+  return success;
+}
+
+/**
+ * Checks whether `value` is a finite point of length `n` in the sense that it
+ * is an array of length `n` of finite numbers.
+ */
+export function is_point_of_length(value: unknown, n: number): value is Point {
+  const { success } = PointS.length(n).safeParse(value);
+  return success;
+}
+
 /** Problem data in the format provided by the backend */
 type _Problem = {
   problem_id: number;
@@ -315,22 +337,29 @@ type _Problem = {
 };
 
 /** Problem data in the format used by the frontend */
-export type Problem = {
+export type UnboundedProblem = {
   id: number;
   name: string;
   type: string;
-  objectives: Objective[];
+  objectives: UnboundedObjective[];
   n_objectives: number;
   variables: Variable[];
   n_variables: number;
   n_constraints: number;
-  //
-  // Having the numbers of objectives, variables and constraints as properties
-  // of the problem is useful in the frontend.
-  //
 };
 
-export type Objective = {
+export type BoundedProblem = {
+  id: number;
+  name: string;
+  type: string;
+  objectives: BoundedObjective[];
+  n_objectives: number;
+  variables: Variable[];
+  n_variables: number;
+  n_constraints: number;
+};
+
+export type UnboundedObjective = {
   name: string;
   minimize: boolean;
 };
@@ -346,8 +375,11 @@ export type Variable = {
   name: string;
 };
 
+export type Problem = UnboundedProblem | BoundedProblem;
+export type Objective = UnboundedObjective | BoundedObjective;
+
 /** Transforms problem data from the backend format to the frontend format */
-function transform_problem(problem: _Problem): Problem {
+function transform_problem(problem: _Problem): UnboundedProblem {
   const objectives = extract_objectives(problem);
   const variables = extract_variables(problem);
 
@@ -376,7 +408,7 @@ function extract_variables(problem: _Problem): Variable[] {
   }));
 }
 
-// TODO: Currently requires a batched version of the backend
+// TODO: Currently requires a batched version of the backend.
 export function get_all_problems(): Promise<Problem[]> {
   return with_access_token()
     .get("/problem/access/all")
