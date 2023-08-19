@@ -57,7 +57,7 @@
         readonly={true}
       /> -->
     </div>
-    <div>
+    <div style="width: 100%; height: 90%;">
       <SingleHorizontalBar
         {lowerBound}
         {higherBound}

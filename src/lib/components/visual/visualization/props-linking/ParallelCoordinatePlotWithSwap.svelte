@@ -321,7 +321,7 @@
 
   onMount(() => {
     option = createOption(names, values);
-    console.log("object");
+    // console.log("object");
   });
 </script>
 
