@@ -9,6 +9,7 @@
   export let solutionValue: number | undefined = undefined;
   export let selectedValue: number | undefined = undefined;
   export let previousValue: number | undefined = undefined;
+  export let lowerIsBetter: true;
   //   export let barColor = "#a6b1e1";
   //   // export let isMin = true;
   //   // export let divId: string;
@@ -64,6 +65,7 @@
         {solutionValue}
         bind:selectedValue
         bind:previousValue
+        {lowerIsBetter}
       />
     </div>
   </div>

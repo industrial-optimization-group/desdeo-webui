@@ -13,46 +13,127 @@
   // let chartDiv: HTMLDivElement
 </script>
 
-<div style="width: 75vw; height: 20vh;">
-  <HorizontalBarWithInputs
-    higherBound={-0.5}
-    lowerBound={-5.5234}
-    barName="name"
-    {previousValue}
-    solutionValue={-2.21398}
-    bind:selectedValue
-  />
-</div>
-<div style="width: 75vw; height: 20vh;">
-  <HorizontalBarWithInputs
-    higherBound={5}
-    lowerBound={0}
-    bind:previousValue
-    bind:solutionValue
-    bind:selectedValue
-  />
-</div>
-<div style="width: 75vw; height: 20vh;">
-  <HorizontalBarWithInputs
-    higherBound={5.4355}
-    lowerBound={5.5234}
-    bind:previousValue
-    bind:solutionValue
-    bind:selectedValue
-  />
-</div>
-<div style="width: 75vw; height: 20vh;">
-  <HorizontalBarWithInputs
-    higherBound={5}
-    lowerBound={-5.5234}
-    barName="name"
-    {previousValue}
-    bind:solutionValue
-    bind:selectedValue
-  />
+<div style="display: flex; height: 80vh; overflow-x:scroll;">
+  <div>
+    <p>Higher is better</p>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={-0.5}
+        lowerBound={-5.5234}
+        barName="name"
+        {previousValue}
+        solutionValue={-2.21398}
+        bind:selectedValue
+        lowerIsBetter={false}
+      />
+    </div>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={5}
+        lowerBound={0}
+        bind:previousValue
+        bind:solutionValue
+        bind:selectedValue
+        lowerIsBetter={false}
+      />
+    </div>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={5.4355}
+        lowerBound={5.5234}
+        bind:previousValue
+        bind:solutionValue
+        bind:selectedValue
+        lowerIsBetter={false}
+      />
+    </div>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={5}
+        lowerBound={-5.5234}
+        barName="name"
+        {previousValue}
+        solutionValue={2.21398}
+        bind:selectedValue
+        lowerIsBetter={false}
+      />
+    </div>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={5}
+        lowerBound={-5.5234}
+        barName="name"
+        {previousValue}
+        bind:solutionValue
+        bind:selectedValue
+        lowerIsBetter={false}
+      />
+    </div>
+  </div>
+  <div>
+    <p>lower is better</p>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={-0.5}
+        lowerBound={-5.5234}
+        barName="name"
+        {previousValue}
+        solutionValue={-2.21398}
+        bind:selectedValue
+        lowerIsBetter={true}
+      />
+    </div>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={5}
+        lowerBound={0}
+        bind:previousValue
+        bind:solutionValue
+        bind:selectedValue
+        lowerIsBetter={true}
+      />
+    </div>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={5.4355}
+        lowerBound={5.5234}
+        bind:previousValue
+        bind:solutionValue
+        bind:selectedValue
+        lowerIsBetter={true}
+      />
+    </div>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={5}
+        lowerBound={-5.5234}
+        barName="name"
+        {previousValue}
+        solutionValue={-2.21398}
+        bind:selectedValue
+        lowerIsBetter={true}
+      />
+    </div>
+    <div style="width: 50vw; height: 20vh;">
+      <HorizontalBarWithInputs
+        higherBound={5}
+        lowerBound={-5.5234}
+        barName="name"
+        {previousValue}
+        bind:solutionValue
+        bind:selectedValue
+        lowerIsBetter={true}
+      />
+    </div>
+  </div>
 </div>
 <button
   on:click={() => {
-    previousValue = 2.21398;
-  }}>Change prev</button
+    solutionValue = -2.21398;
+  }}>Change to neg</button
+>
+<button
+  on:click={() => {
+    solutionValue = 2.21398;
+  }}>Change to pos</button
 >

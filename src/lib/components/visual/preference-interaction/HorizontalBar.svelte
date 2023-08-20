@@ -139,23 +139,39 @@
     // });
   });
 
-  function addHorizontalBar(option: echarts.EChartOption) {
-    chart.setOption(option);
+  function updateBarColor() {
+    let originalBarColor = barColor.slice();
     let datalowerBar;
     let backgroundStyle;
-    let color = higherBound < 0 ? "transparent" : barColor;
+    let color =
+      higherBound < 0
+        ? "transparent"
+        : lowerBound < 0
+        ? (solutionValue as number) < 0
+          ? "white"
+          : originalBarColor
+        : originalBarColor;
 
-    if (lowerIsBetter) {
+    if (!lowerIsBetter) {
       backgroundStyle = {
         color: "white",
         // opacity: 1,
       };
     } else {
       backgroundStyle = {
-        color: barColor,
+        color: originalBarColor,
         // opacity: 1,
       };
-      color = lowerBound < 0 || higherBound < 0 ? "transparent" : barColor;
+      let oldBarColor = originalBarColor;
+      originalBarColor = "white";
+      color =
+        higherBound < 0
+          ? "transparent"
+          : lowerBound < 0
+          ? (solutionValue as number) < 0
+            ? oldBarColor
+            : originalBarColor
+          : originalBarColor;
     }
 
     if (solutionValue != null) {
@@ -192,7 +208,7 @@
             id: "lower",
             stack: "negative",
             type: "bar",
-            color: barColor,
+            color: originalBarColor,
             animation: false,
             data: datalowerBar,
             barWidth: "100%",
@@ -205,6 +221,11 @@
         ],
       });
     }
+  }
+
+  function addHorizontalBar(option: echarts.EChartOption) {
+    chart.setOption(option);
+    updateBarColor();
 
     // TODO: How to get the gridRect without using the private method?
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -685,6 +706,7 @@
           },
         ],
       });
+      updateBarColor();
       // Update the reset arrow position and make it visible
       chart.setOption({
         graphic: [
