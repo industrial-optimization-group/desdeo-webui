@@ -70,12 +70,9 @@
       trigger: "none",
       triggerOn: "none",
       position: [20, -30],
-      // formatter: function(params) {
-      //   console.log(params);
-      //   return "jelklasdj";
-      // },
     },
     xAxis: {
+      z: 301,
       axisLabel: {
         margin: 5,
         lineHeight: 10,
