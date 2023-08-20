@@ -31,7 +31,7 @@
   export let selectedValue: number | undefined = undefined;
   export let previousValue: number | undefined = undefined;
   export let barColor = "#a6b1e1";
-  // export let isMin = true;
+  export let lowerIsBetter = true;
   // export let divId: string;
   export let inputs = false;
   export let decimalPrecision: number | undefined = undefined;
@@ -143,6 +143,23 @@
   function addHorizontalBar(option: echarts.EChartOption) {
     chart.setOption(option);
     let datalowerBar;
+    let backgroundStyle;
+    let color;
+
+    if (lowerIsBetter) {
+      backgroundStyle = {
+        color: "white",
+        // opacity: 1,
+      };
+      color = lowerBound < 0 || higherBound < 0 ? "transparent" : barColor;
+    } else {
+      backgroundStyle = {
+        color: barColor,
+        // opacity: 1,
+      };
+      color = lowerBound < 0 || higherBound < 0 ? "transparent" : barColor;
+    }
+
     if (solutionValue) {
       datalowerBar = higherBound < 0 ? [[solutionValue]] : [[lowerBound]];
     } else {
@@ -154,15 +171,13 @@
         {
           id: "higher",
           stack: "negative",
-          color: lowerBound < 0 || higherBound < 0 ? "transparent" : barColor,
-          showBackground: true,
-          backgroundStyle: {
-            color: barColor,
-            opacity: 0.2,
-          },
           type: "bar",
+          color: color,
+          showBackground: true,
+          backgroundStyle: backgroundStyle,
           data: solutionValue ? [[solutionValue]] : [[0]],
           barWidth: "100%",
+          // opacity: lowerIsBetter ? 1 : 0.2,
           emphasis: {
             //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
@@ -178,7 +193,7 @@
           {
             id: "lower",
             stack: "negative",
-            color: barColor,
+            color: lowerIsBetter ? barColor : "white",
             type: "bar",
             animation: false,
             data: datalowerBar,

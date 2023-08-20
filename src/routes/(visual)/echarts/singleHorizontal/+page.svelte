@@ -52,6 +52,7 @@
         lowerBound={-5}
         bind:solutionValue
         bind:selectedValue
+        lowerIsBetter={false}
       />
     </div>
   </div>
