@@ -1,6 +1,5 @@
 <script lang="ts">
   import InputWithValidation from "$lib/components/visual/preference-interaction/BasicInput.svelte";
-  import { onMount } from "svelte";
   import SingleHorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBar.svelte";
 
   export let lowerBound: number;
@@ -9,22 +8,12 @@
   export let solutionValue: number | undefined = undefined;
   export let selectedValue: number | undefined = undefined;
   export let previousValue: number | undefined = undefined;
-  export let lowerIsBetter: true;
+  export let lowerIsBetter = true;
+  export let decimalPrecision: number | undefined = undefined;
   //   export let barColor = "#a6b1e1";
   //   // export let isMin = true;
   //   // export let divId: string;
   //   export let inputs = false;
-  //   export let decimalPrecision = 2;
-
-  onMount(() => {
-    // if (previousValue) {
-    //   console.log(previousValue);
-    //   // document.getElementById("prev")?.removeAttribute("style");
-    //   document.getElementById("prev").style.display = "flex";
-    // } else {
-    //   document.getElementById("prev").style.display = "none";
-    // }
-  });
 </script>
 
 <!-- Horizontal bar with inputs -->
@@ -66,6 +55,7 @@
         bind:selectedValue
         bind:previousValue
         {lowerIsBetter}
+        {decimalPrecision}
       />
     </div>
   </div>

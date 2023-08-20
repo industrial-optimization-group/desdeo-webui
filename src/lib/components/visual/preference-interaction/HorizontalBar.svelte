@@ -53,8 +53,6 @@
     //updateSolutionBar(Number.parseFloat(solutionValue.toFixed(decimalPrecision)));
   }
 
-  // updateBarColor
-
   const arrowSize = 15;
   const arrowColor = "black";
   const shadowSize = 5;
@@ -139,6 +137,7 @@
     // });
   });
 
+  // TODO: Better documentation. Also try to make this more understandable.
   function updateBarColor() {
     let originalBarColor = barColor.slice();
     let datalowerBar;
@@ -187,7 +186,7 @@
           stack: "negative",
           type: "bar",
           color: color,
-          showBackground: true,
+          showBackground: solutionValue ? true : false,
           backgroundStyle: backgroundStyle,
           data: solutionValue ? [[solutionValue]] : [[0]],
           barWidth: "100%",
@@ -208,7 +207,7 @@
             id: "lower",
             stack: "negative",
             type: "bar",
-            color: originalBarColor,
+            color: solutionValue ? originalBarColor : "transparent",
             animation: false,
             data: datalowerBar,
             barWidth: "100%",

@@ -2,8 +2,8 @@
   import HorizontalBarWithInputs from "$lib/components/visual/preference-interaction/HorizontalBarWithInputs.svelte";
 
   // import { onMount } from "svelte";
-  let solutionValue: number;
-  $: solutionValue = 3.23;
+  let solutionValue: number | undefined = undefined;
+  $: solutionValue = undefined;
   $: selectedValue = undefined;
   let previousValue: number | undefined = undefined;
   $: previousValue;
