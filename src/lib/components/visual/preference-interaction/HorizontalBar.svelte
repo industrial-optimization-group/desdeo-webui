@@ -33,7 +33,7 @@
   export let barColor = "#a6b1e1";
   export let lowerIsBetter = true;
   // export let divId: string;
-  export let inputs = false;
+  // export let inputs = false;
   export let decimalPrecision: number | undefined = undefined;
 
   // $: console.log(selectedValue);
@@ -833,25 +833,4 @@
   }
 </script>
 
-<!-- By default creates just the horizontal bar. If inputs prop is true adds input and input logic -->
-{#if inputs}
-  <div
-    style=" height:100%; width:100%; display: flex; margin-top:2em; margin-bottom:2em"
-  >
-    <!-- Div for inputs -->
-    <div style="height:100%">
-      <input type="number" bind:value={selectedValue} step="any" />
-      <label for="prev">Previous preference: </label>
-      <input
-        name="prev"
-        type="number"
-        readonly
-        bind:value={previousValue}
-        style=" border: 2; box-shadow: none;background-color: rgba(232 234 241);"
-      />
-    </div>
-    <div style="height:100%; width:60%" bind:this={chartDiv} />
-  </div>
-{:else}
-  <div style="height:100%; width:100%" bind:this={chartDiv} />
-{/if}
+<div style="height:100%; width:100%" bind:this={chartDiv} />

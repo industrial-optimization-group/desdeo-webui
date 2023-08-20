@@ -23,7 +23,6 @@
       lowerBound={0}
       solutionValue={3}
       previousValue={2.21398}
-      inputs={true}
     />
   </div>
   <div id="hori2" style="width: 100vh; height: 2vh; min-height: 100px;">
@@ -31,16 +30,10 @@
       higherBound={-10.234523}
       lowerBound={-10.53453}
       solutionValue={-11.05}
-      inputs={true}
     />
   </div>
   <div id="hori3" style="width: 100vh; height: 2vh; min-height: 100px;">
-    <HorizontalBar
-      higherBound={10}
-      lowerBound={-10}
-      solutionValue={-3}
-      inputs={true}
-    />
+    <HorizontalBar higherBound={10} lowerBound={-10} solutionValue={-3} />
   </div>
   <!-- Horizontal bars without default inputs.   -->
   <div style="margin-top: 2em;">
