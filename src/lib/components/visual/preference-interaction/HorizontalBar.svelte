@@ -53,6 +53,8 @@
     //updateSolutionBar(Number.parseFloat(solutionValue.toFixed(decimalPrecision)));
   }
 
+  // updateBarColor
+
   const arrowSize = 15;
   const arrowColor = "black";
   const shadowSize = 5;
@@ -141,14 +143,13 @@
     chart.setOption(option);
     let datalowerBar;
     let backgroundStyle;
-    let color;
+    let color = higherBound < 0 ? "transparent" : barColor;
 
     if (lowerIsBetter) {
       backgroundStyle = {
         color: "white",
         // opacity: 1,
       };
-      color = lowerBound < 0 || higherBound < 0 ? "transparent" : barColor;
     } else {
       backgroundStyle = {
         color: barColor,
@@ -157,8 +158,8 @@
       color = lowerBound < 0 || higherBound < 0 ? "transparent" : barColor;
     }
 
-    if (solutionValue) {
-      datalowerBar = higherBound < 0 ? [[solutionValue]] : [[lowerBound]];
+    if (solutionValue != null) {
+      datalowerBar = higherBound < 0 ? [[lowerBound]] : [[lowerBound]];
     } else {
       datalowerBar = higherBound < 0 ? [[0]] : [[lowerBound]];
     }
@@ -190,8 +191,8 @@
           {
             id: "lower",
             stack: "negative",
-            color: lowerIsBetter ? barColor : "white",
             type: "bar",
+            color: barColor,
             animation: false,
             data: datalowerBar,
             barWidth: "100%",

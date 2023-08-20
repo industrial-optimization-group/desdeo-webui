@@ -28,7 +28,8 @@
   <div id="hori2" style="width: 100vh; height: 2vh; min-height: 100px;">
     <HorizontalBar
       higherBound={-10.234523}
-      lowerBound={-10.53453}
+      lowerBound={-11.53453}
+      previousValue={-11.05}
       solutionValue={-11.05}
     />
   </div>

@@ -15,6 +15,16 @@
 
 <div style="width: 75vw; height: 20vh;">
   <HorizontalBarWithInputs
+    higherBound={-0.5}
+    lowerBound={-5.5234}
+    barName="name"
+    {previousValue}
+    solutionValue={-2.21398}
+    bind:selectedValue
+  />
+</div>
+<div style="width: 75vw; height: 20vh;">
+  <HorizontalBarWithInputs
     higherBound={5}
     lowerBound={0}
     bind:previousValue
@@ -33,8 +43,8 @@
 </div>
 <div style="width: 75vw; height: 20vh;">
   <HorizontalBarWithInputs
-    higherBound={-2}
-    lowerBound={5.5234}
+    higherBound={5}
+    lowerBound={-5.5234}
     barName="name"
     {previousValue}
     bind:solutionValue
