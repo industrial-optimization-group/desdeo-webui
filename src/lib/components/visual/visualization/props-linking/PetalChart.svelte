@@ -11,6 +11,7 @@ T
   import type * as echarts from "echarts";
   import { handleSelectionChange } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
+  import { selectedLineStyle } from "../../stores";
 
   // export let id: string;
   // export let title = "Test title";
@@ -179,6 +180,13 @@ T
         roseType: "area",
         tooltip: {},
         selectedMode: "series",
+        selectedOffset: 0,
+        select: {
+          itemStyle: {
+            borderColor: selectedLineStyle.color,
+            borderWidth: 3,
+          },
+        },
 
         // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
         // encode: {
