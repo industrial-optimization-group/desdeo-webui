@@ -2,36 +2,91 @@
     @description Makes a petal chart using the ECharts library's pie option.
 -->
 <!-- TODO: Make a component for a single petal chart. This file then could create all wanted petal charts. 
-TODO: Selection doesn't work properly. Objectives and solutions are mixed up
+T
 -->
 
 <script lang="ts">
   // import { onDestroy } from "svelte";
   // import { chartStore } from "$lib/components/visual/chartStore";
   import type * as echarts from "echarts";
-  import {
-    handleClickSelection,
-    handleHighlightChange,
-    handleSelectionChange,
-  } from "$lib/components/visual/helperFunctions";
+  import { handleSelectionChange } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
 
   // export let id: string;
   // export let title = "Test title";
   // export let data: SolutionData;
 
-  export let values: number[][];
+  export let objectiveValues: number[];
   // export let minimize: boolean[];
   // export let showIndicators = false;
-  export let indicatorNames: string[] = [];
+  export let name = "";
   export let selectedIndices: number[] = [];
-  export let title = "Test title";
-  export let highlightedIndices: number | undefined = undefined;
+  // export let title = "Test title";
+  export let highlightedIndex: number | undefined = undefined;
+  export let componentIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   // export let data: SolutionData;
+  $: if (selectedIndices != undefined) {
+    if (componentIndex != undefined) {
+      if (selectedIndices.includes(componentIndex)) {
+        if (chart) {
+          chart.setOption({
+            series: [
+              {
+                type: "pie",
+                selectedMode: "series",
+              },
+            ],
+          });
+          chart.dispatchAction({
+            type: "select",
+            seriesIndex: 0,
+            dataIndex: 0,
+          });
+        }
+      } else {
+        if (chart) {
+          chart.setOption({
+            series: [
+              {
+                type: "pie",
+                selectedMode: false,
+              },
+            ],
+          });
+          // chart.dispatchAction({
+          // type: "downplay",
+          // seriesIndex: 0,
+          // });
+        }
+      }
+    }
+  }
   $: {
     if (chart) {
-      handleHighlightChange(chart, highlightedIndices);
+      if (componentIndex === highlightedIndex) {
+        // highlightedIndex = -1;
+        chart.dispatchAction({
+          type: "highlight",
+          seriesIndex: 0,
+        });
+      } else {
+        chart.dispatchAction({
+          type: "downplay",
+          seriesIndex: 0,
+          // dataIndex: highlightedIndex,
+        });
+      }
+
+      // chart.setOption({
+      //   tooltip: {
+      //     formatter: tooltipFormatter,
+      //     borderColor: "",
+      //     textStyle: {
+      //       color: "",
+      //     },
+      //   },
+      // });
     }
   }
 
@@ -42,126 +97,128 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
     }
   }
 
-  const names: string[] = indicatorNames;
+  // const names: string[] = name;
   // const values: number[][] = data.values;
 
-  let newSeriesObjects = [];
-  let subTexts: echarts.EChartTitleOption[] = [{ text: title }];
+  // let newSeriesObjects = [];
+  // let subTexts: echarts.EChartTitleOption[] = [{ text: title }];
   // Change values of "values" to be positive with the map function.
-  let valuesPositive = values.map((row) => row.map((value) => Math.abs(value)));
-  let valuesTransposed = valuesPositive;
+
+  // let valuesPositive = objectiveValues.map((row) => row.map((value) => Math.abs(value)));
+  // let valuesTransposed = valuesPositive;
+
   // Transpose values matrix. One liner from https://stackoverflow.com/questions/17428587/transposing-a-2d-array-in-javascript
   // let valuesTransposed = valuesPositive[0].map((col, i) =>
   //   valuesPositive.map((row) => row[i])
   // );
   // Set the column names
-  let dataSet: (string | number)[][] = [["Solution", ...names]];
-  for (let i = 0; i < valuesTransposed.length; i++) {
-    let newRow: (string | number)[] = ["Solution " + (i + 1)];
-    newRow.push(...valuesTransposed[i]);
-    dataSet.push(newRow);
-
-    newSeriesObjects.push(
-      {
-        name: names[i],
-        type: "pie",
-        radius: "30%",
-        roseType: "area",
-        center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-        encode: {
-          itemName: "Solution",
-          value: names[i],
-          tooltip: names[i],
-        },
-      },
-      // A circle for showing the lines between petals and border line.
-      {
-        type: "pie",
-        radius: "30%",
-        tooltip: {
-          show: false,
-        },
-        roseType: "area",
-        itemStyle: {
-          borderWidth: 1,
-          borderColor: "gray",
-          color: "transparent",
-        },
-        emphasis: {
-          itemStyle: {
-            borderWidth: 1,
-            borderColor: "gray",
-            color: "transparent",
-          },
-        },
-        center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-        // To be under the petals when clicking.
-        z: 1,
-        silent: true,
-        label: {
-          show: false,
-        },
-        data: [...Array(valuesTransposed.length).fill(1)],
-      }
-    );
-
-    subTexts.push({
-      subtext: names[i],
-      left: ((i + 0.5) / valuesTransposed.length) * 100 + "%",
-      top: "20%",
-      textAlign: "center",
+  // Create the series data for the radar chart.
+  let seriesData: { value: number; name: string }[] = [];
+  for (let i = 0; i < objectiveValues.length; i++) {
+    seriesData.push({
+      value: objectiveValues[i],
+      name: "Objective " + (i + 1),
     });
   }
 
+  let dataSet: (string | number)[][] = [["Objective", ...objectiveValues]];
+
+  // let newRow: (string | number)[] = ["Solution " + (i + 1)];
+  // newRow.push(...valuesTransposed[i]);
+  // dataSet.push(newRow);
+
+  // newSeriesObjects.push(
+
+  // A circle for showing the lines between petals and border line.
+  // {
+  //   type: "pie",
+  //   radius: "30%",
+  //   tooltip: {
+  //     show: false,
+  //   },
+  //   roseType: "area",
+  //   itemStyle: {
+  //     borderWidth: 1,
+  //     borderColor: "gray",
+  //     color: "transparent",
+  //   },
+  //   emphasis: {
+  //     itemStyle: {
+  //       borderWidth: 1,
+  //       borderColor: "gray",
+  //       color: "transparent",
+  //     },
+  //   },
+  //   // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
+  //   // To be under the petals when clicking.
+  //   z: 1,
+  //   silent: true,
+  //   label: {
+  //     show: false,
+  //   },
+  //   // data: [[1,2,3]],
+  // }
+  // );
+
   // Create the option object for the whole chart.
   const option: echarts.EChartOption = {
-    title: subTexts,
-    // tooltip: {
-    //   formatter: (params) => {
-    //     return (
-    //       params.name +
-    //       "</br>" +
-    //       "</br>" +
-    //       params.seriesName +
-    //       " value" +
-    //       ": " +
-    //       params.data[params.seriesIndex + 1] +
-    //       "</br>" +
-    //       "All values" +
-    //       ": " +
-    //       valuesPositive[params.dataIndex]
-    //     );
-    //   },
-    // },
+    title: {
+      show: true,
+      text: name,
+      left: "center",
+    },
+
     dataset: {
       source: dataSet,
     },
-    series: newSeriesObjects,
+    series: [
+      {
+        name: "Alternative",
+        type: "pie",
+        radius: "30%",
+        roseType: "area",
+        tooltip: {},
+        selectedMode: "series",
+
+        // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
+        // encode: {
+        //   itemName: "Solution",
+        //   value: name,
+        //   tooltip: name,
+        // },
+        data: seriesData,
+      },
+    ],
   };
   // let chart: echarts.EChartsType = createChart(id, option);
 
   // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
   let events = {
-    click: function (params: {
-      dataIndex: number;
-      componentType: string;
-      seriesIndex: number;
-      data: { value: number[] };
-    }) {
-      selectedIndices = handleClickSelection(
-        chart,
-        params,
-        selectedIndices,
-        maxSelections
-      );
+    click: function () {
+      if (componentIndex) {
+        selectedIndices = updateSelectedIndices(componentIndex);
+      }
     },
-    mouseover: function (params: { dataIndex: number }) {
-      highlightedIndices = params.dataIndex;
+    mouseover: function () {
+      highlightedIndex = componentIndex;
     },
     mouseout: function () {
-      highlightedIndices = undefined;
+      highlightedIndex = undefined;
     },
   };
+
+  function updateSelectedIndices(indexToAdd: number) {
+    let selectedCopy = selectedIndices.slice();
+    // Check if selectedCopy already contains the index of the clicked solution
+    if (selectedCopy.includes(indexToAdd)) {
+      // If it does, remove it from the array (to unselect it)
+      selectedCopy.splice(selectedCopy.indexOf(indexToAdd), 1);
+    } else {
+      // If it doesn't, add it to the array
+      selectedCopy = [...selectedCopy, indexToAdd];
+    }
+    return selectedCopy;
+  }
 </script>
 
 <EchartsComponent {option} bind:chart bind:events />

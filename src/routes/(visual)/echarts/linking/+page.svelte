@@ -3,7 +3,7 @@
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
   import ParallelAxis from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
   import BarChartProps from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
-  import PetalChartProps from "$lib/components/visual/visualization/props-linking/PetalChart.svelte";
+  import PetalChartProps from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";
   import RadarChartProps from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
@@ -11,7 +11,7 @@
   // import { selectedSolutions } from "$lib/components/visual/stores";
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
-  import SinglePetal from "$lib/components/visual/visualization/props-linking/SinglePetal.svelte";
+  import SinglePetal from "$lib/components/visual/visualization/props-linking/PetalChart.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -151,10 +151,11 @@
   </div>
   <div style="height:25vh; width:100vh">
     <SinglePetal
-      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      name={"Alternative 1"}
       bind:selectedIndices
-      bind:values={theValues}
-      bind:highlightedIndices={high}
+      bind:objectiveValues={theValues[0]}
+      bind:highlightedIndex={high}
+      componentIndex={1}
     />
   </div>
 
