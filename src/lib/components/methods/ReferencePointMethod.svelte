@@ -3,6 +3,8 @@
 A user interface for the Reference Point Method.
 
 NOTE: Non-functional prototype.
+
+TODO: Disable the UI while interacting with the backend.
 -->
 <script lang="ts">
   import * as _ from "$lib/methods/reference_point_method/functional_api";
@@ -10,9 +12,7 @@ NOTE: Non-functional prototype.
   import type { BoundedObjective, Problem, Point } from "$lib/api";
   import Card from "../main/Card.svelte";
   import ReferencePointSelect from "../util/undecorated/ReferencePointSelect.svelte";
-
   import ProblemDetails from "../main/ProblemDetails.svelte";
-  // import ParallelCoordinatePlotWithSwap from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
   import ParallelCoordinatePlotBase from "../visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
 
   /** The problem to solve. */
@@ -51,11 +51,10 @@ NOTE: Non-functional prototype.
       <h1 class="font-bold">Reference point method</h1>
       {#if _.is_uninitialized(method)}
         <div>
-          Please click "initialize" to start solving the problem with the
-          method.
+          Please click "start" to start solving the problem with the method.
         </div>
         <button class="btn variant-filled" on:click={handle_initialize}
-          >Initialize</button
+          >Start</button
         >
       {:else}
         <div>Please select a reference point and then click "iterate".</div>
