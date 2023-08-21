@@ -1,4 +1,5 @@
 <script lang="ts">
+  import HelpButton from "../util/undecorated/HelpButton.svelte";
   import DefinitionList from "./DefinitionList.svelte";
   import type { Definition } from "./NewProblem.svelte";
 
@@ -8,13 +9,11 @@
 
 <div class="flex flex-col items-start gap-4">
   <div class="underline">
-    Constants
-    <button
-      class="border border-black px-1"
+    Constants <HelpButton
       on:click={() => {
         show_help = !show_help;
-      }}>?</button
-    >
+      }}
+    />
   </div>
   {#if show_help}
     <div class="max-w-xs">

@@ -2,6 +2,7 @@
   import ConstraintInput from "./ConstraintInput.svelte";
   import NewButton from "./NewButton.svelte";
   import DeleteButton from "./DeleteButton.svelte";
+  import HelpButton from "../util/undecorated/HelpButton.svelte";
   import type { Definition } from "./NewProblem.svelte";
 
   export let constraints: Definition[] = [];
@@ -27,13 +28,11 @@
 
 <div class="flex flex-col items-start gap-4">
   <div class="underline">
-    Constraints
-    <button
-      class="border border-black px-1"
+    Constraints <HelpButton
       on:click={() => {
         show_help = !show_help;
-      }}>?</button
-    >
+      }}
+    />
   </div>
   {#if show_help}
     <div class="max-w-xs">

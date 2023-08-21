@@ -65,6 +65,7 @@
   import Constraints from "./Constraints.svelte";
   import Constants from "./Constants.svelte";
   import DescriptionInput from "./DescriptionInput.svelte";
+  import HelpButton from "../util/undecorated/HelpButton.svelte";
 
   //
   // NOTE: This library is not really needed; I just used it to save some
@@ -123,12 +124,11 @@
     </div>
 
     <div class="max-w-prose">
-      General instructions: <button
-        class="border border-black px-1"
+      General instructions: <HelpButton
         on:click={() => {
           show_help = !show_help;
-        }}>?</button
-      >
+        }}
+      />
       {#if show_help}
         <ul class="ml-8 list-disc">
           <li>You need to enter at least one variable and one objective.</li>
