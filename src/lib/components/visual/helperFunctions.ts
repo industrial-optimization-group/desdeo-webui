@@ -2,7 +2,12 @@ import type { EChartOption, EChartsType } from "echarts";
 
 export function handleClickSelection(
   chart: EChartsType,
-  params: { dataIndex: number; componentType: string; seriesIndex: number },
+  params: {
+    dataIndex: number;
+    componentType: string;
+    seriesIndex: number;
+    data: { value: number[] };
+  },
   selectedIndices: number[],
   maxSelections: number | undefined
 ) {
@@ -14,7 +19,10 @@ export function handleClickSelection(
     // If it doesn't, add it to the array
     selectedIndices = [...selectedIndices, params.dataIndex];
   }
-  if (maxSelections !== undefined && selectedIndices.length > maxSelections) {
+  if (maxSelections == undefined) {
+    maxSelections = params.data.value.length;
+  }
+  if (selectedIndices.length > maxSelections) {
     selectedIndices.splice(selectedIndices.indexOf(params.dataIndex), 1);
     // let chart = params.
     chart.setOption({
@@ -97,7 +105,10 @@ export function handleSelectionChange(
   selectedIndices: number[],
   maxSelections: number | undefined
 ) {
-  if (maxSelections !== undefined && selectedIndices.length <= maxSelections) {
+  if (maxSelections == undefined) {
+    maxSelections = selectedIndices.length;
+  }
+  if (selectedIndices.length <= maxSelections) {
     chart.dispatchAction({
       type: "unselect",
       seriesIndex: 0,
@@ -198,8 +209,16 @@ export function tooltipFormatter(
   const newParams: EChartOption.Tooltip.Format =
     params as EChartOption.Tooltip.Format;
   let result = newParams.name + "<br>";
-  for (let i = 0; i < newParams.data.value.length; i++) {
-    result += newParams.data.value[i] + "<br>";
+  if (newParams.data.value) {
+    for (let i = 0; i < newParams.data.value.length; i++) {
+      result += newParams.data.value[i] + "<br>";
+      //"Objective: " + i +" " +
+    }
+  } else {
+    result = "";
+    for (let i = 0; i < newParams.data.length; i++) {
+      result += newParams.data[i] + "<br>";
+    }
   }
   return result;
 }

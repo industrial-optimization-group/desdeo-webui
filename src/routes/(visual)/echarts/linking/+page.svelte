@@ -1,12 +1,12 @@
 <script lang="ts">
   // import Example from "$lib/components/visual/Example.svelte";
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
-  import ParallelAxis from "$lib/components/visual/visualization/props-linking/ParallelAxis.svelte";
-  import BarChartProps from "$lib/components/visual/new-components/BarChart.svelte";
+  import ParallelAxis from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
+  import BarChartProps from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
   import PetalChartProps from "$lib/components/visual/visualization/props-linking/PetalChart.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";
-  import RadarChartProps from "$lib/components/visual/new-components/RadarChartProps.svelte";
+  import RadarChartProps from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
   // import BarChart from "$lib/components/visual/BarChart.svelte";
   // import { selectedSolutions } from "$lib/components/visual/stores";
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
@@ -77,7 +77,7 @@
   $: selectedIndices;
   let high: number | undefined = undefined;
   $: high;
-  $: activeinteraction = true;
+  $: disableInteraction = false;
 </script>
 
 <div class="container">
@@ -110,7 +110,7 @@
     <button
       style="background-color: lightgrey; border-style: double; border-color: black; padding: 5px; margin: 5px;"
       on:click={() => {
-        activeinteraction = !activeinteraction;
+        disableInteraction = !disableInteraction;
       }}>Toggle interaction</button
     >
 
@@ -124,23 +124,23 @@
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
     <div style="height:40vh; width:100vh">
       <ParallelAxis
-        bind:disableInteraction={activeinteraction}
+        bind:disableInteraction
         bind:values={theValues}
         names={["Objective1", "Objective2", "Objective3", "Objective4"]}
         lowerIsBetter={[true, false, true, false]}
         bind:selectedIndices
+        bind:highlightedIndex={high}
         ranges={[
           { min: 0, max: 10 },
           { min: -2.324, max: 10 },
           { min: 0, max: 10 },
           { min: undefined, max: undefined },
         ]}
-        bind:highlightedIndex={high}
       />
     </div>
   </div>
 
-  <div>
+  <div style="height:40vh; width:100vh">
     <RadarChartProps
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
