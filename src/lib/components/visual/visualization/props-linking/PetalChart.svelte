@@ -6,16 +6,15 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
 -->
 
 <script lang="ts">
-  import * as echarts from "echarts";
-  import { onMount } from "svelte";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "$lib/components/visual/chartStore";
-  import type { PieSeriesOption, TitleComponentOption } from "echarts";
+  import type * as echarts from "echarts";
   import {
     handleClickSelection,
     handleHighlightChange,
     handleSelectionChange,
   } from "$lib/components/visual/helperFunctions";
+  import EchartsComponent from "../../general/EchartsComponent.svelte";
 
   // export let id: string;
   // export let title = "Test title";
@@ -28,6 +27,7 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
   export let selectedIndices: number[] = [];
   export let title = "Test title";
   export let highlightedIndices: number | undefined = undefined;
+  export let maxSelections: number | undefined = undefined;
   // export let data: SolutionData;
   $: {
     if (chart) {
@@ -35,19 +35,18 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
     }
   }
 
-  let chartDiv: HTMLDivElement;
   let chart: echarts.EChartsType;
   $: if (selectedIndices) {
     if (chart) {
-      handleSelectionChange(chart, selectedIndices);
+      handleSelectionChange(chart, selectedIndices, maxSelections);
     }
   }
 
   const names: string[] = indicatorNames;
   // const values: number[][] = data.values;
 
-  let newSeriesObjects: PieSeriesOption[] = [];
-  let subTexts: TitleComponentOption[] = [{ text: title }];
+  let newSeriesObjects = [];
+  let subTexts: echarts.EChartTitleOption[] = [{ text: title }];
   // Change values of "values" to be positive with the map function.
   let valuesPositive = values.map((row) => row.map((value) => Math.abs(value)));
   let valuesTransposed = valuesPositive;
@@ -56,9 +55,9 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
   //   valuesPositive.map((row) => row[i])
   // );
   // Set the column names
-  let dataSet = [["Solution", ...names]];
+  let dataSet: (string | number)[][] = [["Solution", ...names]];
   for (let i = 0; i < valuesTransposed.length; i++) {
-    let newRow = ["Solution" + (i + 1)];
+    let newRow: (string | number)[] = ["Solution " + (i + 1)];
     newRow.push(...valuesTransposed[i]);
     dataSet.push(newRow);
 
@@ -113,54 +112,56 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
       textAlign: "center",
     });
   }
-  onMount(() => {
-    // Create the option object for the whole chart.
-    const option = {
-      title: subTexts,
-      tooltip: {
-        formatter: (params) => {
-          return (
-            params.name +
-            "</br>" +
-            "</br>" +
-            params.seriesName +
-            " value" +
-            ": " +
-            params.data[params.seriesIndex + 1] +
-            "</br>" +
-            "All values" +
-            ": " +
-            valuesPositive[params.dataIndex]
-          );
-        },
-      },
-      dataset: {
-        source: dataSet,
-      },
-      series: newSeriesObjects,
-    };
-    // let chart: echarts.EChartsType = createChart(id, option);
-    chart = echarts.init(chartDiv, "", { renderer: "svg" });
-    chart.setOption(option);
-    // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
-    chart.on("mouseover", function (params: { dataIndex: number }) {
+
+  // Create the option object for the whole chart.
+  const option: echarts.EChartOption = {
+    title: subTexts,
+    // tooltip: {
+    //   formatter: (params) => {
+    //     return (
+    //       params.name +
+    //       "</br>" +
+    //       "</br>" +
+    //       params.seriesName +
+    //       " value" +
+    //       ": " +
+    //       params.data[params.seriesIndex + 1] +
+    //       "</br>" +
+    //       "All values" +
+    //       ": " +
+    //       valuesPositive[params.dataIndex]
+    //     );
+    //   },
+    // },
+    dataset: {
+      source: dataSet,
+    },
+    series: newSeriesObjects,
+  };
+  // let chart: echarts.EChartsType = createChart(id, option);
+
+  // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
+  let events = {
+    click: function (params: {
+      dataIndex: number;
+      componentType: string;
+      seriesIndex: number;
+      data: { value: number[] };
+    }) {
+      selectedIndices = handleClickSelection(
+        chart,
+        params,
+        selectedIndices,
+        maxSelections
+      );
+    },
+    mouseover: function (params: { dataIndex: number }) {
       highlightedIndices = params.dataIndex;
-    });
-    chart.on("mouseout", function () {
+    },
+    mouseout: function () {
       highlightedIndices = undefined;
-    });
-    chart.on(
-      "click",
-      function (params: {
-        dataIndex: number;
-        componentType: string;
-        seriesIndex: number;
-      }) {
-        console.log(params);
-        selectedIndices = handleClickSelection(params, selectedIndices);
-      }
-    );
-  });
+    },
+  };
 </script>
 
-<div style="width: 100vh; height: 50vh;" bind:this={chartDiv} />
+<EchartsComponent {option} bind:chart bind:events />

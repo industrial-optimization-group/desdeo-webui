@@ -11,6 +11,7 @@
   // import { selectedSolutions } from "$lib/components/visual/stores";
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
+  import SinglePetal from "$lib/components/visual/visualization/props-linking/SinglePetal.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -140,7 +141,7 @@
     </div>
   </div>
 
-  <div style="height:40vh; width:100vh">
+  <div style="height:25vh; width:100vh">
     <RadarChartProps
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
@@ -148,13 +149,23 @@
       bind:highlightedIndices={high}
     />
   </div>
+  <div style="height:25vh; width:100vh">
+    <SinglePetal
+      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+      bind:highlightedIndices={high}
+    />
+  </div>
 
-  <div>
+  <div style="height:30vh; width:100vh">
     <BarChartProps
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}
     />
+  </div>
+  <div style="height:30vh; width:100vh">
     <PetalChartProps
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
