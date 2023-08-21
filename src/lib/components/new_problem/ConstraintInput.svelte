@@ -37,7 +37,6 @@
 
   $: try {
     value = [operator, JSON.parse(left), JSON.parse(right)];
-    console.log(value);
     //
   } catch (err) {
     //
