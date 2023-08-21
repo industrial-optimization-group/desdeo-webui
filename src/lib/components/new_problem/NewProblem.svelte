@@ -1,5 +1,7 @@
 <script lang="ts" context="module">
   export type Problem = {
+    name: string;
+    description: string;
     variables: Variable[];
     objectives: Definition[];
     constraints: Definition[];
@@ -19,8 +21,8 @@
       display: "Continuous",
     },
     {
-      value: "discrete",
-      display: "Discrete",
+      value: "integer",
+      display: "Integer",
     },
     {
       value: "binary",
@@ -46,6 +48,8 @@
 
   export function new_problem(): Problem {
     return {
+      name: "",
+      description: "",
       variables: [],
       objectives: [],
       constraints: [],
@@ -60,6 +64,7 @@
   import Objectives from "./Objectives.svelte";
   import Constraints from "./Constraints.svelte";
   import Constants from "./Constants.svelte";
+  import DescriptionInput from "./DescriptionInput.svelte";
 
   //
   // NOTE: This library is not really needed; I just used it to save some
@@ -93,7 +98,7 @@
   let show_help = false;
 </script>
 
-<div class="flex flex-col gap-8">
+<div class="flex flex-col items-start gap-8">
   <div class="flex flex-col gap-4">
     <div class="font-bold">Enter a new problem</div>
 
@@ -153,7 +158,7 @@
       on:click={() => save_to_file(problem)}
     >
       <span><DownloadIcon /></span>
-      <span>Save to file</span>
+      <span>Download</span>
     </button>
     <button
       class="anchor"
@@ -161,6 +166,16 @@
         problem = new_problem();
       }}>Clear all</button
     >
+  </div>
+
+  <div class="grid w-full max-w-prose grid-cols-[auto_1fr] items-start gap-8">
+    <input
+      type="text"
+      class="input max-w-fit"
+      bind:value={problem.name}
+      placeholder="Problem name"
+    />
+    <DescriptionInput bind:description={problem.description} />
   </div>
 
   <div class="flex gap-10">
