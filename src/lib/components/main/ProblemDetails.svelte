@@ -6,8 +6,14 @@
   export let problem: Problem;
 
   $: objectives = {
-    head: ["Name", "Minimize"],
-    body: tableMapperValues(problem.objectives, ["name", "minimize"]),
+    head: ["Name", "Goal"],
+    body: tableMapperValues(
+      problem.objectives.map(({ name, minimize }) => ({
+        name,
+        goal: minimize ? "minimize" : "maximize",
+      })),
+      ["name", "goal"]
+    ),
   };
 
   $: variables = {
