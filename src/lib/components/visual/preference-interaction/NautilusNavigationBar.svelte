@@ -126,7 +126,10 @@
         axisPointer: {
           show: true,
           label: {
-            formatter: function (params) {
+            formatter: function (params: {
+              axisDimension: string;
+              value: number;
+            }) {
               if (params.axisDimension === "x") {
                 return (
                   // Show the step number as a percentage
@@ -200,7 +203,7 @@
     let compareLineY;
     let dragIsValid;
 
-    let lineType = event.target.parent.id; // id type is number, but here it is used as a string
+    let lineType = event.target.parent.id as number | string; // id type is number, but here it is used as a string
 
     if (lineType == "aspLine") {
       lineToCompare = getLineComponent(chart, "newBoundLine");
@@ -631,7 +634,7 @@
               // ondrag: function (params) {
               //   console.log(params);
               // },
-              ondragend: function (params) {
+              ondragend: function (params: echarts.ElementEvent) {
                 let step = chart.convertFromPixel({ seriesIndex: 0 }, [
                   params.offsetX,
                   0,
