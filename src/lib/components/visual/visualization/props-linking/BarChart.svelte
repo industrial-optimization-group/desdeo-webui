@@ -7,8 +7,8 @@ TODO: Highlighting and selection don't work properly. Most propably bug in the u
 
 <script lang="ts">
   // import { onDestroy } from "svelte";
-  // import { selectedSolutionsIndices } from "$lib/components/visual/stores";
-  // import { createChart } from "$lib/components/visual/stores";
+  // import { selectedSolutionsIndices } from "$lib/components/visual/constants";
+  // import { createChart } from "$lib/components/visual/constants";
   // import type { SolutionData } from "$lib/components/visual/types";
   import type * as echarts from "echarts";
   import {

@@ -24,7 +24,7 @@
   import {
     colorPalette,
     selectedLineStyle,
-  } from "$lib/components/visual/stores";
+  } from "$lib/components/visual/constants";
   import type { Ranges } from "$lib/components/visual/types";
   import type { EChartOption } from "echarts";
   import { getAxisY, getAxisX } from "$lib/components/visual/helperFunctions";

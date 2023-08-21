@@ -18,7 +18,7 @@
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
-  import { referencePointStyle } from "$lib/components/visual/stores";
+  import { referencePointStyle } from "$lib/components/visual/constants";
   import {
     getChartModel,
     roundToDecimal,

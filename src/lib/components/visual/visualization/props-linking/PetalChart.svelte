@@ -11,7 +11,7 @@ T
   import type * as echarts from "echarts";
   import { handleSelectionChange } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
-  import { selectedLineStyle } from "../../stores";
+  import { selectedLineStyle } from "../../constants";
 
   // export let id: string;
   // export let title = "Test title";

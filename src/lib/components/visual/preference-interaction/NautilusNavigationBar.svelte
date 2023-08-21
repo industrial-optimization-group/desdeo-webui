@@ -27,11 +27,11 @@
   import {
     aspirationLineStyle,
     boundLineStyle,
-  } from "$lib/components/visual/stores";
+  } from "$lib/components/visual/constants";
   import { getChartModel } from "$lib/components/visual/helperFunctions";
 
   // The properties that can be passed to the component.
-  // import { colorPalette } from "$lib/components/visual/stores";
+  // import { colorPalette } from "$lib/components/visual/constants";
 
   export let lowerBound: number;
   export let higherBound: number;

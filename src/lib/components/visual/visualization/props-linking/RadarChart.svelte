@@ -7,7 +7,7 @@
   import type { EChartOption } from "echarts";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "$lib/components/visual/chartStore";
-  import { selectedLineStyle } from "$lib/components/visual/stores";
+  import { selectedLineStyle } from "$lib/components/visual/constants";
   import {
     handleClickSelection,
     handleSelectionChange,
