@@ -1,7 +1,7 @@
 <script lang="ts">
   // import type * as echarts from "echarts";
   import type { EChartOption } from "echarts";
-  import EchartsComponent from "$lib/components/visual/EchartsComponent.svelte";
+  import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
 
   // export let values: number[][];
 

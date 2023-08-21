@@ -133,6 +133,7 @@ TODO: Highlighting and selection don't work properly. Most propably bug in the u
       dataIndex: number;
       componentType: string;
       seriesIndex: number;
+      data: { value: number[] };
     }) {
       console.log(params);
       selectedIndices = handleClickSelection(

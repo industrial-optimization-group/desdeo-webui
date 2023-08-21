@@ -181,6 +181,9 @@ T
         tooltip: {},
         selectedMode: "series",
         selectedOffset: 0,
+        // TODO: Select has type error:Object literal may only specify known properties, and 'select' does not exist in constantsSeriesLine | SeriesPie | SeriesScatter | SeriesEffectScatter | SeriesRadar | SeriesTree | ... 14 more ... | SeriesCustom
+        //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property (ECharts 5.0.0), so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
         select: {
           itemStyle: {
             borderColor: selectedLineStyle.color,

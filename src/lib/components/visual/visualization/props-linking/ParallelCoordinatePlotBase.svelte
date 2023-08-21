@@ -273,6 +273,7 @@
       dataIndex: number;
       componentType: string;
       seriesIndex: number;
+      data: { value: number[] };
     }) {
       // console.log(params);
       selectedIndices = handleClickSelection(
