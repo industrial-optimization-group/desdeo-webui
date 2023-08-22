@@ -523,54 +523,54 @@
           type: "group",
           top: "center",
           name: "interactiveButtons",
-          children: [
-            //Left Arrow
-            {
-              type: "polyline",
-              id: "left",
-              left: shadowSize,
-              shape: {
-                points: [
-                  [0, arrowSize],
-                  [-arrowSize, 0],
-                  [0, -arrowSize],
-                ],
-              },
-              style: {
-                fill: "transparent",
-                stroke: arrowColor,
-                lineWidth: 2.5,
-              },
-            },
-            // Right Arrow
-            {
-              type: "polyline",
-              id: "right",
-              scaleX: -1,
-              right: -chart.getWidth() + shadowSize,
-              shape: {
-                points: [
-                  [0, arrowSize],
-                  [-arrowSize, 0],
-                  [0, -arrowSize],
-                ],
-              },
-              style: {
-                fill: "transparent",
-                stroke: arrowColor,
-                lineWidth: 2.5,
-              },
-            },
-          ],
+          // children: [
+          //   //Left Arrow
+          //   {
+          //     type: "polyline",
+          //     id: "left",
+          //     left: shadowSize,
+          //     shape: {
+          //       points: [
+          //         [0, arrowSize],
+          //         [-arrowSize, 0],
+          //         [0, -arrowSize],
+          //       ],
+          //     },
+          //     style: {
+          //       fill: "transparent",
+          //       stroke: arrowColor,
+          //       lineWidth: 2.5,
+          //     },
+          //   },
+          //   // Right Arrow
+          //   {
+          //     type: "polyline",
+          //     id: "right",
+          //     scaleX: -1,
+          //     right: -chart.getWidth() + shadowSize,
+          //     shape: {
+          //       points: [
+          //         [0, arrowSize],
+          //         [-arrowSize, 0],
+          //         [0, -arrowSize],
+          //       ],
+          //     },
+          //     style: {
+          //       fill: "transparent",
+          //       stroke: arrowColor,
+          //       lineWidth: 2.5,
+          //     },
+          //   },
+          // ],
           // onclick event for the arrows
-          onclick: (params: { target: { id: string } }) => {
-            const targetId = params.target.id;
-            if (targetId === "left") {
-              selectedValue = lowerBound;
-            } else if (targetId === "right") {
-              selectedValue = higherBound;
-            }
-          },
+          // onclick: (params: { target: { id: string } }) => {
+          //   const targetId = params.target.id;
+          //   if (targetId === "left") {
+          //     selectedValue = lowerBound;
+          //   } else if (targetId === "right") {
+          //     selectedValue = higherBound;
+          //   }
+          // },
         },
         // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
         {
@@ -591,8 +591,8 @@
       ],
     };
     chart.setOption(graphicOptions);
-    addOnMouseEffect("left");
-    addOnMouseEffect("right");
+    // addOnMouseEffect("left");
+    // addOnMouseEffect("right");
     addOnMouseEffect("arrow");
 
     addTooltipListeners("aspirationGroup");
