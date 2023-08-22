@@ -12,8 +12,7 @@
  
 -->
 <!-- 
-  TODO: Implement minimize/maximize coloring
-  TODO: BUG: When bounds are really small and close together, ex. [-1.1653, -1.1504], selected line doesnt work correctly (position is wrong)
+  TODO: When drag line is outside the bounds, dragging should start from that position. Now it starts from the edge of the chart. It's not a big problem, but a little annoying to use.
  -->
 <script lang="ts">
   import * as echarts from "echarts";
@@ -648,13 +647,21 @@
       return;
     }
 
+    // If the value is outside the bounds, set the line to the edge of the chart (outside the bounds)
+    let xOption = chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0];
+    if (newValue < lowerBound) {
+      xOption = 15;
+    } else if (newValue > higherBound) {
+      xOption = chart.getWidth() - 15;
+    }
+
     let opt =
       lineId === "aspirationGroup"
         ? [
             {
               id: lineId,
               silent: false,
-              x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+              x: xOption,
               invisible: true,
             },
             {
@@ -679,7 +686,7 @@
             {
               id: lineId,
               silent: false,
-              x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
+              x: xOption,
               invisible: false,
             },
           ];
