@@ -57,7 +57,7 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
   // Set the column names
   let dataSet: (string | number)[][] = [["Solution", ...names]];
   for (let i = 0; i < valuesTransposed.length; i++) {
-    let newRow: (string | number)[] = ["Solution " + (i + 1)];
+    let newRow: (string | number)[] = ["Objective " + (i + 1)];
     newRow.push(...valuesTransposed[i]);
     dataSet.push(newRow);
 
@@ -73,36 +73,36 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
           value: names[i],
           tooltip: names[i],
         },
-      },
-      // A circle for showing the lines between petals and border line.
-      {
-        type: "pie",
-        radius: "30%",
-        tooltip: {
-          show: false,
-        },
-        roseType: "area",
-        itemStyle: {
-          borderWidth: 1,
-          borderColor: "gray",
-          color: "transparent",
-        },
-        emphasis: {
-          itemStyle: {
-            borderWidth: 1,
-            borderColor: "gray",
-            color: "transparent",
-          },
-        },
-        center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-        // To be under the petals when clicking.
-        z: 1,
-        silent: true,
-        label: {
-          show: false,
-        },
-        data: [...Array(valuesTransposed.length).fill(1)],
       }
+      // A circle for showing the lines between petals and border line.
+      // {
+      //   type: "pie",
+      //   radius: "30%",
+      //   tooltip: {
+      //     show: false,
+      //   },
+      //   roseType: "area",
+      //   itemStyle: {
+      //     borderWidth: 1,
+      //     borderColor: "gray",
+      //     color: "transparent",
+      //   },
+      //   emphasis: {
+      //     itemStyle: {
+      //       borderWidth: 1,
+      //       borderColor: "gray",
+      //       color: "transparent",
+      //     },
+      //   },
+      //   center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
+      //   // To be under the petals when clicking.
+      //   z: 1,
+      //   silent: true,
+      //   label: {
+      //     show: false,
+      //   },
+      //   data: [...Array(valuesTransposed.length).fill(1)],
+      // }
     );
 
     subTexts.push({
@@ -164,4 +164,4 @@ TODO: Selection doesn't work properly. Objectives and solutions are mixed up
   };
 </script>
 
-<EchartsComponent {option} bind:chart bind:events />
+<EchartsComponent {option} bind:chart bind:events colors={[]} />

@@ -17,6 +17,7 @@ T
   // export let title = "Test title";
   // export let data: SolutionData;
 
+  export let colors: string[] = [];
   export let objectiveValues: number[];
   // export let minimize: boolean[];
   // export let showIndicators = false;
@@ -176,9 +177,9 @@ T
       {
         name: "Alternative",
         type: "pie",
-        radius: "30%",
         roseType: "area",
         tooltip: {},
+        radius: ["10%", "90%"],
         selectedMode: "series",
         selectedOffset: 0,
         // TODO: Select has type error:Object literal may only specify known properties, and 'select' does not exist in constantsSeriesLine | SeriesPie | SeriesScatter | SeriesEffectScatter | SeriesRadar | SeriesTree | ... 14 more ... | SeriesCustom
@@ -199,6 +200,34 @@ T
         // },
         data: seriesData,
       },
+      // A circle for showing the lines between petals and border line.
+      {
+        type: "pie",
+        radius: "30%",
+
+        roseType: "area",
+        itemStyle: {
+          borderWidth: 1,
+          borderColor: "gray",
+          color: "transparent",
+        },
+        emphasis: {
+          itemStyle: {
+            borderWidth: 1,
+            borderColor: "gray",
+            color: "transparent",
+          },
+        },
+        // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
+        // To be under the petals when clicking.
+        z: 1,
+        silent: true,
+        label: {
+          show: false,
+        },
+        data: [1],
+      },
+      // );
     ],
   };
   // let chart: echarts.EChartsType = createChart(id, option);
@@ -232,4 +261,4 @@ T
   }
 </script>
 
-<EchartsComponent {option} bind:chart bind:events />
+<EchartsComponent {option} bind:chart bind:events {colors} />

@@ -1,17 +1,22 @@
 <script lang="ts">
+  import MultiplePetal from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
+  import ParallelCoordinatePlotWithSwap from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
   // import Example from "$lib/components/visual/Example.svelte";
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
-  import ParallelAxis from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
-  // import BarChartProps from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
-  // import PetalChartProps from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
+  // import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
+  // import BarChartProps from "$lib/components/visual/newComponents/BarChartProps.svelte";
+  // import ParallelAxisPlain from "$lib/components/visual/newComponents/ParallelPlotSimpleExample.svelte";
+  // import PetalChartProps from "$lib/components/visual/newComponents/PetalChartProps.svelte";
+  // import RadarChartProps from "$lib/components/visual/newComponents/RadarChartProps.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
   // import PetalChart from "$lib/components/visual/PetalChart.svelte";
-  import RadarChartProps from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
   // import BarChart from "$lib/components/visual/BarChart.svelte";
   // import { selectedSolutions } from "$lib/components/visual/stores";
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
-  import SinglePetal from "$lib/components/visual/visualization/props-linking/PetalChart.svelte";
+  // import ParallelCoordinatePlot from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  import BarChart from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -123,49 +128,66 @@
     </p> -->
     <!-- <BasicTable selectedSolutions={$selectedSolutions} /> -->
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
+    <div style="height:40vh; width:100vh">
+      <ParallelCoordinatePlotWithSwap
+        values={theValues}
+        names={["Objective1", "Objective2", "Objective3", "Objective4"]}
+        lowerIsBetter={[true, false, true, false]}
+        ranges={[
+          { min: 0, max: 10 },
+          { min: -2.324, max: 10 },
+          { min: 0, max: 10 },
+          { min: undefined, max: undefined },
+        ]}
+        showIndicators={true}
+        {disableInteraction}
+      />
+    </div>
   </div>
-  <div style="height:50em; width:50vh; align-self: center;">
-    <ParallelAxis
-      bind:disableInteraction
-      bind:values={theValues}
+
+  <div style="height:40vh; width:100vh">
+    <ParallelCoordinatePlotBase
+      values={theValues}
       names={["Objective1", "Objective2", "Objective3", "Objective4"]}
-      lowerIsBetter={[true, false, true, false]}
-      bind:selectedIndices
-      bind:highlightedIndex={high}
-      ranges={[
-        { min: 0, max: 10 },
-        { min: -2.324, max: 10 },
-        { min: 0, max: 10 },
-        { min: undefined, max: undefined },
-      ]}
+      disableInteraction={false}
+      maxSelections={2}
     />
   </div>
-  <div style="height:50em; width:100vh">
-    <RadarChartProps
-      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+
+  <div style="height:40vh; width:100vh">
+    <MultiplePetal
+      indicatorNames={[
+        "Alternative1",
+        "Alternative2",
+        "Alternative3",
+        "Alternative4",
+      ]}
       bind:selectedIndices
       bind:values={theValues}
       bind:highlightedIndices={high}
     />
   </div>
-  <div style="height:40em; width:100vh">
-    <SinglePetal
-      name={"Alternative 1"}
+
+  <div style="height:40vh; width:100vh">
+    <BarChart
+      indicatorNames={[
+        "Alternative1",
+        "Alternative2",
+        "Alternative3",
+        "Alternative4",
+      ]}
       bind:selectedIndices
-      bind:objectiveValues={theValues[0]}
-      bind:highlightedIndex={high}
-      componentIndex={0}
+      bind:values={theValues}
+      bind:highlightedIndices={high}
     />
   </div>
-  <!-- 
-  <div style="height:30vh; width:100vh">
+
+  <!-- <div>
     <BarChartProps
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}
     />
-  </div>
-  <div style="height:30vh; width:100vh">
     <PetalChartProps
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
@@ -189,12 +211,5 @@
     height: 100vh;
     min-width: max-content;
     overflow: scroll;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-wrap: nowrap;
-  }
-  div {
-    min-height: 50px;
   }
 </style>

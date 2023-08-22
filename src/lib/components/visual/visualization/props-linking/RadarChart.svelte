@@ -15,6 +15,7 @@
   } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
 
+  export let colors: string[] = [];
   export let values: number[][];
   // export let minimize: boolean[];
   // export let showIndicators = false;
@@ -104,4 +105,4 @@
   };
 </script>
 
-<EchartsComponent {option} bind:chart bind:events />
+<EchartsComponent {option} bind:chart bind:events {colors} />

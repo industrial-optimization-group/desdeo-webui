@@ -27,7 +27,7 @@
   </div>
   <div
     id="hori"
-    style="width: 100vh; height: 2vh; min-height: 70px; margin-top: 2m; margin-bottom: 5em;"
+    style="width: 60vh; height: 2vh; min-height: 70px; margin-top: 2m; margin-bottom: 5em;"
   >
     <HorizontalBarWithArrows
       higherBound={5}
@@ -44,7 +44,10 @@
       solutionValue={-11.05}
     />
   </div>
-  <div id="hori3" style="width: 100vh; height: 2vh; min-height: 100px;">
+  <div
+    id="hori3"
+    style="margin: 2em; width: 30vh; height: 2vh; min-height: 100px;"
+  >
     <HorizontalBarWithArrows
       higherBound={10}
       lowerBound={-10}

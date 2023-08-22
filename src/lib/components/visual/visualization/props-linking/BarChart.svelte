@@ -152,4 +152,4 @@ TODO: Highlighting and selection don't work properly. Most propably bug in the u
   };
 </script>
 
-<EchartsComponent {option} bind:chart bind:events />
+<EchartsComponent {option} bind:chart bind:events colors={[]} />
