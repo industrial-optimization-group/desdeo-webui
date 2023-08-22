@@ -85,7 +85,8 @@
     justify-content: space-between;
   }
   .firstPart {
-    width: 20%;
+    min-width: 20%;
+    max-width: 20%;
     justify-content: var(--justify);
   }
   .secondPart {
