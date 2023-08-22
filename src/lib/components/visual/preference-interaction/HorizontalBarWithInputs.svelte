@@ -18,7 +18,8 @@
 </script>
 
 <!-- Horizontal bar with inputs -->
-<div class="container" style="--barColor:{barColor ? barColor : '#c000'}">
+<!-- <div class="container" style="--barColor:{barColor ? barColor : '#c000'}"> -->
+<div class="container">
   <div
     class="firstPart"
     style="--justify: {barName ? 'space-between' : 'flex-end'}"
@@ -76,7 +77,7 @@
     column-gap: 2em;
     border-style: solid;
     border-width: 2px;
-    border-color: var(--barColor);
+    border-color: "c000";
     padding: 0.5em;
   }
 
