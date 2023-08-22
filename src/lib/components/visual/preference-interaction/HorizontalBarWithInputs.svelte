@@ -10,6 +10,7 @@
   export let previousValue: number | undefined = undefined;
   export let lowerIsBetter = true;
   export let decimalPrecision: number | undefined = undefined;
+  export let barColor: string | undefined = undefined;
   //   export let barColor = "#a6b1e1";
   //   // export let isMin = true;
   //   // export let divId: string;
@@ -17,7 +18,7 @@
 </script>
 
 <!-- Horizontal bar with inputs -->
-<div class="container">
+<div class="container" style="--barColor:{barColor ? barColor : '#c000'}">
   <div
     class="firstPart"
     style="--justify: {barName ? 'space-between' : 'flex-end'}"
@@ -56,6 +57,7 @@
         bind:previousValue
         {lowerIsBetter}
         {decimalPrecision}
+        {barColor}
       />
     </div>
   </div>
@@ -74,7 +76,7 @@
     column-gap: 2em;
     border-style: solid;
     border-width: 2px;
-    border-color: #ccc;
+    border-color: var(--barColor);
     padding: 0.5em;
   }
 

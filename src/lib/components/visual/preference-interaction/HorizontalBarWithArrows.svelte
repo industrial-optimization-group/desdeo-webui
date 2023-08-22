@@ -12,15 +12,13 @@
  
 -->
 <!-- 
-  TODO: When drag line is outside the bounds, dragging should start from that position. Now it starts from the edge of the chart. It's not a big problem, but a little annoying to use.
+  TODO: Implement minimize/maximize coloring
+  TODO: BUG: When bounds are really small and close together, ex. [-1.1653, -1.1504], selected line doesnt work correctly (position is wrong)
  -->
 <script lang="ts">
   import * as echarts from "echarts";
   import { onMount } from "svelte";
-  import {
-    colorPalette,
-    referencePointStyle,
-  } from "$lib/components/visual/constants";
+  import { referencePointStyle } from "$lib/components/visual/constants";
   import {
     getChartModel,
     roundToDecimal,
@@ -32,7 +30,7 @@
   export let solutionValue: number | undefined = undefined;
   export let selectedValue: number | undefined = undefined;
   export let previousValue: number | undefined = undefined;
-  export let barColor = colorPalette[0];
+  export let barColor = "#a6b1e1";
   export let lowerIsBetter = true;
   // export let divId: string;
   // export let inputs = false;
@@ -525,54 +523,54 @@
           type: "group",
           top: "center",
           name: "interactiveButtons",
-          // children: [
-          //   //Left Arrow
-          //   {
-          //     type: "polyline",
-          //     id: "left",
-          //     left: shadowSize,
-          //     shape: {
-          //       points: [
-          //         [0, arrowSize],
-          //         [-arrowSize, 0],
-          //         [0, -arrowSize],
-          //       ],
-          //     },
-          //     style: {
-          //       fill: "transparent",
-          //       stroke: arrowColor,
-          //       lineWidth: 2.5,
-          //     },
-          //   },
-          //   // Right Arrow
-          //   {
-          //     type: "polyline",
-          //     id: "right",
-          //     scaleX: -1,
-          //     right: -chart.getWidth() + shadowSize,
-          //     shape: {
-          //       points: [
-          //         [0, arrowSize],
-          //         [-arrowSize, 0],
-          //         [0, -arrowSize],
-          //       ],
-          //     },
-          //     style: {
-          //       fill: "transparent",
-          //       stroke: arrowColor,
-          //       lineWidth: 2.5,
-          //     },
-          //   },
-          // ],
+          children: [
+            //Left Arrow
+            {
+              type: "polyline",
+              id: "left",
+              left: shadowSize,
+              shape: {
+                points: [
+                  [0, arrowSize],
+                  [-arrowSize, 0],
+                  [0, -arrowSize],
+                ],
+              },
+              style: {
+                fill: "transparent",
+                stroke: arrowColor,
+                lineWidth: 2.5,
+              },
+            },
+            // Right Arrow
+            {
+              type: "polyline",
+              id: "right",
+              scaleX: -1,
+              right: -chart.getWidth() + shadowSize,
+              shape: {
+                points: [
+                  [0, arrowSize],
+                  [-arrowSize, 0],
+                  [0, -arrowSize],
+                ],
+              },
+              style: {
+                fill: "transparent",
+                stroke: arrowColor,
+                lineWidth: 2.5,
+              },
+            },
+          ],
           // onclick event for the arrows
-          // onclick: (params: { target: { id: string } }) => {
-          //   const targetId = params.target.id;
-          //   if (targetId === "left") {
-          //     selectedValue = lowerBound;
-          //   } else if (targetId === "right") {
-          //     selectedValue = higherBound;
-          //   }
-          // },
+          onclick: (params: { target: { id: string } }) => {
+            const targetId = params.target.id;
+            if (targetId === "left") {
+              selectedValue = lowerBound;
+            } else if (targetId === "right") {
+              selectedValue = higherBound;
+            }
+          },
         },
         // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
         {
@@ -593,8 +591,8 @@
       ],
     };
     chart.setOption(graphicOptions);
-    // addOnMouseEffect("left");
-    // addOnMouseEffect("right");
+    addOnMouseEffect("left");
+    addOnMouseEffect("right");
     addOnMouseEffect("arrow");
 
     addTooltipListeners("aspirationGroup");
@@ -650,21 +648,13 @@
       return;
     }
 
-    // If the value is outside the bounds, set the line to the edge of the chart (outside the bounds)
-    let xOption = chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0];
-    if (newValue < lowerBound) {
-      xOption = 15;
-    } else if (newValue > higherBound) {
-      xOption = chart.getWidth() - 15;
-    }
-
     let opt =
       lineId === "aspirationGroup"
         ? [
             {
               id: lineId,
               silent: false,
-              x: xOption,
+              x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
               invisible: true,
             },
             {
@@ -689,7 +679,7 @@
             {
               id: lineId,
               silent: false,
-              x: xOption,
+              x: chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0],
               invisible: false,
             },
           ];
