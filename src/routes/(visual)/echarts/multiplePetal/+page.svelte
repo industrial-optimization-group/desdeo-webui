@@ -1,5 +1,5 @@
 <script lang="ts">
-  import MultiplePetal from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
+  // import PetalAsPolar from "$lib/components/visual/visualization/props-linking/PetalAsPolar.svelte";
   import ParallelCoordinatePlotWithSwap from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
   // import Example from "$lib/components/visual/Example.svelte";
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
@@ -15,8 +15,10 @@
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
   // import ParallelCoordinatePlot from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
-  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  // import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
   import BarChart from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
+  import SingleBarChart from "$lib/components/visual/visualization/props-linking/SingleBarChart.svelte";
+  import RadarAsBarRadius from "$lib/components/visual/visualization/props-linking/RadarAsBarRadius.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -48,7 +50,7 @@
     names: ["Objective1", "Objective2", "Objective3"],
     values: [
       [1, 2, 3, 2],
-      [4, 5, 6, 2],
+      [-2, 1.2, 2.4, 3.6],
       [7, 8, 9, 4],
       [7, 2, 9, 8],
     ],
@@ -92,9 +94,9 @@
       style="background-color: lightgrey; border-style: double; border-color: black; padding: 5px; margin: 5px;"
       on:click={() => {
         theValues = [
-          [1, 1, 1, 2],
-          [4, 5, 6, 3],
-          [7, 8, 9, 3],
+          [-1, -1, -1, -2],
+          [-2, 1.2, 2.4, 3.6],
+          [-7, -8, -9, -3],
         ];
         console.log(theValues);
       }}>Change values</button
@@ -146,25 +148,19 @@
   </div>
 
   <div style="height:40vh; width:100vh">
-    <ParallelCoordinatePlotBase
-      values={theValues}
-      names={["Objective1", "Objective2", "Objective3", "Objective4"]}
-      disableInteraction={false}
-      maxSelections={2}
+    <RadarAsBarRadius
+      title="Alternative 1"
+      bind:selectedIndices
+      bind:objectiveValues={theValues[1]}
+      bind:highlightedIndex={high}
     />
   </div>
-
   <div style="height:40vh; width:100vh">
-    <MultiplePetal
-      indicatorNames={[
-        "Alternative1",
-        "Alternative2",
-        "Alternative3",
-        "Alternative4",
-      ]}
+    <SingleBarChart
+      name="Alternative 1"
       bind:selectedIndices
-      bind:values={theValues}
-      bind:highlightedIndices={high}
+      bind:objectiveValues={theValues[1]}
+      bind:highlightedIndex={high}
     />
   </div>
 

@@ -11,15 +11,16 @@ T
   import type * as echarts from "echarts";
   import { handleSelectionChange } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
-  import { selectedLineStyle } from "../../constants";
+  // import { selectedLineStyle } from "../../constants";
 
   // export let id: string;
   // export let title = "Test title";
   // export let data: SolutionData;
 
+  export let title = "";
   export let colors: string[] = [];
   export let objectiveValues: number[];
-  export let name = "";
+  export let axisNames: string[] = [];
   export let selectedIndices: number[] = [];
   export let highlightedIndex: number | undefined = undefined;
   export let componentIndex: number | undefined = undefined;
@@ -32,7 +33,7 @@ T
           chart.setOption({
             series: [
               {
-                type: "pie",
+                type: "bar",
                 selectedMode: "series",
               },
             ],
@@ -48,7 +49,7 @@ T
           chart.setOption({
             series: [
               {
-                type: "pie",
+                type: "bar",
                 selectedMode: false,
               },
             ],
@@ -120,7 +121,7 @@ T
     });
   }
 
-  let dataSet: (string | number)[][] = [["Objective", ...objectiveValues]];
+  // let dataSet: (string | number)[][] = [["Objective", ...objectiveValues]];
 
   // let newRow: (string | number)[] = ["Solution " + (i + 1)];
   // newRow.push(...valuesTransposed[i]);
@@ -163,31 +164,44 @@ T
   const option: echarts.EChartOption = {
     title: {
       show: true,
-      text: name,
+      text: title,
       left: "center",
     },
-
-    dataset: {
-      source: dataSet,
+    polar: {
+      radius: [30, "80%"],
     },
+    angleAxis: {
+      type: "category",
+      data: axisNames,
+      startAngle: 75,
+    },
+    radiusAxis: {
+      type: "value",
+      // min: -5,
+      // max: 4,
+    },
+    // dataset: {
+    //   source: dataSet,
+    // },
     series: [
       {
         name: "Alternative",
-        type: "pie",
-        roseType: "area",
-        tooltip: {},
-        radius: ["10%", "90%"],
-        selectedMode: "series",
-        selectedOffset: 0,
+        type: "bar",
+        // roseType: "area",
+        // tooltip: {},
+        coordinateSystem: "polar",
+        // radius: ["10%", "90%"],
+        // selectedMode: "series",
+        // selectedOffset: 0,
         // TODO: Select has type error:Object literal may only specify known properties, and 'select' does not exist in constantsSeriesLine | SeriesPie | SeriesScatter | SeriesEffectScatter | SeriesRadar | SeriesTree | ... 14 more ... | SeriesCustom
         //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property (ECharts 5.0.0), so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
-        select: {
-          itemStyle: {
-            borderColor: selectedLineStyle.color,
-            borderWidth: 3,
-          },
-        },
+        // select: {
+        //   itemStyle: {
+        //     borderColor: selectedLineStyle.color,
+        //     borderWidth: 3,
+        //   },
+        // },
 
         // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
         // encode: {
@@ -195,7 +209,26 @@ T
         //   value: name,
         //   tooltip: name,
         // },
+        // data: [
         data: seriesData,
+
+        //   {
+        //     value: -2,
+        //     name: "Objective 1",
+        //   },
+        //   {
+        //     value: -2.6,
+        //     name: "Objective 2",
+        //   },
+        //   {
+        //     value: -2.4,
+        //     name: "Objective 3",
+        //   },
+        //   {
+        //     value: -1,
+        //     name: "Objective 4",
+        //   }
+        //   ],
       },
       // A circle for showing the lines between petals and border line.
       // {

@@ -166,17 +166,23 @@ T
       text: name,
       left: "center",
     },
-
+    xAxis: {
+      type: "value",
+    },
+    yAxis: {
+      type: "category",
+    },
     dataset: {
       source: dataSet,
     },
     series: [
       {
         name: "Alternative",
-        type: "pie",
-        roseType: "area",
+        type: "bar",
+        // roseType: "area",
         tooltip: {},
-        radius: ["10%", "90%"],
+        // coordinateSystem: "polar",
+        // radius: ["10%", "90%"],
         selectedMode: "series",
         selectedOffset: 0,
         // TODO: Select has type error:Object literal may only specify known properties, and 'select' does not exist in constantsSeriesLine | SeriesPie | SeriesScatter | SeriesEffectScatter | SeriesRadar | SeriesTree | ... 14 more ... | SeriesCustom

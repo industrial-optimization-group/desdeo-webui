@@ -152,7 +152,7 @@
     <SinglePetal
       name={"Alternative 1"}
       bind:selectedIndices
-      bind:objectiveValues={theValues[0]}
+      objectiveValues={[-1.1627, -1.3678, -1.8523, -1.1627]}
       bind:highlightedIndex={high}
       componentIndex={0}
     />
