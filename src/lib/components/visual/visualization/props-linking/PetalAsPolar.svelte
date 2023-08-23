@@ -271,7 +271,7 @@ T
   // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
   let events = {
     click: function () {
-      if (componentIndex) {
+      if (componentIndex != undefined) {
         selectedIndices = updateSelectedIndices(componentIndex);
       }
     },
