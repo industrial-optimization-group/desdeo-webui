@@ -26,6 +26,7 @@
 
   // Import the visualizations here.
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
 
   // As a temporary solution, add the color palette here as a constant and pass
   // it to the components.
@@ -37,7 +38,7 @@
 
 <TabGroup>
   <Tab bind:group={tab} name="tab1" value={0}>Parallel Axis Plot</Tab>
-  <Tab bind:group={tab} name="tab2" value={1}>Visualization 2</Tab>
+  <Tab bind:group={tab} name="tab2" value={1}>Spider Plot</Tab>
   <Tab bind:group={tab} name="tab3" value={2}>Visualization 3</Tab>
 
   <svelte:fragment slot="panel">
@@ -54,7 +55,26 @@
         bind:highlightedIndex={highlighted}
       />
     {:else if tab === 1}
-      Add a visualization here
+      <div>
+        <RadarChart
+          indicatorNames={names}
+          {values}
+          maxSelections={max_selections}
+          bind:selectedIndices={selected}
+          bind:highlightedIndex={highlighted}
+        />
+      </div>
+      <ParallelCoordinatePlotBase
+        {names}
+        {values}
+        ranges={bounds}
+        lowerIsBetter={lower_is_better}
+        showIndicators={true}
+        disableInteraction={disabled}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+      />
     {:else if tab === 2}
       Add a visualization here
     {/if}

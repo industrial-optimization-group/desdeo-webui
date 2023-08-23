@@ -21,7 +21,7 @@
   // export let showIndicators = false;
   export let indicatorNames: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
   export let selectedIndices: number[] = [];
-  export let highlightedIndices: number | undefined = undefined;
+  export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   // export let data: SolutionData;
 
@@ -34,7 +34,7 @@
 
   $: {
     if (chart) {
-      handleHighlightChange(chart, highlightedIndices);
+      handleHighlightChange(chart, highlightedIndex);
     }
   }
 
@@ -102,12 +102,14 @@
       );
     },
     mouseover: function (params: { dataIndex: number }) {
-      highlightedIndices = params.dataIndex;
+      highlightedIndex = params.dataIndex;
     },
     mouseout: function () {
-      highlightedIndices = undefined;
+      highlightedIndex = undefined;
     },
   };
 </script>
 
-<EchartsComponent {option} bind:chart bind:events {colors} />
+<div style="height: 100%; width: 100%;">
+  <EchartsComponent {option} bind:chart bind:events {colors} />
+</div>

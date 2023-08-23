@@ -153,7 +153,7 @@
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}
-      bind:highlightedIndices={high}
+      bind:highlightedIndex={high}
     />
   </div>
   <div style="height:40vh; width:100vh">
