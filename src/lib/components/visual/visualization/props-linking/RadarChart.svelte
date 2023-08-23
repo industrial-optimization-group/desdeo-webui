@@ -110,6 +110,4 @@
   };
 </script>
 
-<div style="height: 100%; width: 100%;">
-  <EchartsComponent {option} bind:chart bind:events {colors} />
-</div>
+<EchartsComponent {option} bind:chart bind:events {colors} />

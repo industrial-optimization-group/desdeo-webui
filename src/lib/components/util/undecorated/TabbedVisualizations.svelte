@@ -36,7 +36,7 @@
   let tab = 0;
 </script>
 
-<TabGroup>
+<TabGroup regionPanel="h-64">
   <Tab bind:group={tab} name="tab1" value={0}>Parallel Axis Plot</Tab>
   <Tab bind:group={tab} name="tab2" value={1}>Spider Plot</Tab>
   <Tab bind:group={tab} name="tab3" value={2}>Visualization 3</Tab>
@@ -55,7 +55,7 @@
         bind:highlightedIndex={highlighted}
       />
     {:else if tab === 1}
-      <div>
+      <div style="height: 50%;">
         <RadarChart
           indicatorNames={names}
           {values}
@@ -64,17 +64,20 @@
           bind:highlightedIndex={highlighted}
         />
       </div>
-      <ParallelCoordinatePlotBase
-        {names}
-        {values}
-        ranges={bounds}
-        lowerIsBetter={lower_is_better}
-        showIndicators={true}
-        disableInteraction={disabled}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-      />
+
+      <div style="height: 70%;">
+        <ParallelCoordinatePlotBase
+          {names}
+          {values}
+          ranges={bounds}
+          lowerIsBetter={lower_is_better}
+          showIndicators={true}
+          disableInteraction={disabled}
+          maxSelections={max_selections}
+          bind:selectedIndices={selected}
+          bind:highlightedIndex={highlighted}
+        />
+      </div>
     {:else if tab === 2}
       Add a visualization here
     {/if}
