@@ -13,7 +13,7 @@ TODO: Disable the UI while interacting with the backend.
   import Card from "../main/Card.svelte";
   import ReferencePointSelect from "../util/undecorated/ReferencePointSelect.svelte";
   import ProblemDetails from "../main/ProblemDetails.svelte";
-  import ParallelCoordinatePlotBase from "../visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  import TabbedVisualizations from "../util/undecorated/TabbedVisualizations.svelte";
 
   /** The problem to solve. */
   export let problem: Problem;
@@ -82,13 +82,12 @@ TODO: Disable the UI while interacting with the backend.
   <div>
     {#if solutions}
       <Card class="h-[600px]">
-        <svelte:fragment slot="header">Solutions</svelte:fragment>
-        <ParallelCoordinatePlotBase
+        <svelte:fragment slot="header">Visualizations</svelte:fragment>
+        <TabbedVisualizations
           names={objective_names}
           values={solutions}
-          ranges={objectives.map(({ min, max }) => ({ min, max }))}
-          lowerIsBetter={objective_minimize}
-          showIndicators={true}
+          bounds={objectives.map(({ min, max }) => ({ min, max }))}
+          lower_is_better={objective_minimize}
         />
       </Card>
     {:else}
