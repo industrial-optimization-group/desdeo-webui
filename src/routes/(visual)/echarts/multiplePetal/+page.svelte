@@ -16,9 +16,11 @@
   import type { SolutionData } from "$lib/components/visual/types";
   // import ParallelCoordinatePlot from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
   // import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
-  import BarChart from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
-  import SingleBarChart from "$lib/components/visual/visualization/props-linking/SingleBarChart.svelte";
-  import RadarAsBarRadius from "$lib/components/visual/visualization/props-linking/RadarAsBarRadius.svelte";
+  import BarChart from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
+  import SingleBarChart from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
+  import PetalAsPolar from "$lib/components/visual/visualization/props-linking/PetalAsPolar.svelte";
+  import PetalChart from "$lib/components/visual/visualization/props-linking/PetalAsPie.svelte";
+  import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -49,10 +51,10 @@
   let exampleData: SolutionData = {
     names: ["Objective1", "Objective2", "Objective3"],
     values: [
-      [1, 2, 3, 2],
+      [1.5, 0.1, 3, 2],
+      [-7, -8, -9, 3],
       [-2, 1.2, 2.4, 3.6],
-      [7, 8, 9, 4],
-      [7, 2, 9, 8],
+      [-2, 1.2, -1, 4],
     ],
     value_ranges: [
       [0, 10],
@@ -95,8 +97,8 @@
       on:click={() => {
         theValues = [
           [-1, -1, -1, -2],
+          [-7, -8, -9, 3],
           [-2, 1.2, 2.4, 3.6],
-          [-7, -8, -9, -3],
         ];
         console.log(theValues);
       }}>Change values</button
@@ -146,18 +148,43 @@
       />
     </div>
   </div>
-
   <div style="height:40vh; width:100vh">
-    <RadarAsBarRadius
-      title="Alternative 1"
+    <RadarChart
+      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+      bind:highlightedIndices={high}
+    />
+  </div>
+  <div style="height:40vh; width:100vh">
+    <PetalChart
+      name="Petal chart"
+      bind:selectedIndices
+      bind:objectiveValues={theValues[0]}
+      bind:highlightedIndex={high}
+    />
+  </div>
+  <div style="height:40vh; width:100vh">
+    <PetalAsPolar
+      title="PetlaAsBarRadius"
       bind:selectedIndices
       bind:objectiveValues={theValues[1]}
       bind:highlightedIndex={high}
     />
   </div>
+
+  <div style="height:10vh; width:100vh">
+    <PetalAsPolar
+      title="PetalAsPolar"
+      bind:selectedIndices
+      bind:objectiveValues={theValues[0]}
+      bind:highlightedIndex={high}
+    />
+  </div>
+
   <div style="height:40vh; width:100vh">
     <SingleBarChart
-      name="Alternative 1"
+      name="SingleBar"
       bind:selectedIndices
       bind:objectiveValues={theValues[1]}
       bind:highlightedIndex={high}

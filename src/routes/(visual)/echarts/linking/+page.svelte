@@ -11,7 +11,7 @@
   // import { selectedSolutions } from "$lib/components/visual/stores";
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
-  import SinglePetal from "$lib/components/visual/visualization/props-linking/PetalChart.svelte";
+  import SinglePetal from "$lib/components/visual/visualization/props-linking/PetalAsPie.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],

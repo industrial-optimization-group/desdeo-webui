@@ -58,7 +58,12 @@
     radar: {
       shape: "circle",
       indicator: indObjects,
+      scale: true,
+      axisLabel: {
+        show: true,
+      },
     },
+
     series: [
       {
         symbol: "none",

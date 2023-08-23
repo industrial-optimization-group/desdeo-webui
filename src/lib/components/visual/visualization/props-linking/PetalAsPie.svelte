@@ -166,23 +166,16 @@ T
       text: name,
       left: "center",
     },
-    xAxis: {
-      type: "value",
-    },
-    yAxis: {
-      type: "category",
-    },
+
     dataset: {
       source: dataSet,
     },
     series: [
       {
         name: "Alternative",
-        type: "bar",
-        // roseType: "area",
-        tooltip: {},
-        // coordinateSystem: "polar",
-        // radius: ["10%", "90%"],
+        type: "pie",
+        roseType: "area",
+        radius: ["10%", "80%"],
         selectedMode: "series",
         selectedOffset: 0,
         // TODO: Select has type error:Object literal may only specify known properties, and 'select' does not exist in constantsSeriesLine | SeriesPie | SeriesScatter | SeriesEffectScatter | SeriesRadar | SeriesTree | ... 14 more ... | SeriesCustom
@@ -194,42 +187,35 @@ T
             borderWidth: 3,
           },
         },
-
-        // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-        // encode: {
-        //   itemName: "Solution",
-        //   value: name,
-        //   tooltip: name,
-        // },
         data: seriesData,
       },
       // A circle for showing the lines between petals and border line.
-      // {
-      //   type: "pie",
-      //   radius: "30%",
+      {
+        type: "pie",
+        radius: ["10%", "85%"],
 
-      //   roseType: "area",
-      //   itemStyle: {
-      //     borderWidth: 1,
-      //     borderColor: "gray",
-      //     color: "transparent",
-      //   },
-      //   emphasis: {
-      //     itemStyle: {
-      //       borderWidth: 1,
-      //       borderColor: "gray",
-      //       color: "transparent",
-      //     },
-      //   },
-      //   // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-      //   // To be under the petals when clicking.
-      //   z: 1,
-      //   silent: true,
-      //   label: {
-      //     show: false,
-      //   },
-      //   data: [1],
-      // },
+        roseType: "area",
+        itemStyle: {
+          borderWidth: 1,
+          borderColor: "gray",
+          color: "transparent",
+        },
+        emphasis: {
+          itemStyle: {
+            borderWidth: 1,
+            borderColor: "gray",
+            color: "transparent",
+          },
+        },
+        // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
+        // To be under the petals when clicking.
+        z: 1,
+        silent: true,
+        label: {
+          show: false,
+        },
+        data: [1],
+      },
       // );
     ],
   };
