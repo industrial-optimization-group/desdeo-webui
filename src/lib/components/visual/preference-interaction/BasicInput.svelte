@@ -4,11 +4,20 @@
   // export let higherBound: number|undefined = undefined;
   // export let lowerBound: number|undefined = undefined;
   export let labelName = "Value: ";
+  export let onChange: () => void;
 </script>
 
 <div class="ts">
   <label for="box"> {labelName}</label>
-  <input name="box" type="number" bind:value />
+  <input
+    name="box"
+    type="number"
+    step="any"
+    bind:value
+    on:change={() => {
+      onChange();
+    }}
+  />
 </div>
 
 <style>

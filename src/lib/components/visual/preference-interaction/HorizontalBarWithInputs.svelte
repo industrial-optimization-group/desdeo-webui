@@ -1,5 +1,5 @@
 <script lang="ts">
-  import InputWithValidation from "$lib/components/visual/preference-interaction/BasicInput.svelte";
+  import Input from "$lib/components/visual/preference-interaction/BasicInput.svelte";
   import SingleHorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBar.svelte";
 
   export let lowerBound: number;
@@ -11,11 +11,22 @@
   export let lowerIsBetter = true;
   export let decimalPrecision: number | undefined = undefined;
   export let barColor: string | undefined = undefined;
-  export let arrowMode = false;
+  export let arrowMode = true;
   //   export let barColor = "#a6b1e1";
   //   // export let isMin = true;
   //   // export let divId: string;
   //   export let inputs = false;
+
+  function moveToRange() {
+    if (arrowMode && selectedValue != null) {
+      if (selectedValue < lowerBound) {
+        selectedValue = lowerBound;
+      } else if (selectedValue > higherBound) {
+        selectedValue = higherBound;
+      }
+      selectedValue = selectedValue;
+    }
+  }
 </script>
 
 <!-- Horizontal bar with inputs -->
@@ -29,10 +40,14 @@
       <span>{barName}</span>
     {/if}
 
-    <InputWithValidation
+    <Input
       bind:value={selectedValue}
       labelName="Aspiration level"
+      onChange={moveToRange}
     />
+    <!-- <div>
+      <input type="number" bind:value={selectedValue} step="any" on:change={moveToRange}/>
+    </div> -->
   </div>
   <div class="secondPart">
     <div id="prev">

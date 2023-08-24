@@ -615,13 +615,26 @@
       return;
     }
 
-    // If the value is outside the bounds, set the line to the edge of the chart (outside the bounds)
-    let xOption = chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0];
-    if (newValue < lowerBound) {
-      xOption = 15;
-    } else if (newValue > higherBound) {
-      xOption = chart.getWidth() - 15;
+    let xOption;
+    if (arrowMode) {
+      // Set the line to the edge of the chart if arrowMode is on
+      xOption = chart.convertToPixel({ seriesIndex: 0 }, [selectedValue, 0])[0];
+    } else {
+      // If the value is outside the bounds, set the line to the edge of the chart (outside the bounds)
+      xOption = chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0];
+      if (newValue < lowerBound) {
+        xOption = 15;
+      } else if (newValue > higherBound) {
+        xOption = chart.getWidth() - 15;
+      }
     }
+
+    //  let xOption = chart.convertToPixel({ seriesIndex: 0 }, [newValue, 0])[0];
+    //   if (newValue < lowerBound) {
+    //     xOption = 15;
+    //   } else if (newValue > higherBound) {
+    //     xOption = chart.getWidth() - 15;
+    //   }
 
     let opt =
       lineId === "aspirationGroup"
