@@ -11,6 +11,7 @@
     @prop {number} componentIndex - The index of the component. Is needed when multiple charts are used, for the selection to know which of the charts refers to which alternative (solution).
 -->
 <!-- TODO: Clean code -->
+<!-- TODO: Fix objective text that are now on top of each other (Implementing multiple charts in the same echarts instance could solve this issue)   -->
 
 <script lang="ts">
   import type * as echarts from "echarts";
@@ -178,8 +179,14 @@
     },
     angleAxis: {
       type: "category",
-      data: axisNames ? [] : [], // Disable names (no space for them)
+      data: axisNames ? axisNames : [],
       startAngle: 90,
+      axisLabel: {
+        show: true,
+        inside: true,
+        // position: "middle",
+        overflow: "truncate",
+      },
     },
     radiusAxis: {
       // inverse: true,
@@ -193,13 +200,14 @@
     // },
     series: [
       {
-        // name: title,
         type: "bar",
-        // roseType: "area",
-        tooltip: {},
         coordinateSystem: "polar",
-        // radius: ["10%", "90%"],
         selectedMode: "series",
+        // label: {
+        //   show: true,
+        //   position: "inside",
+        //   formatter: "{b}",
+        // },
         selectedOffset: 0,
         // TODO: Select has type error:Object literal may only specify known properties, and 'select' does not exist in constantsSeriesLine | SeriesPie | SeriesScatter | SeriesEffectScatter | SeriesRadar | SeriesTree | ... 14 more ... | SeriesCustom
         //  eslint-disable-next-line @typescript-eslint/ban-ts-comment

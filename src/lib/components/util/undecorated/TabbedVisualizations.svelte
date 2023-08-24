@@ -94,12 +94,14 @@
         maxSelections={max_selections}
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
+        axisNames={names}
       />
       <MultiplePetalCharts
         {values}
         maxSelections={max_selections}
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
+        axisNames={names}
       />
     {/if}
   </svelte:fragment>

@@ -24,7 +24,7 @@
 
   export let colors: string[] = [];
   export let values: number[][];
-  // export let axisNames: string[] = [];
+  export let axisNames: string[] = [];
   export let selectedIndices: number[] = [];
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
@@ -50,6 +50,7 @@
       <BarChart
         title={"Solution " + (i + 1)}
         values={objectiveValues}
+        {axisNames}
         {selectedIndices}
         {highlightedIndex}
         componentIndex={i}

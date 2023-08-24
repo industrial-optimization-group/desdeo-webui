@@ -17,9 +17,10 @@ T
   // export let title = "Test title";
   // export let data: SolutionData;
 
+  export let title = "";
   export let colors: string[] = [];
   export let values: number[];
-  export let title = "";
+  export let axisNames: string[] = [];
   export let selectedIndices: number[] = [];
   export let highlightedIndex: number | undefined = undefined;
   export let componentIndex: number | undefined = undefined;
@@ -116,7 +117,7 @@ T
   for (let i = 0; i < values.length; i++) {
     seriesData.push({
       value: values[i],
-      name: "Objective " + (i + 1),
+      name: axisNames[i],
     });
   }
 
@@ -166,15 +167,17 @@ T
       text: title,
       left: "center",
     },
-    tooltip: {},
+    tooltip: {
+      show: true,
+      trigger: "item",
+      formatter: "{c}",
+    },
+
     xAxis: {
       type: "value",
     },
     yAxis: {
       type: "category",
-      axisLabel: {
-        show: false,
-      },
       axisTick: {
         show: false,
       },
@@ -186,9 +189,14 @@ T
       {
         type: "bar",
         // roseType: "area",
-        tooltip: {},
         // coordinateSystem: "polar",
         // radius: ["10%", "90%"],
+        label: {
+          show: true,
+          position: "insideLeft",
+
+          formatter: "{b}",
+        },
         selectedMode: "series",
         selectedOffset: 0,
         // TODO: Select has type error:Object literal may only specify known properties, and 'select' does not exist in constantsSeriesLine | SeriesPie | SeriesScatter | SeriesEffectScatter | SeriesRadar | SeriesTree | ... 14 more ... | SeriesCustom
