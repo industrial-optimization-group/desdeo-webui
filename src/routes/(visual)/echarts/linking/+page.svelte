@@ -144,7 +144,7 @@
   </div>
   <div style="height:50em; width:100vh">
     <Petals
-      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      axisNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}
       bind:highlightedIndex={high}

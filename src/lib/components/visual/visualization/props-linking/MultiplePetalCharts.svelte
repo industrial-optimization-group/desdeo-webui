@@ -1,11 +1,21 @@
 <!--@component
-    @description Makes a radar chart using the ECharts library.
+    @description This component creates multiple petal charts in one component and behaves in the same manner as other components that take multiple solutions as props. It can be used to compare multiple solutions and their objectives.
+
+    @prop {string[]} colors - The colors of the petals. If not given, all petals will be blue.
+    @prop {number[][]} values - The values of the solutions. Each solution is an array of numbers.
+    @prop {string[]} axisNames - The names of the axis (objectives).
+    @prop {number[]} selectedIndices - The indices of the selected solutions.
+    @prop {number} highlightedIndex - The index of the highlighted solution.
+    @prop {number} maxSelections - The maximum number of selected solutions.
+    @prop {boolean} asRow - If true, the petal charts will be displayed as a row. If false, they will be displayed as a column.
+    
+    
 -->
+<!-- TODO: Implement lower is better prop -->
+<!-- TODO: -->
 
 <script lang="ts">
   import type * as echarts from "echarts";
-  // import { onDestroy } from "svelte";
-  // import { chartStore } from "$lib/components/visual/chartStore";
   import {
     handleSelectionChange,
     handleHighlightChange,
@@ -14,40 +24,23 @@
 
   export let colors: string[] = [];
   export let values: number[][];
-  // export let minimize: boolean[];
-  // export let showIndicators = false;
-  export let indicatorNames: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
+  export let axisNames: string[] = [];
   export let selectedIndices: number[] = [];
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let asRow = true;
-  // export let data: SolutionData;
 
+  //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;
   $: if (selectedIndices) {
     if (chart) {
       handleSelectionChange(chart, selectedIndices, maxSelections);
     }
   }
-
   $: {
     if (chart) {
       handleHighlightChange(chart, highlightedIndex);
     }
-  }
-
-  // const names: string[] = data.names;
-  // const values: number[][] = data.values;
-
-  // Create the indicator objects for the radar chart.
-  let indObjects: { name: string }[] = [];
-  indicatorNames.forEach((name) => {
-    indObjects.push({ name: name });
-  });
-  // Create the series data for the radar chart.
-  let seriesData: { value: number[]; name: string }[] = [];
-  for (let i = 0; i < values.length; i++) {
-    seriesData.push({ value: values[i], name: "Solution " + (i + 1) });
   }
 </script>
 
@@ -56,11 +49,11 @@
     <div style="height: 100%; width: 100%;">
       <PetalAsPolar
         title={"Solution " + (i + 1)}
-        objectiveValues={value}
+        values={value}
         {selectedIndices}
         {highlightedIndex}
         componentIndex={i}
-        axisNames={indicatorNames}
+        {axisNames}
         color={colors[i]}
       />
     </div>

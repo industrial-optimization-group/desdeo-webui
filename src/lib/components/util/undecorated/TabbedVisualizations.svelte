@@ -87,7 +87,7 @@
         bind:highlightedIndex={highlighted}
       />
       <Petals
-        indicatorNames={names}
+        axisNames={names}
         {values}
         maxSelections={max_selections}
         bind:selectedIndices={selected}

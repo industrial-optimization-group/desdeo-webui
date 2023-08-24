@@ -1,31 +1,31 @@
 <!--@component
     @description Makes a petal chart using the ECharts library's pie option.
+
+    @prop {string} title - The title of the chart (solution name).
+    @prop {string} color - The color of the chart (the color of the petals).
+    @prop {number[]} values - The values of the petals (the values of the objectives).
+    @prop {string[]} axisNames - The names of the axis (objectives).
+    @prop {number[]} selectedIndices - The indices of the selected alternatives.
+    @prop {number} highlightedIndex - The index of the highlighted altervative.
+    @prop {number} maxSelections - The maximum number of selected solutions.
+    @prop {number} componentIndex - The index of the component. Is needed when multiple charts are used, for the selection to know which of the charts refers to which alternative (solution).
 -->
-<!-- TODO: Make a component for a single petal chart. This file then could create all wanted petal charts. 
-T
--->
+<!-- TODO: Clean code -->
 
 <script lang="ts">
-  // import { onDestroy } from "svelte";
-  // import { chartStore } from "$lib/components/visual/chartStore";
   import type * as echarts from "echarts";
   import { handleSelectionChange } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
   import { selectedLineStyle } from "../../constants";
-  // import { selectedLineStyle } from "../../constants";
-
-  // export let id: string;
-  // export let title = "Test title";
-  // export let data: SolutionData;
 
   export let title = "";
   export let color = "";
-  export let objectiveValues: number[];
+  export let values: number[];
   export let axisNames: string[] = [];
   export let selectedIndices: number[] = [];
   export let highlightedIndex: number | undefined = undefined;
-  export let componentIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
+  export let componentIndex: number | undefined = undefined;
 
   $: if (selectedIndices != undefined) {
     if (componentIndex != undefined) {
@@ -115,9 +115,9 @@ T
   // Set the column names
   // Create the series data for the radar chart.
   let seriesData: { value: number; name: string }[] = [];
-  for (let i = 0; i < objectiveValues.length; i++) {
+  for (let i = 0; i < values.length; i++) {
     seriesData.push({
-      value: objectiveValues[i],
+      value: values[i],
       name: axisNames[i],
     });
   }
@@ -219,53 +219,7 @@ T
         // },
         // data: [
         data: seriesData,
-
-        //   {
-        //     value: -2,
-        //     name: "Objective 1",
-        //   },
-        //   {
-        //     value: -2.6,
-        //     name: "Objective 2",
-        //   },
-        //   {
-        //     value: -2.4,
-        //     name: "Objective 3",
-        //   },
-        //   {
-        //     value: -1,
-        //     name: "Objective 4",
-        //   }
-        //   ],
       },
-      // A circle for showing the lines between petals and border line.
-      // {
-      //   type: "pie",
-      //   radius: "30%",
-
-      //   roseType: "area",
-      //   itemStyle: {
-      //     borderWidth: 1,
-      //     borderColor: "gray",
-      //     color: "transparent",
-      //   },
-      //   emphasis: {
-      //     itemStyle: {
-      //       borderWidth: 1,
-      //       borderColor: "gray",
-      //       color: "transparent",
-      //     },
-      //   },
-      //   // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-      //   // To be under the petals when clicking.
-      //   z: 1,
-      //   silent: true,
-      //   label: {
-      //     show: false,
-      //   },
-      //   data: [1],
-      // },
-      // );
     ],
   };
   // let chart: echarts.EChartsType = createChart(id, option);

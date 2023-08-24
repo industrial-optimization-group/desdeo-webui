@@ -168,7 +168,7 @@
     <PetalAsPolar
       title="PetlaAsBarRadius"
       bind:selectedIndices
-      bind:objectiveValues={theValues[1]}
+      bind:values={theValues[1]}
       bind:highlightedIndex={high}
     />
   </div>
@@ -177,7 +177,7 @@
     <PetalAsPolar
       title="PetalAsPolar"
       bind:selectedIndices
-      bind:objectiveValues={theValues[0]}
+      bind:values={theValues[0]}
       bind:highlightedIndex={high}
     />
   </div>
