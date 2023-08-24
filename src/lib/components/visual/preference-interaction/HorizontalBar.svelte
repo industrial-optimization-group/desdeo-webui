@@ -34,9 +34,8 @@
   export let previousValue: number | undefined = undefined;
   export let barColor = colorPalette[0];
   export let lowerIsBetter = true;
-  // export let divId: string;
-  // export let inputs = false;
   export let decimalPrecision: number | undefined = undefined;
+  export let arrowMode = true;
 
   // $: console.log(selectedValue);
   $: if (selectedValue != null) {
@@ -525,54 +524,18 @@
           type: "group",
           top: "center",
           name: "interactiveButtons",
-          // children: [
-          //   //Left Arrow
-          //   {
-          //     type: "polyline",
-          //     id: "left",
-          //     left: shadowSize,
-          //     shape: {
-          //       points: [
-          //         [0, arrowSize],
-          //         [-arrowSize, 0],
-          //         [0, -arrowSize],
-          //       ],
-          //     },
-          //     style: {
-          //       fill: "transparent",
-          //       stroke: arrowColor,
-          //       lineWidth: 2.5,
-          //     },
-          //   },
-          //   // Right Arrow
-          //   {
-          //     type: "polyline",
-          //     id: "right",
-          //     scaleX: -1,
-          //     right: -chart.getWidth() + shadowSize,
-          //     shape: {
-          //       points: [
-          //         [0, arrowSize],
-          //         [-arrowSize, 0],
-          //         [0, -arrowSize],
-          //       ],
-          //     },
-          //     style: {
-          //       fill: "transparent",
-          //       stroke: arrowColor,
-          //       lineWidth: 2.5,
-          //     },
-          //   },
-          // ],
+          children: arrowMode ? addSideArrows() : [],
           // onclick event for the arrows
-          // onclick: (params: { target: { id: string } }) => {
-          //   const targetId = params.target.id;
-          //   if (targetId === "left") {
-          //     selectedValue = lowerBound;
-          //   } else if (targetId === "right") {
-          //     selectedValue = higherBound;
-          //   }
-          // },
+          onclick: (params: { target: { id: string } }) => {
+            if (arrowMode) {
+              const targetId = params.target.id;
+              if (targetId === "left") {
+                selectedValue = lowerBound;
+              } else if (targetId === "right") {
+                selectedValue = higherBound;
+              }
+            }
+          },
         },
         // Invisible rectangle for the whole grid area, so that clicking on the grid area works correctly
         {
@@ -593,8 +556,10 @@
       ],
     };
     chart.setOption(graphicOptions);
-    // addOnMouseEffect("left");
-    // addOnMouseEffect("right");
+    if (arrowMode) {
+      addOnMouseEffect("left");
+      addOnMouseEffect("right");
+    }
     addOnMouseEffect("arrow");
 
     addTooltipListeners("aspirationGroup");
@@ -863,6 +828,49 @@
       // x:0,
       // y:0,
     });
+  }
+
+  function addSideArrows() {
+    let arrows = [
+      //Left Arrow
+      {
+        type: "polyline",
+        id: "left",
+        left: shadowSize,
+        shape: {
+          points: [
+            [0, arrowSize],
+            [-arrowSize, 0],
+            [0, -arrowSize],
+          ],
+        },
+        style: {
+          fill: "transparent",
+          stroke: arrowColor,
+          lineWidth: 2.5,
+        },
+      },
+      // Right Arrow
+      {
+        type: "polyline",
+        id: "right",
+        scaleX: -1,
+        right: -chart.getWidth() + shadowSize,
+        shape: {
+          points: [
+            [0, arrowSize],
+            [-arrowSize, 0],
+            [0, -arrowSize],
+          ],
+        },
+        style: {
+          fill: "transparent",
+          stroke: arrowColor,
+          lineWidth: 2.5,
+        },
+      },
+    ];
+    return arrows;
   }
 </script>
 

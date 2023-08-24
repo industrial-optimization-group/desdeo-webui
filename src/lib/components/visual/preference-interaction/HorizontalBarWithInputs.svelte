@@ -11,6 +11,7 @@
   export let lowerIsBetter = true;
   export let decimalPrecision: number | undefined = undefined;
   export let barColor: string | undefined = undefined;
+  export let arrowMode = false;
   //   export let barColor = "#a6b1e1";
   //   // export let isMin = true;
   //   // export let divId: string;
@@ -59,6 +60,7 @@
         {lowerIsBetter}
         {decimalPrecision}
         {barColor}
+        {arrowMode}
       />
     </div>
   </div>

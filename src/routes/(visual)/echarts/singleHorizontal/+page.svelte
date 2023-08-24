@@ -1,4 +1,5 @@
 <script lang="ts">
+  import HorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBar.svelte";
   import HorizontalBarWithArrows from "$lib/components/visual/preference-interaction/HorizontalBarWithArrows.svelte";
   // import HorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBar.svelte";
   import HorizontalBarWithInputs from "$lib/components/visual/preference-interaction/HorizontalBarWithInputs.svelte";
@@ -23,17 +24,19 @@
       solutionValue={3}
       previousValue={2.21398}
       barName="Solution 1"
+      arrowMode={true}
     />
   </div>
   <div
     id="hori"
     style="width: 60vh; height: 2vh; min-height: 70px; margin-top: 2m; margin-bottom: 5em;"
   >
-    <HorizontalBarWithArrows
+    <HorizontalBar
       higherBound={5}
       lowerBound={0}
       solutionValue={3}
       previousValue={2.21398}
+      arrowMode={true}
     />
   </div>
   <div id="hori2" style="width: 100vh; height: 2vh; min-height: 100px;">
