@@ -16,7 +16,7 @@ TODO: Highlighting and selection don't work properly. Most propably bug in the u
     handleHighlightChange,
     handleSelectionChange,
   } from "$lib/components/visual/helperFunctions";
-  import EchartsComponent from "../../general/EchartsComponent.svelte";
+  import EchartsComponent from "../../../general/EchartsComponent.svelte";
 
   // export let id: string;
   // export let title: string;

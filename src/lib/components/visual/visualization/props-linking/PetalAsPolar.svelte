@@ -19,7 +19,7 @@ T
   // export let data: SolutionData;
 
   export let title = "";
-  export let colors: string[] = [];
+  export let color = "";
   export let objectiveValues: number[];
   export let axisNames: string[] = [];
   export let selectedIndices: number[] = [];
@@ -118,7 +118,7 @@ T
   for (let i = 0; i < objectiveValues.length; i++) {
     seriesData.push({
       value: objectiveValues[i],
-      name: "Objective " + (i + 1),
+      name: axisNames[i],
     });
   }
 
@@ -168,22 +168,24 @@ T
       show: true,
       text: title,
       left: "center",
+      // top:-10
     },
 
     tooltip: {},
     polar: {
-      radius: [30, "80%"],
+      radius: ["12%", "80%"],
+      center: ["50%", "55%"],
     },
     angleAxis: {
       type: "category",
-      data: axisNames,
+      data: axisNames ? [] : [], // Disable names (no space for them)
       startAngle: 90,
     },
     radiusAxis: {
       // inverse: true,
       type: "value",
       // min: -3,
-      scale: true,
+      scale: true, // Scaling needed for negative values, but on positive shows incorrectly
       // max: 4,
     },
     // dataset: {
@@ -191,7 +193,7 @@ T
     // },
     series: [
       {
-        name: "Alternative",
+        // name: title,
         type: "bar",
         // roseType: "area",
         tooltip: {},
@@ -297,4 +299,9 @@ T
   }
 </script>
 
-<EchartsComponent {option} bind:chart bind:events {colors} />
+<EchartsComponent
+  {option}
+  bind:chart
+  bind:events
+  colors={color ? [color] : []}
+/>

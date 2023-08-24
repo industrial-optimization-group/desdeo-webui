@@ -27,6 +27,7 @@
   // Import the visualizations here.
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
   import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
+  import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
 
   // As a temporary solution, add the color palette here as a constant and pass
   // it to the components.
@@ -74,7 +75,24 @@
         bind:highlightedIndex={highlighted}
       />
     {:else if tab === 2}
-      Add a visualization here
+      <ParallelCoordinatePlotBase
+        {names}
+        {values}
+        ranges={bounds}
+        lowerIsBetter={lower_is_better}
+        showIndicators={true}
+        disableInteraction={disabled}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+      />
+      <Petals
+        indicatorNames={names}
+        {values}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+      />
     {/if}
   </svelte:fragment>
 </TabGroup>

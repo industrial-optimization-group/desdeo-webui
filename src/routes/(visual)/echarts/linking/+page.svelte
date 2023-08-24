@@ -12,6 +12,8 @@
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
   import SinglePetal from "$lib/components/visual/visualization/props-linking/PetalAsPie.svelte";
+  import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
+  import { colorPalette } from "$lib/components/visual/constants";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -42,7 +44,7 @@
   let exampleData: SolutionData = {
     names: ["Objective1", "Objective2", "Objective3"],
     values: [
-      [1, 2, 3, 2],
+      [3, 2, 3, 2],
       [4, 5, 6, 2],
       [7, 8, 9, 4],
       [7, 2, 9, 8],
@@ -140,6 +142,16 @@
       ]}
     />
   </div>
+  <div style="height:50em; width:100vh">
+    <Petals
+      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+      bind:highlightedIndex={high}
+      colors={colorPalette}
+    />
+  </div>
+
   <div style="height:50em; width:100vh">
     <RadarChartProps
       indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}

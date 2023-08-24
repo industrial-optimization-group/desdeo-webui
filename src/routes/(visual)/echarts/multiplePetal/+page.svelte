@@ -16,7 +16,7 @@
   import type { SolutionData } from "$lib/components/visual/types";
   // import ParallelCoordinatePlot from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
   // import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
-  import BarChart from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
+  import BarChart from "$lib/components/visual/visualization/props-linking/BarsInOneChart.svelte";
   import SingleBarChart from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
   import PetalAsPolar from "$lib/components/visual/visualization/props-linking/PetalAsPolar.svelte";
   import PetalChart from "$lib/components/visual/visualization/props-linking/PetalAsPie.svelte";
