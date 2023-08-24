@@ -36,7 +36,7 @@
   let tab = 0;
 </script>
 
-<TabGroup regionPanel="h-64">
+<TabGroup class="flex h-full flex-col " regionPanel=" flex flex-col grow">
   <Tab bind:group={tab} name="tab1" value={0}>Parallel Axis Plot</Tab>
   <Tab bind:group={tab} name="tab2" value={1}>Spider Plot</Tab>
   <Tab bind:group={tab} name="tab3" value={2}>Visualization 3</Tab>
@@ -55,29 +55,24 @@
         bind:highlightedIndex={highlighted}
       />
     {:else if tab === 1}
-      <div style="height: 50%;">
-        <RadarChart
-          indicatorNames={names}
-          {values}
-          maxSelections={max_selections}
-          bind:selectedIndices={selected}
-          bind:highlightedIndex={highlighted}
-        />
-      </div>
-
-      <div style="height: 70%;">
-        <ParallelCoordinatePlotBase
-          {names}
-          {values}
-          ranges={bounds}
-          lowerIsBetter={lower_is_better}
-          showIndicators={true}
-          disableInteraction={disabled}
-          maxSelections={max_selections}
-          bind:selectedIndices={selected}
-          bind:highlightedIndex={highlighted}
-        />
-      </div>
+      <RadarChart
+        indicatorNames={names}
+        {values}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+      />
+      <ParallelCoordinatePlotBase
+        {names}
+        {values}
+        ranges={bounds}
+        lowerIsBetter={lower_is_better}
+        showIndicators={true}
+        disableInteraction={disabled}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+      />
     {:else if tab === 2}
       Add a visualization here
     {/if}

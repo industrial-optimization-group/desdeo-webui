@@ -81,7 +81,7 @@ TODO: Disable the UI while interacting with the backend.
 
   <div>
     {#if solutions}
-      <Card class="h-[600px]">
+      <Card class="h-full">
         <svelte:fragment slot="header">Visualizations</svelte:fragment>
         <TabbedVisualizations
           names={objective_names}
