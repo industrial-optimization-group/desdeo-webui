@@ -7,7 +7,10 @@
   import type { EChartOption } from "echarts";
   // import { onDestroy } from "svelte";
   // import { chartStore } from "$lib/components/visual/chartStore";
-  import { selectedLineStyle } from "$lib/components/visual/constants";
+  import {
+    colorPalette,
+    selectedLineStyle,
+  } from "$lib/components/visual/constants";
   import {
     handleClickSelection,
     handleSelectionChange,
@@ -15,7 +18,7 @@
   } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
 
-  export let colors: string[] = [];
+  export let colors: string[] = [colorPalette[0]];
   export let values: number[][];
   // export let minimize: boolean[];
   // export let showIndicators = false;
@@ -63,7 +66,7 @@
         show: true,
       },
     },
-
+    color: colors,
     series: [
       {
         symbol: "none",
@@ -74,12 +77,6 @@
         // @ts-ignore -- Error says that disabled doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property, so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.emphasis.disabled
         select: {
           lineStyle: selectedLineStyle,
-        },
-        emphasis: {
-          lineStyle: {
-            width: 5,
-            opacity: 1,
-          },
         },
         data: seriesData,
       },

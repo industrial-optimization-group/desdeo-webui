@@ -2,9 +2,9 @@
   import * as echarts from "echarts";
   import type { EChartOption, EChartsType } from "echarts";
   import { onMount } from "svelte";
-  import { colorPalette } from "../constants";
+  // import { highlightedStyle } from "../constants";
 
-  export let colors = colorPalette;
+  export let colors: string[] = [];
   export let chart: EChartsType | undefined = undefined;
   export let option: EChartOption;
   export let events:
@@ -33,6 +33,7 @@
       chart.setOption(option);
       chart.setOption({
         color: colors,
+        colorBy: "data",
       });
     } else {
       chart.resize();

@@ -31,3 +31,9 @@ export const selectedLineStyle = {
   width: 7,
   opacity: 1,
 };
+
+export const highlightedStyle = {
+  color: selectedLineStyle.color,
+  width: 7,
+  opacity: 0.4,
+};

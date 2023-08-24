@@ -181,6 +181,9 @@ T
       axisTick: {
         show: false,
       },
+      axisLabel: {
+        show: false,
+      },
     },
     dataset: {
       source: dataSet,

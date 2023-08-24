@@ -52,6 +52,7 @@
   // export let data: SolutionData;
 
   export let chart: echarts.ECharts | undefined = undefined;
+  export let colors: string[] = [colorPalette[0]];
 
   let option: EChartOption;
 
@@ -217,7 +218,7 @@
     }
     // Create the option object for the whole chart.
     return {
-      color: colorPalette,
+      color: colors,
       tooltip: {
         // TODO: Check if there is better way to achiece no type errors, check https://github.com/apache/echarts/issues/14723
         formatter: tooltipFormatter,
@@ -327,4 +328,4 @@
   };
 </script>
 
-<EchartsComponent bind:chart {option} {events} />
+<EchartsComponent bind:chart {option} {events} {colors} />

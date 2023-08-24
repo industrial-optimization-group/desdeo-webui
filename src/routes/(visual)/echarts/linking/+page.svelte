@@ -1,7 +1,7 @@
 <script lang="ts">
   // import Example from "$lib/components/visual/Example.svelte";
   // import HorizontalAxisPlot from "$lib/components/visual/HorizontalAxisPlot.svelte";
-  import ParallelAxis from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
+  // import ParallelAxis from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotWithSwap.svelte";
   // import BarChartProps from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
   // import PetalChartProps from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   // import RadarChart from "$lib/components/visual/RadarChart.svelte";
@@ -15,6 +15,7 @@
   import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
   import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
+  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -82,6 +83,7 @@
   let high: number | undefined = undefined;
   $: high;
   $: disableInteraction = false;
+  // let color = colorPalette[0];
 </script>
 
 <div class="container">
@@ -127,8 +129,17 @@
     <!-- <BasicTable selectedSolutions={$selectedSolutions} /> -->
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
   </div>
+  <div style="height:50em; width:100vh">
+    <MultipleBarCharts
+      axisNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+      bind:highlightedIndex={high}
+      colors={colorPalette}
+    />
+  </div>
   <div style="height:50em; width:50vh; align-self: center;">
-    <ParallelAxis
+    <ParallelCoordinatePlotBase
       bind:disableInteraction
       bind:values={theValues}
       names={["Objective1", "Objective2", "Objective3", "Objective4"]}
@@ -141,15 +152,7 @@
         { min: 0, max: 10 },
         { min: undefined, max: undefined },
       ]}
-    />
-  </div>
-  <div style="height:50em; width:100vh">
-    <MultipleBarCharts
-      axisNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
-      bind:selectedIndices
-      bind:values={theValues}
-      bind:highlightedIndex={high}
-      colors={colorPalette}
+      colors={[colorPalette[0]]}
     />
   </div>
   <div style="height:50em; width:100vh">
@@ -168,6 +171,7 @@
       bind:selectedIndices
       bind:values={theValues}
       bind:highlightedIndex={high}
+      colors={[colorPalette[0]]}
     />
   </div>
   <div style="height:40em; width:100vh">

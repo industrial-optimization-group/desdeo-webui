@@ -20,7 +20,7 @@
   import { selectedLineStyle } from "../../constants";
 
   export let title = "";
-  export let color = "";
+  export let colors: string[] = [];
   export let values: number[];
   export let axisNames: string[] = [];
   export let selectedIndices: number[] = [];
@@ -261,9 +261,4 @@
   }
 </script>
 
-<EchartsComponent
-  {option}
-  bind:chart
-  bind:events
-  colors={color ? [color] : []}
-/>
+<EchartsComponent {option} bind:chart bind:events {colors} />

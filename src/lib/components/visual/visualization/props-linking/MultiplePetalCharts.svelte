@@ -54,7 +54,7 @@
         {highlightedIndex}
         componentIndex={i}
         {axisNames}
-        color={colors[i]}
+        {colors}
       />
     </div>
   {/each}
