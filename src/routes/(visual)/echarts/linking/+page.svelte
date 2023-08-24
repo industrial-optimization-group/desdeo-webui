@@ -14,6 +14,7 @@
   import SinglePetal from "$lib/components/visual/visualization/props-linking/PetalAsPie.svelte";
   import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
+  import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -140,6 +141,15 @@
         { min: 0, max: 10 },
         { min: undefined, max: undefined },
       ]}
+    />
+  </div>
+  <div style="height:50em; width:100vh">
+    <MultipleBarCharts
+      axisNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+      bind:highlightedIndex={high}
+      colors={colorPalette}
     />
   </div>
   <div style="height:50em; width:100vh">

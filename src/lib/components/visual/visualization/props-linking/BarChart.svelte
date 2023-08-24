@@ -18,8 +18,8 @@ T
   // export let data: SolutionData;
 
   export let colors: string[] = [];
-  export let objectiveValues: number[];
-  export let name = "";
+  export let values: number[];
+  export let title = "";
   export let selectedIndices: number[] = [];
   export let highlightedIndex: number | undefined = undefined;
   export let componentIndex: number | undefined = undefined;
@@ -113,14 +113,14 @@ T
   // Set the column names
   // Create the series data for the radar chart.
   let seriesData: { value: number; name: string }[] = [];
-  for (let i = 0; i < objectiveValues.length; i++) {
+  for (let i = 0; i < values.length; i++) {
     seriesData.push({
-      value: objectiveValues[i],
+      value: values[i],
       name: "Objective " + (i + 1),
     });
   }
 
-  let dataSet: (string | number)[][] = [["Objective", ...objectiveValues]];
+  let dataSet: (string | number)[][] = [["Objective", ...values]];
 
   // let newRow: (string | number)[] = ["Solution " + (i + 1)];
   // newRow.push(...valuesTransposed[i]);
@@ -163,21 +163,27 @@ T
   const option: echarts.EChartOption = {
     title: {
       show: true,
-      text: name,
+      text: title,
       left: "center",
     },
+    tooltip: {},
     xAxis: {
       type: "value",
     },
     yAxis: {
       type: "category",
+      axisLabel: {
+        show: false,
+      },
+      axisTick: {
+        show: false,
+      },
     },
     dataset: {
       source: dataSet,
     },
     series: [
       {
-        name: "Alternative",
         type: "bar",
         // roseType: "area",
         tooltip: {},

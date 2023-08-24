@@ -20,11 +20,11 @@
     handleSelectionChange,
     handleHighlightChange,
   } from "$lib/components/visual/helperFunctions";
-  import PetalAsPolar from "./PetalAsPolar.svelte";
+  import BarChart from "./BarChart.svelte";
 
   export let colors: string[] = [];
   export let values: number[][];
-  export let axisNames: string[] = [];
+  // export let axisNames: string[] = [];
   export let selectedIndices: number[] = [];
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
@@ -45,17 +45,17 @@
 </script>
 
 <div class="multi" style="--flex-direction:{asRow ? 'row' : 'column'}">
-  {#each values as value, i}
+  {#each values as objectiveValues, i}
     <div style="height: 100%; width: 100%;">
-      <PetalAsPolar
+      <BarChart
         title={"Solution " + (i + 1)}
-        values={value}
+        values={objectiveValues}
         {selectedIndices}
         {highlightedIndex}
         componentIndex={i}
-        {axisNames}
-        color={colors[i]}
+        {colors}
       />
+      <!-- {axisNames} -->
     </div>
   {/each}
 </div>

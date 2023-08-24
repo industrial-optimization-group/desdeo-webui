@@ -27,7 +27,9 @@
   // Import the visualizations here.
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
   import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
-  import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
+  // import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
+  import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
+  import MultiplePetalCharts from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
 
   // As a temporary solution, add the color palette here as a constant and pass
   // it to the components.
@@ -40,7 +42,8 @@
 <TabGroup class="flex h-full flex-col " regionPanel=" flex flex-col grow">
   <Tab bind:group={tab} name="tab1" value={0}>Parallel Axis Plot</Tab>
   <Tab bind:group={tab} name="tab2" value={1}>Spider Plot</Tab>
-  <Tab bind:group={tab} name="tab3" value={2}>Visualization 3</Tab>
+  <Tab bind:group={tab} name="tab3" value={2}>Petal and bar plots</Tab>
+  <Tab bind:group={tab} name="tab4" value={3}>Bar plots</Tab>
 
   <svelte:fragment slot="panel">
     {#if tab === 0}
@@ -86,8 +89,13 @@
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
       />
-      <Petals
-        axisNames={names}
+      <MultipleBarCharts
+        {values}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+      />
+      <MultiplePetalCharts
         {values}
         maxSelections={max_selections}
         bind:selectedIndices={selected}

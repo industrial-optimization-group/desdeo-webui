@@ -184,9 +184,9 @@
 
   <div style="height:40vh; width:100vh">
     <SingleBarChart
-      name="SingleBar"
+      title="SingleBar"
       bind:selectedIndices
-      bind:objectiveValues={theValues[1]}
+      bind:values={theValues[1]}
       bind:highlightedIndex={high}
     />
   </div>
