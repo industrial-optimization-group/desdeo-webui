@@ -27,6 +27,7 @@
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let componentIndex: number | undefined = undefined;
+  export let disableAnimation = false;
 
   $: if (selectedIndices != undefined) {
     if (componentIndex != undefined) {
@@ -261,4 +262,4 @@
   }
 </script>
 
-<EchartsComponent {option} bind:chart bind:events {colors} />
+<EchartsComponent {option} bind:chart bind:events {colors} {disableAnimation} />

@@ -49,10 +49,9 @@
   export let brushIntervalPerAxis: Ranges[] = [];
   export let newOptions: EChartOption | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
-  // export let data: SolutionData;
-
   export let chart: echarts.ECharts | undefined = undefined;
   export let colors: string[] = [colorPalette[0]];
+  export let disableAnimation = false;
 
   let option: EChartOption;
 
@@ -246,6 +245,7 @@
         throttleType: "debounce",
         throttleDelay: 300,
       },
+      animation: !disableAnimation,
       series: [
         {
           silent: disableInteraction,

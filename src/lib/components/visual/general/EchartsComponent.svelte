@@ -7,6 +7,7 @@
   export let colors: string[] = [];
   export let chart: EChartsType | undefined = undefined;
   export let option: EChartOption;
+  export let disableAnimation = false;
   export let events:
     | {
         [key: string]: (params: {
@@ -34,6 +35,7 @@
       chart.setOption({
         color: colors,
         colorBy: "data",
+        animation: !disableAnimation,
       });
     } else {
       chart.resize();

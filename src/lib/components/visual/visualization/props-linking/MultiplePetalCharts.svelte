@@ -29,6 +29,7 @@
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let asRow = true;
+  export let disableAnimation = false;
 
   //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;
@@ -55,6 +56,7 @@
         componentIndex={i}
         {axisNames}
         {colors}
+        {disableAnimation}
       />
     </div>
   {/each}
