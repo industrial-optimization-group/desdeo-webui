@@ -853,6 +853,7 @@
         formatter: () => {
           return tooltipHelpText;
         },
+        position: idToChek == "verticalGroup" ? [20, -50] : [20, -30],
       },
     });
     chart.dispatchAction({
