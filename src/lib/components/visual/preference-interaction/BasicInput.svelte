@@ -1,4 +1,3 @@
-<!-- TODO: Implement input value validation -->
 <script lang="ts">
   export let value: number | undefined;
   // export let higherBound: number|undefined = undefined;
