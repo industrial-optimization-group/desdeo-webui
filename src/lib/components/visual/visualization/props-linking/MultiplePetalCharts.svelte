@@ -30,6 +30,7 @@
   export let maxSelections: number | undefined = undefined;
   export let asRow = true;
   export let disableAnimation = false;
+  export let aspectRatio: number | undefined = undefined;
 
   //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;
@@ -57,6 +58,7 @@
         {axisNames}
         {colors}
         {disableAnimation}
+        {aspectRatio}
       />
     </div>
   {/each}

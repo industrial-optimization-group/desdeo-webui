@@ -28,6 +28,7 @@
   export let maxSelections: number | undefined = undefined;
   export let componentIndex: number | undefined = undefined;
   export let disableAnimation = false;
+  export let aspectRatio = 2 / values.length;
 
   $: if (selectedIndices != undefined) {
     if (componentIndex != undefined) {
@@ -268,5 +269,5 @@
   bind:events
   {colors}
   {disableAnimation}
-  aspectRatio="aspect-[0.8]"
+  {aspectRatio}
 />

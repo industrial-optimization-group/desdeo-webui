@@ -26,7 +26,7 @@ T
   export let componentIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let disableAnimation = false;
-  // export let aspect:string;
+  export let aspectRatio = 2 / values.length;
 
   $: if (selectedIndices != undefined) {
     if (componentIndex != undefined) {
@@ -281,9 +281,6 @@ T
     }
     return selectedCopy;
   }
-
-  let count = values.length;
-  let aspectRatio = 2 / count;
 </script>
 
 <EchartsComponent
