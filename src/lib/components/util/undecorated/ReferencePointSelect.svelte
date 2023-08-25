@@ -9,6 +9,7 @@ NOTE: Not fully functional.
   import type { BoundedObjective, Point } from "$lib/api";
   import { is_point } from "$lib/api";
   import HorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBarWithInputs.svelte";
+  import { colorPalette } from "$lib/components/visual/constants";
 
   export let objectives: BoundedObjective[];
   export let selected_solution: Point | undefined = undefined;
@@ -52,6 +53,7 @@ NOTE: Not fully functional.
       higherBound={max}
       solutionValue={selected_solution ? selected_solution[j] : undefined}
       previousValue={previous_preference ? previous_preference[j] : undefined}
+      barColor={colorPalette[j % colorPalette.length]}
       bind:selectedValue={selected_preference[j]}
     />
   {/each}
