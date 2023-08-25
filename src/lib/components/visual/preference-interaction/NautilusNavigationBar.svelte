@@ -15,11 +15,13 @@
 -->
 <!-- 
   TODO: documentation
-    TODO: Fix draggable oldLines
-    TODO: Make YAxis visible
-    TODO: Min/Max prop
-    TODO: Color prop
-  
+  TODO: Fix draggable oldLines
+  TODO: Make YAxis visible
+  TODO: Min/Max prop
+  TODO: Color prop
+  TODO: Why the lines on the drawn region are not smooth?
+  TODO: Add restriction which prevents dragging line outside feasible region
+  TODO: Divide applyForMultipleLines to 2 different functions
    -->
 <script lang="ts">
   import { onMount } from "svelte";
@@ -30,9 +32,7 @@
   } from "$lib/components/visual/constants";
   import { getChartModel } from "$lib/components/visual/helperFunctions";
 
-  // The properties that can be passed to the component.
-  // import { colorPalette } from "$lib/components/visual/constants";
-
+  // Props
   export let lowerBound: number;
   export let higherBound: number;
   export let iterations: number;
@@ -41,32 +41,22 @@
   export let selectedBoundValue = lowerBound;
   export let uncertaintyBounds: number[][];
   export let disableInteraction = true;
-  // export let colorPaletteIndex =  $: selectedAspY = 0;
-  // export let isMin = true;
-  // export let divId: string;
+  // Local variables
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
   let lastPosition: number;
-  $: stepBack = false;
-  // $: console.log(selectedValue);
-  // $: console.log("bound value: " + selectedBoundValue);
-  // $: updateLine(selectedValue)
+  let objShape: number[][] = [];
+  // Reactive statements
   $: updateLine("aspiration", selectedValue);
   $: updateLine("bound", selectedBoundValue);
-  $: currentIterationIndex;
   $: updateOnNewStep(currentIterationIndex);
   $: updateInteractivity(disableInteraction);
-  let objShape: number[][] = [];
+  $: stepBack = false;
 
-  onMount(() => {
-    updateData();
-    chart = echarts.init(chartDiv, null, {
-      renderer: "svg",
-    });
-    addNautilusBar();
-  });
-
-  /** Updates the data that is used to draw the feasible region. */
+  /**
+   * Updates the data that is used to draw the feasible region. Draws until the
+   * current iteration and then draws back to the first iteration.
+   */
   function updateData() {
     objShape = [];
     for (let index = 0; index <= currentIterationIndex; index++) {
@@ -81,6 +71,11 @@
     }
   }
 
+  /**
+   * Draws the feasible region on the chart.
+   *
+   * @param api The api of the chart.
+   */
   function draw(
     api: echarts.EChartOption.SeriesCustom.RenderItemApi
   ): echarts.EChartOption.SeriesCustom.RenderItemReturnPolygon {
@@ -197,6 +192,14 @@
     setDefaultGraphicOptions();
   }
 
+  /**
+   * Restricts the dragging of the aspiration and bound lines so that aspiration
+   * line does not go below the bound line and vice versa.
+   *
+   * @param event The event that triggered the dragging. Used to get the line
+   *   TODO: Add restriction which prevents dragging line outside feasible
+   *   region
+   */
   function restrictDrag(event: echarts.ElementEvent) {
     let newLineName = event.target.id;
     let lineToCompare;
@@ -220,7 +223,7 @@
         : lineToCompare.y;
       dragIsValid = event.offsetY > compareLineY;
     }
-    // Check if drag is valid comparet to the other line and if it is inside the chart bounds
+    // Check if drag is valid compared to the other line and if it is inside the chart bounds
     if (dragIsValid && event.offsetY > 0 && event.offsetY < chart.getHeight()) {
       lastPosition = event.offsetY;
       if (lineType == "aspLine") {
@@ -235,6 +238,7 @@
         ])[1];
       }
     }
+    // Set the new drag position to the line
     chart.setOption({
       graphic: {
         id: newLineName,
@@ -244,6 +248,13 @@
     });
   }
 
+  /**
+   * Updates the position of the aspiration or bound line.
+   *
+   * @param type The type of the line to update. Can be either "aspiration" or
+   *   "bound".
+   * @param newValue The new value of the line.
+   */
   function updateLine(type: string, newValue: number | undefined) {
     if (!chart || newValue == null) {
       return;
@@ -258,6 +269,7 @@
 
     chart.setOption({
       graphic: {
+        // If the new part of the line (newAspLine or newBoundLine) is invisible, use the old line (oldAspLine or oldBoundLine).
         id: invisible ? idOld : idNew,
         lastY: newY,
         y: newY,
@@ -265,12 +277,18 @@
     });
   }
 
+  /**
+   * Updates the chart when the user clicks the next step button.
+   *
+   * @param idx The index of the current iteration.
+   */
   function updateOnNewStep(idx: number) {
     // If chart is not initialized, do nothing
     if (!chart) {
       return;
     }
     if (idx < iterations) {
+      // If the user has stepped back, reset the lines to the default position.
       if (stepBack) {
         updateStepLine();
         updateData();
@@ -288,7 +306,7 @@
     }
   }
 
-  //TODO: step line dragging
+  /** Updates the position of the vertical line (step line). */
   function updateStepLine() {
     let xForVerticalLine = chart.convertToPixel({ seriesIndex: 0 }, [
       currentIterationIndex,
@@ -366,8 +384,9 @@
     });
   }
 
-  /** Adds the draggable part of the line. */
+  /** Adds the draggable part of the line (Line after step line). */
   function addNewLine() {
+    // TODO: Take the inner function out of the applyForMultipleLines function so it's more readable
     applyForMultipleLines((wholeNameOld, wholeNameNew) => {
       let verticalLineComponent = getLineComponent(chart, "verticalLine");
       let oldLineComponent = getLineComponent(chart, wholeNameOld);
@@ -418,7 +437,14 @@
     }
   }
 
-  // TODO: Divide this to 2 functions, the other could be applyForSingleLine. Then the parameter onlylinename could be deleted
+  /**
+   * Applies the given function for both aspiration and bound lines.
+   *
+   * @param funToApply The function to apply for both lines.
+   * @param onlyLinename If given, applies the function only for the given line.
+   *   TODO: Divide this to 2 functions, the other could be applyForSingleLine.
+   *   Then the parameter onlylinename could be deleted
+   */
   function applyForMultipleLines(
     funToApply: (nameOld: string, nameNew: string) => void,
     onlyLinename?: string
@@ -438,7 +464,7 @@
    * Updates the interactivity of lines on the chart.
    *
    * @param disable If true, disables the interactivity of the lines. If false,
-   *   enables it.
+   *   enables the interactivity of the lines.
    */
   function updateInteractivity(disable: boolean) {
     if (!chart) {
@@ -462,11 +488,13 @@
     });
   }
 
+  /** Reset lines to default position */
   export function resetLinesToDefaults() {
     currentIterationIndex = 0;
     stepBack = true;
   }
 
+  /** Resets the aspiration and bound lines to their default position. */
   function resetLine() {
     if (currentIterationIndex === 0) {
       setDefaultGraphicOptions();
@@ -662,8 +690,16 @@
       ],
     });
   }
+  onMount(() => {
+    updateData();
+    chart = echarts.init(chartDiv, null, {
+      renderer: "svg",
+    });
+    addNautilusBar();
+  });
 </script>
 
 <!--The div where the chart will be rendered. Must have width and height values for the chart to show.-->
 <div style="height:100%; width:100%;" bind:this={chartDiv} />
-<button on:click={resetLinesToDefaults}>Reset lines</button>
+<!-- Button for testing line resetting -->
+<!-- <button on:click={resetLinesToDefaults}>Reset lines</button> -->

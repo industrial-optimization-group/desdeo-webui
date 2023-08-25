@@ -2,6 +2,32 @@
 
 The visual folder contains mainly visualization components, which use Apache ECharts and Svelte libraries. ECharts handles the chart configuration and generation, Svelte is used to make them easily accessible as commponents.
 
+## Folder structure:
+
+### visual -folder
+
+- Contains files that the different components use, such as constants.ts and helperFunctions.ts
+
+#### general -folder
+
+- Contains the EchartsComponent.svelte, which is used to create a chart and render it. This component is used in all visualization components.
+
+#### preference-interaction -folder
+
+- This folder contains components that are used in helping the user to select the preferred value.
+
+#### visualization -folder
+
+- This folder contains the visualization components. The components are divided into two subfolders.
+
+- ##### props-linking -folder
+  - Contains components that use props to link selections and highlighting with the rest of the cahrts.
+  - These components don't use ECharts to link the charts, but instead use props for it.
+- ##### multi-charts -folder
+  - Contains components that uses ECharts to render multiple charts in one component.
+  - This is achieved by using the series option in ECharts.
+    - Each solution is a different series object in the series array.
+
 ## How to use the components
 
 To add a component to your HTML, use it as a normal svelte component with props. So if you wish to add a parallel axis, first import it:
