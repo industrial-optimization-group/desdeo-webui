@@ -43,6 +43,8 @@
       handleHighlightChange(chart, highlightedIndex);
     }
   }
+  // let count = values[0].length;
+  // let aspect = "aspect-[1/" + count + "]";
 </script>
 
 <div class="multi" style="--flex-direction:{asRow ? 'row' : 'column'}">
@@ -58,6 +60,7 @@
         {colors}
         {disableAnimation}
       />
+      <!-- {aspect} -->
       <!-- {axisNames} -->
     </div>
   {/each}
@@ -69,7 +72,7 @@
     flex-direction: var(--flex-direction);
     /* flex-wrap: wrap; */
     justify-content: center;
-    height: 100%;
-    widows: 100%;
+    /* height: 100%; */
+    /* width: 100%; */
   }
 </style>

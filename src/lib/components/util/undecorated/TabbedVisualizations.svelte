@@ -41,7 +41,7 @@
   let tab = 0;
 </script>
 
-<TabGroup class="flex h-full flex-col " regionPanel=" flex flex-col grow">
+<TabGroup>
   <Tab bind:group={tab} name="tab1" value={0}>Parallel Axis Plot</Tab>
   <Tab bind:group={tab} name="tab2" value={1}>Radar Plot</Tab>
   <Tab bind:group={tab} name="tab3" value={2}>Petal and bar plots</Tab>

@@ -26,6 +26,7 @@ T
   export let componentIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let disableAnimation = false;
+  // export let aspect:string;
 
   $: if (selectedIndices != undefined) {
     if (componentIndex != undefined) {
@@ -280,6 +281,16 @@ T
     }
     return selectedCopy;
   }
+
+  let count = values.length;
+  let aspectRatio = 2 / count;
 </script>
 
-<EchartsComponent {option} bind:chart bind:events {colors} {disableAnimation} />
+<EchartsComponent
+  {option}
+  bind:chart
+  bind:events
+  {colors}
+  {disableAnimation}
+  {aspectRatio}
+/>

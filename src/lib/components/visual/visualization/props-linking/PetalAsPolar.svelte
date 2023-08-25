@@ -262,4 +262,11 @@
   }
 </script>
 
-<EchartsComponent {option} bind:chart bind:events {colors} {disableAnimation} />
+<EchartsComponent
+  {option}
+  bind:chart
+  bind:events
+  {colors}
+  {disableAnimation}
+  aspectRatio="aspect-[0.8]"
+/>
