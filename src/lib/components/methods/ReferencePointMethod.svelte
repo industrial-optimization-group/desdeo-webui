@@ -13,7 +13,9 @@ TODO: Disable the UI while interacting with the backend.
   import Card from "../main/Card.svelte";
   import ReferencePointSelect from "../util/undecorated/ReferencePointSelect.svelte";
   import ProblemDetails from "../main/ProblemDetails.svelte";
-  import TabbedVisualizations from "../util/undecorated/TabbedVisualizations.svelte";
+  import Visualizations, {
+    type Mode,
+  } from "../util/undecorated/Visualizations.svelte";
   import MethodLayout from "../util/undecorated/MethodLayout.svelte";
 
   /** The problem to solve. */
@@ -46,6 +48,7 @@ TODO: Disable the UI while interacting with the backend.
   }
 
   let visualizations_maximized = false;
+  let visualizations_mode: Mode = "tabbed";
 </script>
 
 <div class="flex flex-col gap-10">
@@ -79,6 +82,13 @@ TODO: Disable the UI while interacting with the backend.
           on:click={() => {
             visualizations_maximized = !visualizations_maximized;
           }}>Toggle visualizations size</button
+        >
+        <button
+          class="anchor"
+          on:click={() => {
+            visualizations_mode =
+              visualizations_mode === "tabbed" ? "gridded" : "tabbed";
+          }}>Toggle visualization grid</button
         >
       </div>
     {/if}
@@ -125,11 +135,12 @@ TODO: Disable the UI while interacting with the backend.
       <div slot="visualizations">
         <Card>
           <svelte:fragment slot="header">Visualizations</svelte:fragment>
-          <TabbedVisualizations
+          <Visualizations
             names={objective_names}
             values={solutions}
             bounds={objectives.map(({ min, max }) => ({ min, max }))}
             lower_is_better={objective_minimize}
+            mode={visualizations_mode}
           />
         </Card>
       </div>

@@ -19,11 +19,6 @@
   // `values`, `bounds` and `lower_is_better` have the same length.
   //
 
-  //
-  // TODO: Should we also allow multiple highlighted values? (This is for
-  // future; don't worry about it now.)
-  //
-
   // Import the visualizations here.
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
   import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
@@ -32,18 +27,12 @@
   import MultiplePetalCharts from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
 
-  // As a temporary solution, add the color palette here as a constant and pass
-  // it to the components.
-  const colors = colorPalette;
-
-  // Do the same here for any other stuff that currently uses stores.
-
   let tab = 0;
 </script>
 
 <TabGroup>
-  <Tab bind:group={tab} name="tab1" value={0}>Parallel Axis Plot</Tab>
-  <Tab bind:group={tab} name="tab2" value={1}>Radar Plot</Tab>
+  <Tab bind:group={tab} name="tab1" value={0}>Parallel axis plot</Tab>
+  <Tab bind:group={tab} name="tab2" value={1}>Radar plot</Tab>
   <Tab bind:group={tab} name="tab3" value={2}>Petal and bar plots</Tab>
   <Tab bind:group={tab} name="tab4" value={3}>Bar plots</Tab>
 
@@ -97,7 +86,7 @@
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
         axisNames={names}
-        {colors}
+        colors={colorPalette}
       />
       <MultiplePetalCharts
         {values}
@@ -105,7 +94,7 @@
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
         axisNames={names}
-        {colors}
+        colors={colorPalette}
       />
     {/if}
   </svelte:fragment>
