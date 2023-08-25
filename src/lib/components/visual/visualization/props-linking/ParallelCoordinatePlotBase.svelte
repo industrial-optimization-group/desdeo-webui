@@ -326,6 +326,14 @@
       brushIntervalPerAxis = helpArray;
     },
   };
+
+  /**
+   * Classes for setting the aspect ratio of the plot. Default value is
+   * `"aspect-[5/3]"`.
+   */
+  export let aspect = "aspect-[5/3]";
 </script>
 
-<EchartsComponent bind:chart {option} {events} {colors} />
+<div class={aspect}>
+  <EchartsComponent bind:chart {option} {events} />
+</div>

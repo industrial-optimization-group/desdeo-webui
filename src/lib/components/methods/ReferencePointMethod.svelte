@@ -14,6 +14,7 @@ TODO: Disable the UI while interacting with the backend.
   import ReferencePointSelect from "../util/undecorated/ReferencePointSelect.svelte";
   import ProblemDetails from "../main/ProblemDetails.svelte";
   import TabbedVisualizations from "../util/undecorated/TabbedVisualizations.svelte";
+  import MethodLayout from "../util/undecorated/MethodLayout.svelte";
 
   /** The problem to solve. */
   export let problem: Problem;
@@ -43,30 +44,56 @@ TODO: Disable the UI while interacting with the backend.
     solutions = method.state.additional_solutions;
     previous_preference = method.state.previous_preference;
   }
+
+  let visualizations_maximized = false;
 </script>
 
-<div class="grid grid-cols-2 gap-10">
-  <div class="flex flex-col gap-10">
-    <div class="flex flex-col items-start gap-4">
-      <h1 class="font-bold">Reference point method</h1>
-      {#if _.is_uninitialized(method)}
-        <div>
-          Please click "start" to start solving the problem with the method.
-        </div>
-        <button class="btn variant-filled" on:click={handle_initialize}
-          >Start</button
+<div class="flex flex-col gap-10">
+  <div class="flex flex-col items-start gap-4">
+    <h1 class="font-bold">Reference point method</h1>
+    {#if !objectives}
+      <div>
+        Please click "start" to start solving the problem with the method.
+      </div>
+      <button class="btn variant-filled" on:click={handle_initialize}
+        >Start</button
+      >
+    {:else if objectives && !solutions}
+      <div>Please select a reference point and then click "iterate".</div>
+      <div class="flex gap-4">
+        <button class="btn variant-filled" on:click={handle_iterate}
+          >Iterate</button
         >
-      {:else}
-        <div>Please select a reference point and then click "iterate".</div>
-        <div class="flex gap-4">
-          <button class="btn variant-filled" on:click={handle_iterate}
-            >Iterate</button
-          >
-        </div>
-      {/if}
-    </div>
+      </div>
+    {:else}
+      <div>
+        Please select a new reference point and then click "iterate", if you
+        wish to continue.
+      </div>
+      <div class="flex gap-4">
+        <button class="btn variant-filled" on:click={handle_iterate}
+          >Iterate</button
+        >
+        <button
+          class="anchor"
+          on:click={() => {
+            visualizations_maximized = !visualizations_maximized;
+          }}>Toggle visualizations size</button
+        >
+      </div>
+    {/if}
+  </div>
 
-    {#if objectives}
+  <!-- Before start -->
+  {#if !objectives}
+    <div class="grid grid-cols-2 items-start gap-10">
+      <ProblemDetails {problem} />
+    </div>
+  {/if}
+
+  <!-- Before first iteration -->
+  {#if objectives && !solutions}
+    <div class="grid grid-cols-2 items-start gap-10">
       <Card>
         <svelte:fragment slot="header">Preference information</svelte:fragment>
         <ReferencePointSelect
@@ -76,22 +103,39 @@ TODO: Disable the UI while interacting with the backend.
           bind:reference_point
         />
       </Card>
-    {/if}
-  </div>
-
-  <div>
-    {#if solutions}
-      <Card class="h-full">
-        <svelte:fragment slot="header">Visualizations</svelte:fragment>
-        <TabbedVisualizations
-          names={objective_names}
-          values={solutions}
-          bounds={objectives.map(({ min, max }) => ({ min, max }))}
-          lower_is_better={objective_minimize}
-        />
-      </Card>
-    {:else}
       <ProblemDetails {problem} />
-    {/if}
-  </div>
+    </div>
+  {/if}
+
+  <!-- Has iterated at least once -->
+  {#if objectives && solutions}
+    <MethodLayout {visualizations_maximized}>
+      <div slot="preferences">
+        <Card>
+          <svelte:fragment slot="header">Preference information</svelte:fragment
+          >
+          <ReferencePointSelect
+            {objectives}
+            selected_solution={solutions ? solutions[0] : undefined}
+            {previous_preference}
+            bind:reference_point
+          />
+        </Card>
+      </div>
+      <div slot="visualizations">
+        <Card>
+          <svelte:fragment slot="header">Visualizations</svelte:fragment>
+          <TabbedVisualizations
+            names={objective_names}
+            values={solutions}
+            bounds={objectives.map(({ min, max }) => ({ min, max }))}
+            lower_is_better={objective_minimize}
+          />
+        </Card>
+      </div>
+      <div slot="solutions">
+        <Card>The solutions table will be here.</Card>
+      </div>
+    </MethodLayout>
+  {/if}
 </div>
