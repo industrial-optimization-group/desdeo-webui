@@ -329,11 +329,11 @@
 
   /**
    * Classes for setting the aspect ratio of the plot. Default value is
-   * `"aspect-[5/3]"`.
+   * `"aspect-[3]"`.
    */
-  export let aspect = "aspect-[5/3]";
+  export let aspect = "aspect-[3]";
 </script>
 
-<div class={aspect}>
+<div class={aspect} style="aspect-ratio: {values.length / 1.5}">
   <EchartsComponent bind:chart {option} {events} />
 </div>
