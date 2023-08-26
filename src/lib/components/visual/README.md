@@ -2,6 +2,16 @@
 
 The visual folder contains mainly visualization components, which use Apache ECharts.js and Svelte.js libraries. ECharts handles the chart configuration and generation, Svelte is used to make them easily accessible as commponents.
 
+## Available components (TODO: Add link to images, add rest of the available components)
+
+### HorizontalBar.svelte
+
+### Parallel Coordinate Plot
+
+### Linking functionality:
+
+![horizontal-bars-plot](./resources/Linking/linking_parallel.gif)
+
 ## Folder structure:
 
 ### visual -folder
