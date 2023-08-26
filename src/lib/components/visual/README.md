@@ -2,15 +2,49 @@
 
 The visual folder contains mainly visualization components, which use Apache ECharts.js and Svelte.js libraries. ECharts handles the chart configuration and generation, Svelte is used to make them easily accessible as commponents.
 
-## Available components (TODO: Add link to images, add rest of the available components)
+## Available components
 
-### HorizontalBar.svelte
+### Horizontal Bar
+
+![horizontal-bar](./resources/HorizontalBar.png)
+
+- #### With arrows and input validation:
+  ![horizontal-bars-arrowMode](./resources/HorizontalBarArrowMode.png)
+
+### Nautilus Navigation Bar
+
+![nautilus-navigation-bar](./resources/)
+
+### Horizontal and Nautilus bars with inputs
+
+![bar-with-inputs](./resources/HorizontalBarWithInputs.png)
+
+TODO: add nautilus bar wiht inputs
+
+### Radar Chart
+
+![radar-chart](./resources/RadarChart.png)
+
+### Bar Chart
+
+![bar-chart](./resources/BarChart.png)
+![bar-chart](./resources/MultipleBarCharts.png)
+
+### Petal Chart
+
+![petal-chart](./resources/PetalChart.png)
+![petal-chart](./resources/MultiplePetalCharts.png)
 
 ### Parallel Coordinate Plot
 
+![parallel-coordinate-plot](./resources/ParallelCoordinatePlotBase.png)
+
 ### Linking functionality:
 
-![horizontal-bars-plot](./resources/Linking/linking_parallel.gif)
+![linking](./resources/Linking/linking_parallel.gif)
+
+- #### Other example
+  ![linking](./resources/Linking/linking_objectives.gif)
 
 ## Folder structure:
 
