@@ -1,6 +1,6 @@
 # Visual components
 
-The visual folder contains mainly visualization components, which use Apache ECharts and Svelte libraries. ECharts handles the chart configuration and generation, Svelte is used to make them easily accessible as commponents.
+The visual folder contains mainly visualization components, which use Apache ECharts.js and Svelte.js libraries. ECharts handles the chart configuration and generation, Svelte is used to make them easily accessible as commponents.
 
 ## Folder structure:
 
@@ -30,7 +30,7 @@ The visual folder contains mainly visualization components, which use Apache ECh
 
 ## How to use the components
 
-To add a component to your HTML, use it as a normal svelte component with props. So if you wish to add a parallel axis, first import it:
+To add a component to your HTML, use it as a normal svelte component with props. So if you wish to add a parallel coordinate plot, first import it:
 
 ```typescript
 import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
@@ -56,6 +56,25 @@ If you wish to contribute to the visual components, please read the general inst
 
 ### Step by step
 
+0. Create a new .svelte file in the visual folder
+
+   - Import EchartsComponent.svelte and types
+
+     ```typescript
+      <script lang="ts">
+        import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
+        import type * as echarts from "echarts";
+
+        const option: echarts.EChartOption = {
+          title: title,
+        };
+        // Rest of the code here
+      </script>
+
+      <EchartsComponent {option} />
+
+     ```
+
 1. Creating the chart
    - Configure ECharts options, for reference use echarts own documentation: [ECharts Docs](https://echarts.apache.org/en/option.html#title)
      ```typescript
@@ -64,21 +83,44 @@ If you wish to contribute to the visual components, please read the general inst
        //Other options...
      };
      ```
-   - Then use the createChart method to create the chart with these options
+   - Then use the EchartsComponent.svelte to create the chart and pass the option as a prop.
      ```typescript
-     createChart(id, option);
-     // You can also assign the created chart to a variable if you want to use it later.
-     const chart: echarts.EChartsType = createChart(id, option);
-     chart.setOption({
-       //Some new options...
-     });
+      <EchartsComponent
+        {option}
+        // Other (optional) props...
+      />
      ```
+   - If you want to use the created echart instance, you should bind it to a variable
+     ```typescript
+     <EchartsComponent
+       {option}
+       bind:chart
+       // Other (optional) props...
+     />
+     ```
+     - This will allow you to use the instance in the new component:
+       ```typescript
+       let chart: echarts.EChartsType;
+       ```
 1. Configuring the svelte component
-   - Remember to add the component in your main page file:
-     ```html
-     <MyComponent id="myComponent" title="My chart" data="{exampleData}" />
+
+   - Add the props that you want to use in the component
+
+     ```typescript
+     export let colors: string[];
+     export let values: number[][];
+     export let selectedIndices: number[] = [];
+     export let highlightedIndex: number | undefined = undefined;
+     export let maxSelections: number | undefined = undefined;
+     export let disableAnimation = false;
      ```
-1. Data processing
+
+   - Remember to add the component in your main svelte file:
+     ```html
+     <MyComponent colors="{colors}" {values} disableAnimation="{true}" />
+     ```
+
+1. Data processing TODO: Instructions are not up to date
 
    - When getting the data from solutionData, it usually needs to be processed somehow to create the chart's series and names dynamically.
    - For example making the series dynamically.
