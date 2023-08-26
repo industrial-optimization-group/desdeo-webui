@@ -111,6 +111,20 @@
     bind:disableInteraction
   />
 </div>
+<div style="width: 70vh; height: 20vh; min-height: 100px; margin-top: 2em;">
+  <NautilusNavigationBar
+    higherBound={5}
+    lowerBound={0}
+    yAxisMax={6}
+    yAxisMin={-2}
+    iterations={10}
+    bind:currentIterationIndex
+    bind:selectedValue
+    bind:selectedBoundValue={boundValue}
+    uncertaintyBounds={exampleData.uncertainty[0]}
+    bind:disableInteraction
+  />
+</div>
 <!-- Button for simulating iterating -->
 <div style="margin-top: 2em">
   <button

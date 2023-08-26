@@ -41,6 +41,8 @@
   export let selectedBoundValue = lowerBound;
   export let uncertaintyBounds: number[][];
   export let disableInteraction = true;
+  export let yAxisMax: number | undefined = undefined;
+  export let yAxisMin: number | undefined = undefined;
   // Local variables
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
@@ -138,8 +140,8 @@
       // Get the max and min values from the current objective uncertainties and set them as the max and min values for the y-axis.
       yAxis: {
         // boundaryGap:["20%","20%"],
-        max: higherBound,
-        min: "dataMin",
+        max: yAxisMax ? yAxisMax : higherBound,
+        min: yAxisMin ? yAxisMin : "dataMin",
         // max: Math.ceil(upperBound) ,
         // min: Math.floor(
         //   Math.min(
