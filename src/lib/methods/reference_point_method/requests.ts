@@ -1,6 +1,6 @@
 import type { Backend, Problem, Point } from "$lib/api";
 import { z } from "zod";
-import { PointS } from "$lib/api";
+import { PointS, is_point_of_length } from "$lib/api";
 
 /**
  * Sets up the method with the problem.
@@ -25,7 +25,7 @@ export async function start(
   problem: Problem
 ): Promise<StartResponse> {
   const response = await backend.with_instance().get("/method/control");
-  return startResponse(problem.n_objectives).parse(response.data);
+  return startResponseS(problem.objectives.length).parse(response.data);
 }
 
 /**
@@ -48,7 +48,7 @@ export async function iterate(
       reference_point,
     },
   });
-  return iterateResponse(problem.n_objectives).parse(response.data);
+  return iterateResponseS(problem.objectives.length).parse(response.data);
 }
 
 /**
@@ -59,8 +59,7 @@ export function is_valid_reference_point(
   problem: Problem,
   value: unknown
 ): value is Point {
-  const { success } = PointS.length(problem.n_objectives).safeParse(value);
-  return success;
+  return is_point_of_length(value, problem.objectives.length);
 }
 
 //
@@ -69,12 +68,12 @@ export function is_valid_reference_point(
 // The following section contains schemas for the expected data formats
 // of the backend server's responses.
 //
-// TODO: Is there a nice way to create the basic schemas and the refined
+// TODO: Is there a nice way to create the base schemas and the refined
 // schemas without code duplication?
 //
 
 /** Response to the "start method" request. */
-const StartResponse = z
+const StartResponseS = z
   .object({
     response: z
       .object({
@@ -90,7 +89,7 @@ const StartResponse = z
  * Creates a refinement of the `StartResponse` schema with the point length
  * restricted to `n`.
  */
-function startResponse(n: number) {
+function startResponseS(n: number) {
   return z
     .object({
       response: z
@@ -105,7 +104,7 @@ function startResponse(n: number) {
 }
 
 /** Response to the "iterate method" request. */
-const IterateResponse = z
+const IterateResponseS = z
   .object({
     response: z
       .object({
@@ -121,7 +120,7 @@ const IterateResponse = z
  * Creates a refinement of the `IterateResponse` schema with the point length
  * restricted to `n`.
  */
-function iterateResponse(n: number) {
+function iterateResponseS(n: number) {
   return z
     .object({
       response: z
@@ -135,5 +134,5 @@ function iterateResponse(n: number) {
     .strict();
 }
 
-export type StartResponse = z.infer<typeof StartResponse>;
-export type IterateResponse = z.infer<typeof IterateResponse>;
+export type StartResponse = z.infer<typeof StartResponseS>;
+export type IterateResponse = z.infer<typeof IterateResponseS>;

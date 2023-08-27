@@ -1,43 +1,25 @@
 <!--
 @component
-A component for selecting a reference point for the given objectives with
-horizontal bars.
+A component for selecting a reference point with horizontal bars.
 
-NOTE: Not fully functional.
+NOTE: The component will MODIFY the `preference` array instead of returning
+a new array.
+
+NOTE: The user of the component is responsible for verifying that
+`objective_names`, `lower_bounds`, `upper_bounds`, `preference`,
+`previous_preference` and `selected_solution` have the same length,
+if they are defined.
 -->
 <script lang="ts">
-  import type { BoundedObjective, Point } from "$lib/api";
-  import { is_point } from "$lib/api";
-  import HorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBarWithInputs.svelte";
+  export let objective_names: string[];
+  export let lower_bounds: number[];
+  export let upper_bounds: number[];
+  export let preference: (number | undefined)[];
+  export let previous_preference: number[] | undefined = undefined;
+  export let selected_solution: number[] | undefined = undefined;
+
+  import HorizontalBarWithInputs from "$lib/components/visual/preference-interaction/HorizontalBarWithInputs.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
-
-  export let objectives: BoundedObjective[];
-  export let selected_solution: Point | undefined = undefined;
-  export let previous_preference: Point | undefined = undefined;
-  export let reference_point: Point | undefined = undefined;
-
-  //
-  // TODO: This should be reactive because it depends on the length
-  // of `objectives`. I was not able to get reactivity working.
-  //
-  let selected_preference: (number | undefined)[] = objectives.map(
-    () => undefined
-  );
-
-  $: if (is_point(selected_preference)) {
-    reference_point = [...selected_preference];
-  }
-
-  $: if (selected_solution && selected_solution.length !== objectives.length) {
-    throw new Error("`selected_solution` has invalid length");
-  }
-
-  $: if (
-    previous_preference &&
-    previous_preference.length !== objectives.length
-  ) {
-    throw new Error("`previous_preference` has invalid length");
-  }
 </script>
 
 <div class="flex flex-col gap-4">
@@ -46,15 +28,15 @@ NOTE: Not fully functional.
     horizontal bar or the input box. The input box can be used to enter a value
     outside the range of the horizontal bar.
   </div>
-  {#each objectives as { name, min, max }, j}
-    <HorizontalBar
-      barName={name}
-      lowerBound={min}
-      higherBound={max}
-      solutionValue={selected_solution ? selected_solution[j] : undefined}
+  {#each objective_names as objective_name, j}
+    <HorizontalBarWithInputs
+      barName={objective_name}
+      lowerBound={lower_bounds[j]}
+      higherBound={upper_bounds[j]}
       previousValue={previous_preference ? previous_preference[j] : undefined}
+      solutionValue={selected_solution ? selected_solution[j] : undefined}
       barColor={colorPalette[j % colorPalette.length]}
-      bind:selectedValue={selected_preference[j]}
+      bind:selectedValue={preference[j]}
     />
   {/each}
 </div>

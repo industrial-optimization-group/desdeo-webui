@@ -11,7 +11,11 @@ export const backend: Backend = {
   with_instance: with_access_token,
 };
 
-// The API URL
+//
+// The backend URL
+//
+// TODO: Move this to a configuration file.
+//
 const baseURL = "http://localhost:5000";
 
 /** A missing token is represented by `undefined`. */
@@ -74,11 +78,6 @@ export enum LoginStatus {
   LoggedInAsGuest = "LOGGED_IN_AS_GUEST",
 }
 
-/** The current login status. */
-// export const logged_in = derived(state.refresh_token, ($refresh_token) => {
-//   return $refresh_token !== undefined;
-// });
-
 /** See {@link state} for how the login status is determined. */
 export const login_status = derived(
   [state.refresh_token, state.username],
@@ -113,8 +112,10 @@ function with_access_token() {
   });
 }
 
+//
 // TODO: Authorization error should also invalidate the access token
 // if it exists?
+//
 function with_refresh_token() {
   return axios.create({
     baseURL,
@@ -131,7 +132,8 @@ function with_refresh_token() {
  * token, the refresh token and the username. The caller is responsible for
  * invalidating the old tokens before calling this function.
  *
- * @returns The message returned by the server.
+ * @returns The message returned by the server. The tokens are not included to
+ *   prevent leaking.
  */
 export function login(username: string, password: string) {
   return without_token()
@@ -302,16 +304,131 @@ export function register_account(username: string, password: string) {
     });
 }
 
+//
+// NOTE: Requires a version of the backend that sends the problems as a list
+// rather than a record. This format is easier to handle and more useful in
+// general.
+//
+// NOTE: Requires a version of the backend that doesn't send ideal and nadir
+// points as part of the problem data. See `BackendProblemS` for more
+// information.
+//
+export async function get_all_problems(): Promise<Problem[]> {
+  const response = await with_access_token().get("/problem/access/all");
+  const problems = z.array(BackendProblemS).parse(response.data);
+  return problems.map(transform_problem);
+}
+
+//
+// NOTE: Requires a version of the backend that doesn't send ideal and nadir
+// points as part of the problem data. See `BackendProblemS` for more
+// information.
+//
+// TODO: Is this function used anywhere? Does this access point actually send
+// the data in the `BackendProblem` format?
+//
+export async function get_problem(problem_id: number): Promise<Problem> {
+  const response = await with_access_token().post("/problem/access", {
+    problem_id,
+  });
+  const problem = BackendProblemS.parse(response.data);
+  return transform_problem(problem);
+}
+
+//
+// Schemas and types
+//
+
 export const PointS = z.array(z.number().finite());
 export type Point = z.infer<typeof PointS>;
+
+/**
+ * Problem data in the format provided by the backend.
+ *
+ * NOTE: Does not include ideal and nadir points. I needed to remove these from
+ * the backend as a quick fix, because infinite values were sent as invalid JSON
+ * that caused the JSON parser to throw an error.
+ *
+ * A possible short-term solution might be to only include the ideal and nadir
+ * points in the response when they are finite. A long-term solution could be to
+ * handle non-numeric values in the same way as MathJSON does.
+ *
+ * TODO: Validate that all the lengths match.
+ */
+const BackendProblemS = z
+  .object({
+    problem_id: z.number(),
+    problem_name: z.string(),
+    problem_type: z.string(),
+    objective_names: z.array(z.string()),
+    minimize: z.array(
+      z.union([
+        z.literal(1).transform(() => true),
+        z.literal(-1).transform(() => false),
+      ])
+    ),
+    n_objectives: z.number(),
+    variable_names: z.array(z.string()),
+    n_variables: z.number(),
+    n_constraints: z.number(),
+  })
+  .strict();
+
+type BackendProblem = z.infer<typeof BackendProblemS>;
+
+/**
+ * Problem data in the format used by the frontend.
+ *
+ * @property type - It is unclear what this field represents. It is included in
+ *   the type because the backend makes it available.
+ */
+export type Problem = {
+  id: number;
+  name: string;
+  type: string;
+  objectives: Objective[];
+  variables: Variable[];
+  n_constraints: number;
+};
+
+/**
+ * @property minimize - `true` if the goal is to minimize, `false` if the goal
+ *   is to maximize.
+ */
+export type Objective = {
+  name: string;
+  minimize: boolean;
+};
+
+export type Variable = {
+  name: string;
+};
+
+//
+// Utility functions
+//
+
+/** Transforms problem data from the backend format to the frontend format. */
+function transform_problem(problem: BackendProblem): Problem {
+  return {
+    id: problem.problem_id,
+    name: problem.problem_name,
+    type: problem.problem_type,
+    objectives: problem.objective_names.map((name, j) => ({
+      name,
+      minimize: problem.minimize[j],
+    })),
+    variables: problem.variable_names.map((name) => ({ name })),
+    n_constraints: problem.n_constraints,
+  };
+}
 
 /**
  * Checks whether `value` is a finite point in the sense that it is an (possibly
  * empty) array of finite numbers.
  */
 export function is_point(value: unknown): value is Point {
-  const { success } = PointS.safeParse(value);
-  return success;
+  return PointS.safeParse(value).success;
 }
 
 /**
@@ -319,110 +436,5 @@ export function is_point(value: unknown): value is Point {
  * is an array of length `n` of finite numbers.
  */
 export function is_point_of_length(value: unknown, n: number): value is Point {
-  const { success } = PointS.length(n).safeParse(value);
-  return success;
-}
-
-/** Problem data in the format provided by the backend */
-type _Problem = {
-  problem_id: number;
-  problem_name: string;
-  problem_type: string;
-  objective_names: string[];
-  minimize: number[];
-  n_objectives: number;
-  variable_names: string[];
-  n_variables: number;
-  n_constraints: number;
-};
-
-/** Problem data in the format used by the frontend */
-export type UnboundedProblem = {
-  id: number;
-  name: string;
-  type: string;
-  objectives: UnboundedObjective[];
-  n_objectives: number;
-  variables: Variable[];
-  n_variables: number;
-  n_constraints: number;
-};
-
-export type BoundedProblem = {
-  id: number;
-  name: string;
-  type: string;
-  objectives: BoundedObjective[];
-  n_objectives: number;
-  variables: Variable[];
-  n_variables: number;
-  n_constraints: number;
-};
-
-export type UnboundedObjective = {
-  name: string;
-  minimize: boolean;
-};
-
-export type BoundedObjective = {
-  name: string;
-  minimize: boolean;
-  min: number;
-  max: number;
-};
-
-export type Variable = {
-  name: string;
-};
-
-export type Problem = UnboundedProblem | BoundedProblem;
-export type Objective = UnboundedObjective | BoundedObjective;
-
-/** Transforms problem data from the backend format to the frontend format */
-function transform_problem(problem: _Problem): UnboundedProblem {
-  const objectives = extract_objectives(problem);
-  const variables = extract_variables(problem);
-
-  return {
-    id: problem.problem_id,
-    name: problem.problem_name,
-    type: problem.problem_type,
-    objectives: objectives,
-    n_objectives: objectives.length,
-    variables: variables,
-    n_variables: variables.length,
-    n_constraints: problem.n_constraints,
-  };
-}
-
-function extract_objectives(problem: _Problem): Objective[] {
-  return problem.objective_names.map((name, i) => ({
-    name,
-    minimize: problem.minimize[i] === 1,
-  }));
-}
-
-function extract_variables(problem: _Problem): Variable[] {
-  return problem.variable_names.map((name) => ({
-    name,
-  }));
-}
-
-// TODO: Currently requires a batched version of the backend.
-export function get_all_problems(): Promise<Problem[]> {
-  return with_access_token()
-    .get("/problem/access/all")
-    .then((response) => {
-      // TODO: Validate data
-      return (<_Problem[]>response.data).map(transform_problem);
-    });
-}
-
-export function get_problem(problem_id: number): Promise<Problem> {
-  return with_access_token()
-    .post("/problem/access", { problem_id })
-    .then((response) => {
-      // TODO: Validate data
-      return transform_problem(response.data);
-    });
+  return PointS.length(n).safeParse(value).success;
 }
