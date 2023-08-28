@@ -1,14 +1,11 @@
-<script lang="ts">
-  import { login_status, LoginStatus } from "$lib/api";
-  import { goto } from "$app/navigation";
-
-  if ($login_status !== LoginStatus.LoggedOut) {
-    //
-    // The root page currently has no content to show, so we redirect
-    // logged in users to /saved_problems
-    //
-    goto("/saved_problems");
-  }
-</script>
-
-<h1>Root page</h1>
+<div class="flex flex-col gap-4">
+  <h1 class="font-bold">Root page</h1>
+  <p class="max-w-prose">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+    non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </p>
+</div>
