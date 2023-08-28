@@ -11,12 +11,12 @@ TODO: Disable the UI while interacting with the backend.
   import { backend } from "$lib/api";
   import type { Problem } from "$lib/api";
 
-  import Card from "../main/Card.svelte";
   import ReferencePointSelect from "../util/undecorated/ReferencePointSelect.svelte";
   import ProblemDetails from "../main/ProblemDetails.svelte";
-  import MethodLayout from "../util/undecorated/MethodLayout.svelte";
-  import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
   import Visualizations from "$lib/components/util/undecorated/Visualizations.svelte";
+  import MethodLayout from "../util/undecorated/MethodLayout.svelte";
+  import Card from "../main/Card.svelte";
+  import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
 
   /** The problem to solve. */
   export let problem: Problem;
@@ -31,6 +31,10 @@ TODO: Disable the UI while interacting with the backend.
 
   // Stores the input values.
   let preference: (number | undefined)[];
+
+  $: if (preference) {
+    console.log("Preference changed");
+  }
 
   // TODO: Handle errors.
   async function handle_initialize() {
@@ -65,7 +69,10 @@ TODO: Disable the UI while interacting with the backend.
     {:else if _.is_initialized(method)}
       <div>Please select a reference point and then click "iterate".</div>
       <div class="flex gap-4">
-        <button class="btn variant-filled" on:click={handle_iterate}
+        <button
+          class="btn variant-filled"
+          on:click={handle_iterate}
+          disabled={!_.is_valid_reference_point(method, preference)}
           >Iterate</button
         >
       </div>
@@ -75,9 +82,16 @@ TODO: Disable the UI while interacting with the backend.
         wish to continue.
       </div>
       <div class="flex gap-4">
-        <button class="btn variant-filled" on:click={handle_iterate}
+        <button
+          class="btn variant-filled"
+          on:click={handle_iterate}
+          disabled={!_.is_valid_reference_point(method, preference)}
           >Iterate</button
         >
+        <!-- TODO:
+            - Add proper buttons to the visualizations component.
+            - Make grid mode available only in maximized mode.
+        -->
         <button
           class="anchor"
           on:click={() => {
@@ -108,7 +122,7 @@ TODO: Disable the UI while interacting with the backend.
           objective_names={_.objective_names(method)}
           lower_bounds={_.lower_bounds(method)}
           upper_bounds={_.upper_bounds(method)}
-          {preference}
+          bind:preference
         />
       </Card>
       <ProblemDetails {problem} />
@@ -124,7 +138,7 @@ TODO: Disable the UI while interacting with the backend.
             objective_names={_.objective_names(method)}
             lower_bounds={_.lower_bounds(method)}
             upper_bounds={_.upper_bounds(method)}
-            {preference}
+            bind:preference
             previous_preference={method.previous_preference}
             selected_solution={method.current_solution}
           />
