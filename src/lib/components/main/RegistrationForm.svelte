@@ -1,4 +1,8 @@
 <script lang="ts">
+  //
+  // TODO: The registration form could be merged with the login form.
+  //
+
   import { register_account, login_as_guest } from "$lib/api";
   import { goto } from "$app/navigation";
   import { toastStore } from "@skeletonlabs/skeleton";
@@ -31,7 +35,10 @@
       });
   }
 
-  // TODO: This function is repeated in the login form component
+  //
+  // TODO: This function is repeated in the login form component. It could be
+  // moved to somewhere, or the component could be merged.
+  //
   function handleGuestLogin() {
     login_as_guest()
       .then(() => {

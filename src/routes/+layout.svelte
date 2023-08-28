@@ -1,8 +1,11 @@
 <script>
   //
-  // The selected theme
+  // The main theme
   //
-  // TODO: Implement the design with a custom theme.
+  // TODO: Implement the design with a custom theme. It is probably best to
+  // wait until v2 of Skeleton is published, since there will be changes to
+  // the theming system.
+  //
   // See https://www.skeleton.dev/docs/generator.
   //
   import "@skeletonlabs/skeleton/themes/theme-hamlindigo.css";
@@ -28,8 +31,8 @@
 </script>
 
 <!--
-  -- The drawer feature uses a singleton pattern, so the drawer component should
-  -- not be used anywhere but here. 
+  -- NOTE: The drawer feature uses a singleton pattern, so the drawer component
+  -- should not be used anywhere but here. 
   -->
 <Drawer position="bottom">
   <div class="min-h-full p-4">
@@ -55,8 +58,8 @@
 </Drawer>
 
 <!--
-  -- The toast feature uses a singleton pattern, so the toast component should
-  -- not be used anywhere but here. 
+  -- NOTE: The toast feature uses a singleton pattern, so the toast component
+  -- should not be used anywhere but here. 
   --
   -- NOTE: The dismiss button's styling should be kept in sync with the general
   -- close button's styling (see `CloseButton.svelte`).
