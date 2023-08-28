@@ -114,6 +114,7 @@ function without_token() {
   return axios.create({ baseURL });
 }
 
+// TODO: Add middleware for token renewal on authorization error.
 function with_access_token() {
   return axios.create({
     baseURL,
@@ -124,7 +125,7 @@ function with_access_token() {
 }
 
 //
-// TODO: Authorization error should also invalidate the access token
+// TODO: Should authorization error also invalidate the access token
 // if it exists?
 //
 function with_refresh_token() {
