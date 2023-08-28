@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Table, tableMapperValues } from "@skeletonlabs/skeleton";
   import { problem_has_finite_bounds } from "$lib/api";
+  import { z } from "zod";
   import type { Problem } from "$lib/api";
   import type { TableSource } from "@skeletonlabs/skeleton";
 
@@ -32,16 +33,22 @@
       "has_finite_bounds",
     ]),
 
-    // The data returned when interactive is enabled and a row is clicked.
+    // The data returned when a row is clicked.
     meta: tableMapperValues(problems, ["id"]),
   };
 
-  // TODO: Specify a type for `meta`
-  function handle_selection(meta) {
-    const problem_id = meta.detail[0];
-    selected_problem = problems.find((problem) => {
-      return problem.id === problem_id;
-    });
+  //
+  // The `selected` event of the table has a detail field, which is a tuple
+  // of the values specified above. In this case the tuple consists of the
+  // `id` value of the problem, which is a number.
+  //
+  const schema = z.object({
+    detail: z.tuple([z.number()]),
+  });
+
+  function handle_selection(meta: unknown) {
+    const problem_id = schema.parse(meta).detail[0];
+    selected_problem = problems.find(({ id }) => id === problem_id);
   }
 </script>
 
