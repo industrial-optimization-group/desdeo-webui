@@ -470,3 +470,11 @@ export function is_point(value: unknown): value is Point {
 export function is_point_of_length(value: unknown, n: number): value is Point {
   return PointS.length(n).safeParse(value).success;
 }
+
+/**
+ * Checks whether the ideal and nadir points of the problem contain only finite
+ * values.
+ */
+export function problem_has_finite_bounds(problem: Problem) {
+  return is_point(problem.ideal_point) && is_point(problem.nadir_point);
+}
