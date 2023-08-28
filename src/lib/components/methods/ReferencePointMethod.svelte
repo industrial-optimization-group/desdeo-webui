@@ -32,10 +32,6 @@ TODO: Disable the UI while interacting with the backend.
   // Stores the input values.
   let preference: (number | undefined)[];
 
-  $: if (preference) {
-    console.log("Preference changed");
-  }
-
   // TODO: Handle errors.
   async function handle_initialize() {
     method = await _.initialize(method);
