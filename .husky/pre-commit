@@ -11,6 +11,7 @@
 npx lint-staged || exit 1
 
 #
-# TODO: Uncomment afer we have fixed the current errors
+# Runs svelte-check on the entire project. It is not possible to run this on
+# just the staged filed.
 #
-# npm run check || exit 1
+npm run check || exit 1
