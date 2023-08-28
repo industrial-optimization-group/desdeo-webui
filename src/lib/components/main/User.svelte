@@ -9,10 +9,9 @@
   }
 </script>
 
-<div class="flex gap-1">
+<div class="flex gap-2">
   {#if $login_status === LoginStatus.LoggedOut}
     <span>Not logged in</span>
-    <span>/</span>
     <span><a class="anchor" href="/login">Log in</a></span>
   {:else}
     {#if $login_status === LoginStatus.LoggedInAsUser}
@@ -20,7 +19,6 @@
     {:else}
       <span>Logged in as a guest</span>
     {/if}
-    <span>/</span>
-    <span><button class="anchor" on:click={handleLogout}>Log out</button></span>
+    <button class="anchor" on:click={handleLogout}>Log out</button>
   {/if}
 </div>
