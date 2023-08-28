@@ -1,8 +1,10 @@
 <script lang="ts">
-  import type { Problem } from "$lib/api";
+  import { login_status, LoginStatus, type Problem } from "$lib/api";
   import { getContext } from "svelte";
-  let desdeo_problems: Problem[] = getContext("desdeo_problems");
+
   export let selected_problem: Problem | undefined = undefined;
+
+  let desdeo_problems: Problem[] = getContext("desdeo_problems");
 
   import { TabGroup, Tab } from "@skeletonlabs/skeleton";
   import ProblemList from "./ProblemList.svelte";
@@ -17,7 +19,9 @@
 </script>
 
 <TabGroup>
-  <Tab bind:group={tab} name="saved" value={0}>Your saved problems</Tab>
+  {#if $login_status === LoginStatus.LoggedInAsUser}
+    <Tab bind:group={tab} name="saved" value={0}>Your saved problems</Tab>
+  {/if}
   <Tab bind:group={tab} name="provided" value={1}
     >Problems provided by DESDEO</Tab
   >
@@ -25,7 +29,7 @@
   <svelte:fragment slot="panel">
     <div class="grid grid-cols-2 gap-10">
       <div>
-        {#if tab === 0}
+        {#if tab === 0 && $login_status === LoginStatus.LoggedInAsUser}
           Saving problems is not yet supported. Please take a look at the
           <button
             class="anchor"
