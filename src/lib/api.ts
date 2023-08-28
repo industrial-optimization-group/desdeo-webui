@@ -1,5 +1,15 @@
+//
+// TODO: Rename this module to `backend_client.ts`?
+//
+
 import axios, { type AxiosInstance } from "axios";
 import { z } from "zod";
+
+//
+// TODO: Replace anything that depends on Svelte with something else to make
+// the module reusable elsewhere. Currently only the state uses Svelte stores.
+// These stores could be replaced with RxJS observables.
+//
 import { derived, writable, get, readonly } from "svelte/store";
 
 /** An interface for accessing a backend server. */
@@ -7,6 +17,12 @@ export interface Backend {
   with_instance: () => AxiosInstance;
 }
 
+//
+// Export this module as a backend instance.
+//
+// TODO: It would be nice to have a function that creates new backend
+// instances.
+//
 export const backend: Backend = {
   with_instance: with_access_token,
 };
@@ -44,9 +60,6 @@ const state = {
 };
 
 function set_access_token(token: Token) {
-  if (token === "") {
-    throw new Error("Invalid token (empty string)");
-  }
   state.access_token.set(token);
 }
 
@@ -55,9 +68,6 @@ function get_access_token() {
 }
 
 function set_refresh_token(token: Token) {
-  if (token === "") {
-    throw new Error("Invalid token (empty string)");
-  }
   state.refresh_token.set(token);
 }
 
@@ -66,12 +76,13 @@ function get_refresh_token() {
 }
 
 function set_username(username: string | undefined) {
-  if (username === "") {
-    throw new Error("Invalid username (empty string)");
-  }
   state.username.set(username);
 }
 
+//
+// TODO: It would be better to use a tagged union with the user name included
+// in the status.
+//
 export enum LoginStatus {
   LoggedOut = "LOGGED_OUT",
   LoggedInAsUser = "LOGGED_IN_AS_USER",
@@ -132,10 +143,15 @@ function with_refresh_token() {
  * token, the refresh token and the username. The caller is responsible for
  * invalidating the old tokens before calling this function.
  *
- * @returns The message returned by the server. The tokens are not included to
- *   prevent leaking.
+ * @returns The message returned by the backend server. The tokens are not
+ *   included.
+ *
+ *   TODO: Validate response data.
  */
-export function login(username: string, password: string) {
+export function login(
+  username: string,
+  password: string
+): Promise<{ message: string }> {
   return without_token()
     .post("/login", {
       username,
@@ -162,16 +178,18 @@ export function login(username: string, password: string) {
 /**
  * Attempts to log in as a guest user.
  *
- * @returns The message returned by the server.
+ * @returns The message returned by the backend server. The tokens are not
+ *   included.
+ *
+ *   TODO: Validate response data.
  */
-export function login_as_guest() {
+export function login_as_guest(): Promise<{ message: string }> {
   return without_token()
     .get("/guest/create")
     .then((response) => {
       set_access_token(response.data.access_token);
       set_refresh_token(response.data.refresh_token);
       set_username(undefined);
-
       return {
         message: <string>response.data.message,
       };
@@ -192,23 +210,19 @@ export function login_as_guest() {
  * invalidated token is cleared.
  *
  * Does effectively nothing if not logged in.
- *
- * @param ignore_errors
  */
-export async function logout(ignore_errors = true) {
+export async function logout(ignore_errors = true): Promise<void> {
   //
-  // We're invalidating the tokens sequentially rather than concurrently so that
-  // possible error situations can be handled correctly. The refresh token is
-  // invalidated first because it can be used to get a new access token.
+  // The refresh token is invalidated first because it can be used to get a new
+  // access token.
   //
   await invalidate_refresh_token(ignore_errors);
   await invalidate_access_token(ignore_errors);
-
   set_username(undefined);
 }
 
 /**
- * Invalidates the current access token and clears it from the state.
+ * Invalidates the access token and clears it from the state.
  *
  * See {@link logout} for comments about possible failure.
  *
@@ -218,24 +232,25 @@ export async function logout(ignore_errors = true) {
  *
  * Does nothing if an access token doesn't exist.
  *
- * @param ignore_errors
+ * TODO: Validate response data.
  */
-async function invalidate_access_token(ignore_errors = true) {
+async function invalidate_access_token(ignore_errors = true): Promise<void> {
   if (get_access_token() === undefined) {
     return;
   }
   try {
     await with_access_token().post("/logout/access");
-  } catch (error) {
+    //
+  } catch (err) {
     if (!ignore_errors) {
-      throw error;
+      throw err;
     }
   }
   set_access_token(undefined);
 }
 
 /**
- * Invalidates the current refresh token and clears it from the state.
+ * Invalidates the refresh token and clears it from the state.
  *
  * See {@link logout} for comments about possible failure.
  *
@@ -245,23 +260,31 @@ async function invalidate_access_token(ignore_errors = true) {
  *
  * Does nothing if a refresh token doesn't exist.
  *
- * @param ignore_errors
+ * TODO: Validate response data.
  */
-async function invalidate_refresh_token(ignore_errors = true) {
+async function invalidate_refresh_token(ignore_errors = true): Promise<void> {
   if (get_refresh_token() === undefined) {
     return;
   }
   try {
     await with_refresh_token().post("/logout/refresh");
-  } catch (error) {
+    //
+  } catch (err) {
     if (!ignore_errors) {
-      throw error;
+      throw err;
     }
   }
   set_refresh_token(undefined);
 }
 
-export function refresh_access_token() {
+/**
+ * Attempts to renew the access token.
+ *
+ * TODO: Validate response data.
+ *
+ * TODO: Rename to `renew_access_token`?
+ */
+export function refresh_access_token(): Promise<void> {
   return with_refresh_token()
     .post("/token/refresh")
     .then((response) => {
@@ -278,9 +301,13 @@ export function refresh_access_token() {
  *
  * The new user account is automatically logged in by the server.
  *
- * @returns The message returned by the server.
+ * @returns The message returned by the backend server. The tokens are not
+ *   included.
  */
-export function register_account(username: string, password: string) {
+export function register_account(
+  username: string,
+  password: string
+): Promise<{ message: string }> {
   return without_token()
     .post("/registration", {
       username,
@@ -325,6 +352,9 @@ export async function get_problem(problem_id: number): Promise<Problem> {
 
 //
 // Schemas and types
+//
+// TODO: Rename the `PointS` schema to `FinitePointS` and add a new `PointS`
+// schema that allows infinite values?
 //
 
 export const PointS = z.array(z.number().finite());
