@@ -50,6 +50,7 @@ TODO: Disable the UI while interacting with the backend.
 
   let visualizations_maximized = false;
   let gridded_visualizations = false;
+  let visualizations_tab = 0;
 </script>
 
 <div class="flex flex-col gap-10">
@@ -142,7 +143,9 @@ TODO: Disable the UI while interacting with the backend.
       </div>
       <div slot="visualizations">
         <Card>
-          <svelte:fragment slot="header">Visualizations</svelte:fragment>
+          <svelte:fragment slot="header"
+            >Solution visualizations</svelte:fragment
+          >
           <Visualizations
             names={_.objective_names(method)}
             values={[method.current_solution, ...method.additional_solutions]}
@@ -152,11 +155,18 @@ TODO: Disable the UI while interacting with the backend.
               ({ minimize }) => minimize
             )}
             grid_mode={gridded_visualizations}
+            max_selections={1}
+            bind:tab={visualizations_tab}
           />
         </Card>
       </div>
       <div slot="solutions">
-        <Card>The solutions table will be here.</Card>
+        <Card>
+          <svelte:fragment slot="header">Solutions</svelte:fragment>
+          <div class="flex flex-col gap-2">
+            <span>The solutions table will be here.</span>
+          </div>
+        </Card>
       </div>
     </MethodLayout>
   {/if}
