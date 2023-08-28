@@ -15,7 +15,7 @@
   // import BasicTable from "$lib/components/visual/BasicTable.svelte";
   import type { SolutionData } from "$lib/components/visual/types";
   // import ParallelCoordinatePlot from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
-  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],

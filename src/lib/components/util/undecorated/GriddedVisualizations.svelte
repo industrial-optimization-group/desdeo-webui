@@ -26,7 +26,7 @@ length.
   $: bounds = transform_bounds(lower_bounds, upper_bounds);
 
   // Import the visualizations here.
-  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
   import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
   // import { colorPalette } from "$lib/components/visual/constants";
 </script>

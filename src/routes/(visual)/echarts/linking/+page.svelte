@@ -15,7 +15,7 @@
   import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
   import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
-  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
+  import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],

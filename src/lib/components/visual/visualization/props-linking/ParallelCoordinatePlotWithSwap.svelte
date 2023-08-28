@@ -29,7 +29,7 @@
   import type { EChartOption } from "echarts";
   import { getAxisY, getAxisX } from "$lib/components/visual/helperFunctions";
   import { onMount } from "svelte";
-  import ParallelCoordinatePlotBase from "./ParallelCoordinatePlotBase.svelte";
+  import ParallelCoordinatePlotBase from "./ParallelCoordinatePlot.svelte";
   // Props for this component:
   export let values: number[][];
   export let lowerIsBetter: boolean[] = [];

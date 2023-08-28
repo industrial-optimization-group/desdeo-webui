@@ -13,7 +13,7 @@ The visual folder contains mainly visualization components, which use Apache ECh
 
 ### Nautilus Navigation Bar
 
-![nautilus-navigation-bar](./resources/)
+![nautilus-navigation-bar](./resources/nautilusBar.png)
 
 ### Horizontal and Nautilus bars with inputs
 
@@ -74,23 +74,19 @@ TODO: add nautilus bar wiht inputs
 
 ## How to use the components
 
-To add a component to your HTML, use it as a normal svelte component with props. So if you wish to add a parallel coordinate plot, first import it:
+To add a component to your HTML, use it as a normal svelte component with props. The props are defined in the JSDOC format for each component. For example, if you wish to add a parallel coordinate plot, first import it:
 
 ```typescript
-import ParallelAxis from "$lib/components/visual/ParallelAxis.svelte";
+import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
 ```
 
-Then add the HTML tag with the props:
+Then add the component as a HTML tag and pass the data as props:
 
 ```html
-<ParallelAxis
-  id="parallelAxis"
-  title="Parallel Axis chart"
-  data="{exampleData}"
-/>
+<ParallelCoordinatePlot {values} names={["Objective1", "Objective2",
+"Objective3", "Objective4"]} ranges={[ { min: 0, max: 10 }, { min: -2.324, max:
+10 }, { min: 0, max: 10 }, { min: undefined, max: undefined }, ]} />
 ```
-
-At the moment, the data should be given as `solutionData` type. All the DESDEO methods will give the data in this format, so it will be easy to use the data when using DESDEOs methods.
 
 ## How to make your own component
 
@@ -163,24 +159,3 @@ If you wish to contribute to the visual components, please read the general inst
      ```html
      <MyComponent colors="{colors}" {values} disableAnimation="{true}" />
      ```
-
-1. Data processing TODO: Instructions are not up to date
-
-   - When getting the data from solutionData, it usually needs to be processed somehow to create the chart's series and names dynamically.
-   - For example making the series dynamically.
-
-     ```typescript
-     let seriesData: { value: number[]; name: string }[] = [];
-     for (let i = 0; i < values.length; i++) {
-       seriesData.push({ value: values[i], name: "Solution " + (i + 1) });
-     }
-     ```
-
-     - This could be the used in the options as follows
-       ```typescript
-       const option: echarts.EChartOption = {
-         title: title,
-         //Other options...
-         series: seriesdata,
-       };
-       ```

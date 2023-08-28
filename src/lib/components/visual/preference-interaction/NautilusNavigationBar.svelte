@@ -44,7 +44,7 @@
   export let yAxisMax: number | undefined = undefined;
   export let yAxisMin: number | undefined = undefined;
   // Local variables
-  let chartDiv: HTMLElement;
+  let chartDiv: HTMLDivElement;
   let chart: echarts.EChartsType;
   let lastPosition: number;
   let objShape: number[][] = [];
@@ -694,7 +694,7 @@
   }
   onMount(() => {
     updateData();
-    chart = echarts.init(chartDiv, null, {
+    chart = echarts.init(chartDiv, undefined, {
       renderer: "svg",
     });
     addNautilusBar();
