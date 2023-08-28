@@ -309,24 +309,12 @@ export function register_account(username: string, password: string) {
 // rather than a record. This format is easier to handle and more useful in
 // general.
 //
-// NOTE: Requires a version of the backend that doesn't send ideal and nadir
-// points as part of the problem data. See `BackendProblemS` for more
-// information.
-//
 export async function get_all_problems(): Promise<Problem[]> {
   const response = await with_access_token().get("/problem/access/all");
   const problems = z.array(BackendProblemS).parse(response.data);
   return problems.map(transform_problem);
 }
 
-//
-// NOTE: Requires a version of the backend that doesn't send ideal and nadir
-// points as part of the problem data. See `BackendProblemS` for more
-// information.
-//
-// TODO: Is this function used anywhere? Does this access point actually send
-// the data in the `BackendProblem` format?
-//
 export async function get_problem(problem_id: number): Promise<Problem> {
   const response = await with_access_token().post("/problem/access", {
     problem_id,
@@ -345,13 +333,9 @@ export type Point = z.infer<typeof PointS>;
 /**
  * Problem data in the format provided by the backend.
  *
- * NOTE: Does not include ideal and nadir points. I needed to remove these from
- * the backend as a quick fix, because infinite values were sent as invalid JSON
- * that caused the JSON parser to throw an error.
- *
- * A possible short-term solution might be to only include the ideal and nadir
- * points in the response when they are finite. A long-term solution could be to
- * handle non-numeric values in the same way as MathJSON does.
+ * NOTE: Requires a version of the backend that sends infinite values as the
+ * strings "+Infinity" and "-Infinity". This change was required because the
+ * backend was sending invalid JSON that caused the JSON parser to fail.
  *
  * TODO: Validate that all the lengths match.
  */
@@ -371,6 +355,20 @@ const BackendProblemS = z
     variable_names: z.array(z.string()),
     n_variables: z.number(),
     n_constraints: z.number(),
+    ideal: z.array(
+      z.union([
+        z.number().finite(),
+        z.literal("+Infinity").transform(() => +Infinity),
+        z.literal("-Infinity").transform(() => -Infinity),
+      ])
+    ),
+    nadir: z.array(
+      z.union([
+        z.number().finite(),
+        z.literal("+Infinity").transform(() => +Infinity),
+        z.literal("-Infinity").transform(() => -Infinity),
+      ])
+    ),
   })
   .strict();
 
@@ -389,6 +387,8 @@ export type Problem = {
   objectives: Objective[];
   variables: Variable[];
   n_constraints: number;
+  ideal_point: number[];
+  nadir_point: number[];
 };
 
 /**
@@ -420,6 +420,8 @@ function transform_problem(problem: BackendProblem): Problem {
     })),
     variables: problem.variable_names.map((name) => ({ name })),
     n_constraints: problem.n_constraints,
+    ideal_point: problem.ideal,
+    nadir_point: problem.nadir,
   };
 }
 
