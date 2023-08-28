@@ -5,6 +5,11 @@ A user interface for the reference point method.
 NOTE: Non-functional prototype.
 
 TODO: Disable the UI while interacting with the backend.
+
+TODO: Update the selected value in the preference information component when
+  the user selects a solution.
+
+TODO: Create a reusable visualizations component with the control buttons.
 -->
 <script lang="ts">
   import * as _ from "$lib/methods/reference_point_method/functional_api";
@@ -32,10 +37,24 @@ TODO: Disable the UI while interacting with the backend.
   // Stores the input values.
   let preference: (number | undefined)[];
 
+  let visualizations_maximized = false;
+  let visualizations_tab = 0;
+  let gridded_visualizations = false;
+
+  $: if (!visualizations_maximized) {
+    gridded_visualizations = false;
+  }
+
   // TODO: Handle errors.
   async function handle_initialize() {
     method = await _.initialize(method);
     preference = method.problem.objectives.map(() => undefined);
+
+    //
+    // This handler can be used to restart the solution process. It is probably
+    // best to also reset the visualizations mode to non-maximized.
+    //
+    visualizations_maximized = false;
   }
 
   // TODO: Handle errors.
@@ -47,10 +66,6 @@ TODO: Disable the UI while interacting with the backend.
       method = await _.iterate(method, preference);
     }
   }
-
-  let visualizations_maximized = false;
-  let gridded_visualizations = false;
-  let visualizations_tab = 0;
 </script>
 
 <div class="flex flex-col gap-10">
@@ -85,22 +100,6 @@ TODO: Disable the UI while interacting with the backend.
           disabled={!_.is_valid_reference_point(method, preference)}
           >Iterate</button
         >
-        <!-- TODO:
-            - Add proper buttons to the visualizations component.
-            - Make grid mode available only in maximized mode.
-        -->
-        <button
-          class="anchor"
-          on:click={() => {
-            visualizations_maximized = !visualizations_maximized;
-          }}>Toggle visualizations size</button
-        >
-        <button
-          class="anchor"
-          on:click={() => {
-            gridded_visualizations = !gridded_visualizations;
-          }}>Toggle visualization grid</button
-        >
       </div>
     {:else}
       <GeneralError />
@@ -130,7 +129,6 @@ TODO: Disable the UI while interacting with the backend.
         <Card>
           <svelte:fragment slot="header">Preference information</svelte:fragment
           >
-          <!-- TODO: Handle selected solution. -->
           <ReferencePointSelect
             objective_names={_.objective_names(method)}
             lower_bounds={_.lower_bounds(method)}
@@ -146,6 +144,22 @@ TODO: Disable the UI while interacting with the backend.
           <svelte:fragment slot="header"
             >Solution visualizations</svelte:fragment
           >
+          <svelte:fragment slot="buttons">
+            <button
+              class="anchor"
+              on:click={() => {
+                gridded_visualizations = !gridded_visualizations;
+              }}
+              disabled={!visualizations_maximized}>Grid</button
+            >
+            <button
+              class="anchor"
+              on:click={() => {
+                visualizations_maximized = !visualizations_maximized;
+              }}
+              >{#if visualizations_maximized}Minimize{:else}Maximize{/if}
+            </button>
+          </svelte:fragment>
           <Visualizations
             names={_.objective_names(method)}
             values={[method.current_solution, ...method.additional_solutions]}
