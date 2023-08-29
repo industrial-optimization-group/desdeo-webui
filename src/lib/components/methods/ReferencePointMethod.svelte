@@ -115,7 +115,7 @@ TODO: Create a reusable visualizations component with the control buttons.
       <Card>
         <svelte:fragment slot="header">Preference information</svelte:fragment>
         <ReferencePointSelect
-          objective_names={_.objective_names(method)}
+          objective_names={_.objective_names_with_goals(method)}
           lower_bounds={_.lower_bounds(method)}
           upper_bounds={_.upper_bounds(method)}
           bind:preference
@@ -130,7 +130,7 @@ TODO: Create a reusable visualizations component with the control buttons.
           <svelte:fragment slot="header">Preference information</svelte:fragment
           >
           <ReferencePointSelect
-            objective_names={_.objective_names(method)}
+            objective_names={_.objective_names_with_goals(method)}
             lower_bounds={_.lower_bounds(method)}
             upper_bounds={_.upper_bounds(method)}
             bind:preference
@@ -161,7 +161,7 @@ TODO: Create a reusable visualizations component with the control buttons.
             </button>
           </svelte:fragment>
           <Visualizations
-            names={_.objective_names(method)}
+            names={_.objective_names_with_goals(method)}
             values={[method.current_solution, ...method.additional_solutions]}
             lower_bounds={_.lower_bounds(method)}
             upper_bounds={_.upper_bounds(method)}

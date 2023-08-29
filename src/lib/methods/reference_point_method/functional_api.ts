@@ -118,6 +118,13 @@ export function objective_names(method: Method): string[] {
   return method.problem.objectives.map(({ name }) => name);
 }
 
+/** Returns the objective names with ` (min)` or ` (max)` appended. */
+export function objective_names_with_goals(method: Method): string[] {
+  return method.problem.objectives.map(
+    (objective) => `${objective.name} (${objective.minimize ? "min" : "max"})`
+  );
+}
+
 export function lower_bounds(method: CanIterate): Point {
   return method.ideal_point.map((ideal_value, j) =>
     Math.min(ideal_value, method.nadir_point[j])
