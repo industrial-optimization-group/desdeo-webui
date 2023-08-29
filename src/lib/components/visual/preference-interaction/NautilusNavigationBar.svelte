@@ -40,7 +40,7 @@
   export let disableInteraction = false;
   export let yAxisMax: number | undefined = undefined;
   export let yAxisMin: number | undefined = undefined;
-  export let aspectRatio = 16 / 5;
+  export let height = 16 / 5;
   // Local variables
   let chartDiv: HTMLDivElement;
   let chart: echarts.EChartsType;
@@ -697,10 +697,10 @@
     });
     addNautilusBar();
   });
-  let aspectString = "aspect-ratio:" + aspectRatio + ";";
+  let heightString = "height:" + height + ";";
 </script>
 
 <!--The div where the chart will be rendered. Must have width and height values for the chart to show.-->
-<div style={aspectString} bind:this={chartDiv} />
+<div style={heightString} bind:this={chartDiv} />
 <!-- Button for testing line resetting -->
 <!-- <button on:click={resetLinesToDefaults}>Reset lines</button> -->

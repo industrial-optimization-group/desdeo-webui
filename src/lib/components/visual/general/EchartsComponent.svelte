@@ -8,8 +8,8 @@
   export let chart: EChartsType | undefined = undefined;
   export let option: EChartOption;
   export let disableAnimation = true;
-  export let aspectRatio: number | string = 5 / 3;
-  export let customStyle = "height: 100%; width: 100%;";
+  export let height: number | string = 30;
+  export let customStyle = "";
   export let events:
     | {
         [key: string]: (params: {
@@ -31,10 +31,10 @@
     }
   }
 
-  if (typeof aspectRatio === "number") {
-    aspectRatio = aspectRatio.toString();
+  if (typeof height === "number") {
+    height = height.toString();
   }
-  let aspectString = "aspect-ratio:" + aspectRatio + ";" + customStyle;
+  let heightString = "height: " + height + "vh;  width:100%" + customStyle;
 
   onMount(() => {
     if (!chart) {
@@ -51,8 +51,8 @@
     } else {
       chart.resize();
     }
-    // chartDiv.setAttribute("style", aspectString);
+    // chartDiv.setAttribute("style", heightString);
   });
 </script>
 
-<div class="aspect-[5/3]" style={aspectString} bind:this={chartDiv} />
+<div style={heightString} bind:this={chartDiv} />

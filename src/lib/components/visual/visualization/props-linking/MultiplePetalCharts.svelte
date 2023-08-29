@@ -30,7 +30,7 @@
   export let maxSelections: number | undefined = undefined;
   export let asRow = true;
   export let disableAnimation: boolean | undefined = undefined;
-  export let aspectRatio: number | undefined = 1 / 2;
+  export let height: number | undefined = 40;
 
   //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;
@@ -57,7 +57,7 @@
       {axisNames}
       {colors}
       {disableAnimation}
-      {aspectRatio}
+      {height}
     />
   {/each}
 </div>
@@ -68,7 +68,7 @@
     flex-direction: var(--flex-direction);
     /* flex-wrap: wrap; */
     justify-content: center;
-    height: 100%;
-    widows: 100%;
+    /* height: 100%; */
+    /* widows: 100%; */
   }
 </style>

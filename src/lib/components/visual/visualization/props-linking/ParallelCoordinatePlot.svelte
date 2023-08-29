@@ -328,7 +328,7 @@
   };
 
   /** The aspect ratio value for the component. */
-  export let aspectRatio = 5 / 3;
+  export let height = 45;
 </script>
 
-<EchartsComponent bind:chart {option} {events} {aspectRatio} />
+<EchartsComponent bind:chart {option} {events} {height} />

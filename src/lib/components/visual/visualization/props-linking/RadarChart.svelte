@@ -27,6 +27,7 @@
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let disableAnimation: boolean | undefined = undefined;
+  export let height: number | undefined = 45;
   // export let data: SolutionData;
 
   let chart: echarts.EChartsType;
@@ -114,5 +115,5 @@
   bind:events
   {colors}
   {disableAnimation}
-  aspectRatio={values.length / 1.5}
+  {height}
 />

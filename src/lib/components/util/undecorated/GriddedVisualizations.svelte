@@ -60,7 +60,6 @@ length.
     bind:highlightedIndex={highlighted}
     axisNames={names}
     colors={colorPalette}
-    aspectRatio={1 / 2}
   />
   <MultiplePetalCharts
     {values}
@@ -69,6 +68,5 @@ length.
     bind:highlightedIndex={highlighted}
     axisNames={names}
     colors={colorPalette}
-    aspectRatio={1 / 2}
   />
 </div>
