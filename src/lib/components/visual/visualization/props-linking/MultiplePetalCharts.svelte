@@ -30,7 +30,7 @@
   export let maxSelections: number | undefined = undefined;
   export let asRow = true;
   export let disableAnimation: boolean | undefined = undefined;
-  export let height: number | undefined = 40;
+  export let height: number | undefined = 50;
 
   //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;

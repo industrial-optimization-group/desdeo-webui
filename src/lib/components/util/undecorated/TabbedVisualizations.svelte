@@ -37,9 +37,11 @@ length.
 </script>
 
 <TabGroup>
-  <Tab bind:group={tab} name="tab1" value={0}>All</Tab>
-  <Tab bind:group={tab} name="tab2" value={1}>Radar and parallel</Tab>
-  <Tab bind:group={tab} name="tab3" value={2}>Petal and bar plots</Tab>
+  <Tab bind:group={tab} name="tab1" value={0}>Parallel Coordinate Plot</Tab>
+  <Tab bind:group={tab} name="tab2" value={1}>Radar Chart</Tab>
+  <Tab bind:group={tab} name="tab3" value={2}>Bar Plot</Tab>
+  <Tab bind:group={tab} name="tab4" value={3}>Petal Plot</Tab>
+  <Tab bind:group={tab} name="tab5" value={4}>All</Tab>
 
   <svelte:fragment slot="panel">
     {#if tab === 0}
@@ -54,29 +56,6 @@ length.
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
       />
-      <RadarChart
-        indicatorNames={names}
-        {values}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-      />
-      <MultipleBarCharts
-        {values}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-        axisNames={names}
-        colors={colorPalette}
-      />
-      <MultiplePetalCharts
-        {values}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-        axisNames={names}
-        colors={colorPalette}
-      />
     {:else if tab === 1}
       <RadarChart
         indicatorNames={names}
@@ -85,6 +64,25 @@ length.
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
       />
+    {:else if tab === 2}
+      <MultipleBarCharts
+        {values}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+        axisNames={names}
+        colors={colorPalette}
+      />
+    {:else if tab === 3}
+      <MultiplePetalCharts
+        {values}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+        axisNames={names}
+        colors={colorPalette}
+      />
+    {:else if tab === 4}
       <ParallelCoordinatePlotBase
         {names}
         {values}
@@ -96,14 +94,9 @@ length.
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
       />
-    {:else if tab === 2}
-      <ParallelCoordinatePlotBase
-        {names}
+      <RadarChart
+        indicatorNames={names}
         {values}
-        ranges={bounds}
-        lowerIsBetter={lower_is_better}
-        showIndicators={true}
-        disableInteraction={disabled}
         maxSelections={max_selections}
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
