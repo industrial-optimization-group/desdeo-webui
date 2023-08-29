@@ -185,8 +185,8 @@
     else {
       for (let i = 0; i < values[0].length; i++) {
         if (ranges) {
-          min = ranges[i] ? ranges[i].min : undefined;
-          max = ranges[i] ? ranges[i].max : undefined;
+          min = ranges[i] ? ranges[i].min : "dataMin";
+          max = ranges[i] ? ranges[i].max : "dataMax";
         }
         let nameObj = {
           dim: i,
