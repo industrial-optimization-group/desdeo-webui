@@ -152,7 +152,7 @@ If you wish to contribute to the visual components, please read the general inst
      export let selectedIndices: number[] = [];
      export let highlightedIndex: number | undefined = undefined;
      export let maxSelections: number | undefined = undefined;
-     export let disableAnimation = false;
+     export let disableAnimation: boolean | undefined = undefined;
      ```
 
    - Remember to add the component in your main svelte file:

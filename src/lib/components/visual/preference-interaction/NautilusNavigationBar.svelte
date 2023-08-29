@@ -40,7 +40,7 @@
   export let selectedValue: number | undefined = undefined;
   export let selectedBoundValue = lowerBound;
   export let uncertaintyBounds: number[][];
-  export let disableInteraction = true;
+  export let disableInteraction = false;
   export let yAxisMax: number | undefined = undefined;
   export let yAxisMin: number | undefined = undefined;
   // Local variables

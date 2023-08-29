@@ -27,7 +27,7 @@
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let componentIndex: number | undefined = undefined;
-  export let disableAnimation = false;
+  export let disableAnimation: boolean | undefined = undefined;
   export let aspectRatio = 4 / values.length;
 
   $: if (selectedIndices != undefined) {

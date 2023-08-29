@@ -26,7 +26,7 @@
   export let selectedIndices: number[] = [];
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
-  export let disableAnimation = false;
+  export let disableAnimation: boolean | undefined = undefined;
   // export let data: SolutionData;
 
   let chart: echarts.EChartsType;

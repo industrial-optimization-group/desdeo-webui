@@ -7,7 +7,7 @@
   export let colors: string[] = [];
   export let chart: EChartsType | undefined = undefined;
   export let option: EChartOption;
-  export let disableAnimation = false;
+  export let disableAnimation = true;
   export let aspectRatio: number | string = 5 / 3;
   export let customStyle = "height: 100%; width: 100%;";
   export let events:

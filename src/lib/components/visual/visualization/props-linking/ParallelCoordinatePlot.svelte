@@ -51,7 +51,7 @@
   export let maxSelections: number | undefined = undefined;
   export let chart: echarts.ECharts | undefined = undefined;
   export let colors: string[] = [colorPalette[0]];
-  export let disableAnimation = false;
+  export let disableAnimation: boolean | undefined = true;
 
   let option: EChartOption;
 
