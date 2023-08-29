@@ -12,6 +12,9 @@ length.
 
 <script lang="ts">
   import { transform_bounds } from "$lib/components/util/util";
+  import { colorPalette } from "$lib/components/visual/constants";
+  import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
+  import MultiplePetalCharts from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
 
   export let names: string[] | undefined = undefined;
   export let values: Point[];
@@ -49,5 +52,21 @@ length.
     maxSelections={max_selections}
     bind:selectedIndices={selected}
     bind:highlightedIndex={highlighted}
+  />
+  <MultipleBarCharts
+    {values}
+    maxSelections={max_selections}
+    bind:selectedIndices={selected}
+    bind:highlightedIndex={highlighted}
+    axisNames={names}
+    colors={colorPalette}
+  />
+  <MultiplePetalCharts
+    {values}
+    maxSelections={max_selections}
+    bind:selectedIndices={selected}
+    bind:highlightedIndex={highlighted}
+    axisNames={names}
+    colors={colorPalette}
   />
 </div>

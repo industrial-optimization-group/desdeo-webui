@@ -37,10 +37,9 @@ length.
 </script>
 
 <TabGroup>
-  <Tab bind:group={tab} name="tab1" value={0}>Parallel axis plot</Tab>
-  <Tab bind:group={tab} name="tab2" value={1}>Radar plot</Tab>
+  <Tab bind:group={tab} name="tab1" value={0}>All</Tab>
+  <Tab bind:group={tab} name="tab2" value={1}>Radar and parallel</Tab>
   <Tab bind:group={tab} name="tab3" value={2}>Petal and bar plots</Tab>
-  <Tab bind:group={tab} name="tab4" value={3}>Bar plots</Tab>
 
   <svelte:fragment slot="panel">
     {#if tab === 0}
@@ -54,6 +53,29 @@ length.
         maxSelections={max_selections}
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
+      />
+      <RadarChart
+        indicatorNames={names}
+        {values}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+      />
+      <MultipleBarCharts
+        {values}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+        axisNames={names}
+        colors={colorPalette}
+      />
+      <MultiplePetalCharts
+        {values}
+        maxSelections={max_selections}
+        bind:selectedIndices={selected}
+        bind:highlightedIndex={highlighted}
+        axisNames={names}
+        colors={colorPalette}
       />
     {:else if tab === 1}
       <RadarChart
