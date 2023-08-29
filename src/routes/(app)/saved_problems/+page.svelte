@@ -1,10 +1,17 @@
 <script lang="ts">
-  import Solve from "$lib/components/main/Solve.svelte";
-  import { setContext } from "svelte";
-  import type { PageData } from "./$types";
+  import { get_all_problems } from "$lib/api";
 
-  export let data: PageData;
-  setContext("desdeo_problems", data.desdeo_problems);
+  import Solve from "$lib/components/main/Solve.svelte";
+  import Waiting from "$lib/components/util/undecorated/Waiting.svelte";
+  import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
 </script>
 
-<Solve />
+{#await get_all_problems()}
+  <Waiting>
+    <span slot="label">Loading problems...</span>
+  </Waiting>
+{:then problems}
+  <Solve {problems} />
+{:catch err}
+  <GeneralError {err} />
+{/await}

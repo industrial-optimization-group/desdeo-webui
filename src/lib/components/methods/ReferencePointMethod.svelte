@@ -178,11 +178,12 @@ TODO: Create a reusable visualizations component with the control buttons.
       <div slot="solutions">
         <Card>
           <svelte:fragment slot="header">Solutions</svelte:fragment>
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-4">
             <p>
               The first solution is the "current solution" as returned by the
               method. The other solutions are the "additional solutions".
             </p>
+            <p>(The solutions table is work in progress.)</p>
             <Table head={_.objective_names_with_goals(method)} body={[]} />
           </div>
         </Card>

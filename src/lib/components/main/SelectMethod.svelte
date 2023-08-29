@@ -1,36 +1,40 @@
 <script lang="ts">
+  import ProblemDetails from "./ProblemDetails.svelte";
   import Card from "./Card.svelte";
+  import type { Problem } from "$lib/api";
 
-  type Method = {
-    id: string;
-    text: string;
-  };
-
-  //
-  // TODO: The backend doesn't currently support selecting the available
-  // methods based on the problem.
-  //
-  let methods: Method[] = [
+  let methods = [
+    // {
+    //   id: "nautilus_navigator",
+    //   display: "Nautilus Navigator",
+    // },
+    // {
+    //   id: "nimbus",
+    //   display: "NIMBUS",
+    // },
     {
       id: "reference_point_method",
-      text: "Reference Point Method",
-    },
-    {
-      id: "nautilus_navigator",
-      text: "Nautilus Navigator",
+      display: "Reference Point Method",
     },
   ];
 
-  let selected_method: Method;
+  export let problem: Problem;
+  export let selected_method: string | undefined = undefined;
 </script>
 
-<div class="grid grid-cols-2 gap-10">
+<div class="grid grid-cols-2 items-start gap-10">
   <Card>
     <svelte:fragment slot="header">Available methods</svelte:fragment>
-    <select class="select" bind:value={selected_method}>
+    <select
+      class="select"
+      bind:value={selected_method}
+      size={Math.max(3, methods.length)}
+    >
       {#each methods as method}
-        <option value={method}>{method.text}</option>
+        <option value={method.id}>{method.display}</option>
       {/each}
     </select>
   </Card>
+
+  <ProblemDetails {problem} />
 </div>
