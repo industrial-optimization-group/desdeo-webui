@@ -22,6 +22,7 @@ length.
   export let selected: number[] = [];
   export let max_selections: number | undefined = undefined;
   export let highlighted: number | undefined = undefined;
+  export let tab = 0;
   export let disabled = false;
 
   $: bounds = transform_bounds(lower_bounds, upper_bounds);
@@ -33,8 +34,6 @@ length.
   import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
   import MultiplePetalCharts from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
-
-  let tab = 0;
 </script>
 
 <TabGroup>

@@ -23,6 +23,7 @@ length.
   export let max_selections: number | undefined = undefined;
   export let highlighted: number | undefined = undefined;
   export let disabled = false;
+  export let tab = 0;
   export let grid_mode = false;
 </script>
 
@@ -48,6 +49,7 @@ length.
     bind:selected
     {max_selections}
     bind:highlighted
+    bind:tab
     {disabled}
   />
 {/if}
