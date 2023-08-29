@@ -30,7 +30,7 @@
   export let maxSelections: number | undefined = undefined;
   export let asRow = true;
   export let disableAnimation: boolean | undefined = undefined;
-  export let aspectRatio: number | undefined = undefined;
+  export let aspectRatio: number | undefined = 1 / 2;
 
   //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;
@@ -48,19 +48,17 @@
 
 <div class="multi" style="--flex-direction:{asRow ? 'row' : 'column'}">
   {#each values as value, i}
-    <div style="height: 100%; width: 100%;">
-      <PetalAsPolar
-        title={"Solution " + (i + 1)}
-        values={value}
-        {selectedIndices}
-        {highlightedIndex}
-        componentIndex={i}
-        {axisNames}
-        {colors}
-        {disableAnimation}
-        {aspectRatio}
-      />
-    </div>
+    <PetalAsPolar
+      title={"Solution " + (i + 1)}
+      values={value}
+      {selectedIndices}
+      {highlightedIndex}
+      componentIndex={i}
+      {axisNames}
+      {colors}
+      {disableAnimation}
+      {aspectRatio}
+    />
   {/each}
 </div>
 

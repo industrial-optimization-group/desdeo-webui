@@ -30,7 +30,7 @@
   export let maxSelections: number | undefined = undefined;
   export let asRow = true;
   export let disableAnimation: boolean | undefined = undefined;
-  export let aspectRatio: number | undefined = undefined;
+  export let aspectRatio: number | undefined = 1 / 2;
 
   //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;
