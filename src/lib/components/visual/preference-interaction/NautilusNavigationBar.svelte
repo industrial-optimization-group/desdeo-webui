@@ -14,10 +14,7 @@
     
 -->
 <!-- 
-  TODO: documentation
-  TODO: Fix draggable oldLines
-  TODO: Make YAxis visible
-  TODO: Min/Max prop
+  TODO: Min/Max prop 
   TODO: Color prop
   TODO: Why the lines on the drawn region are not smooth?
   TODO: Add restriction which prevents dragging line outside feasible region
@@ -43,6 +40,7 @@
   export let disableInteraction = false;
   export let yAxisMax: number | undefined = undefined;
   export let yAxisMin: number | undefined = undefined;
+  export let aspectRatio = 16 / 5;
   // Local variables
   let chartDiv: HTMLDivElement;
   let chart: echarts.EChartsType;
@@ -699,9 +697,10 @@
     });
     addNautilusBar();
   });
+  let aspectString = "aspect-ratio:" + aspectRatio + ";";
 </script>
 
 <!--The div where the chart will be rendered. Must have width and height values for the chart to show.-->
-<div style="height:100%; width:100%;" bind:this={chartDiv} />
+<div style={aspectString} bind:this={chartDiv} />
 <!-- Button for testing line resetting -->
 <!-- <button on:click={resetLinesToDefaults}>Reset lines</button> -->

@@ -65,19 +65,18 @@
         readonly={true}
       /> -->
     </div>
-    <div style="width: 100%; height: 90%;">
-      <SingleHorizontalBar
-        {lowerBound}
-        {higherBound}
-        {solutionValue}
-        bind:selectedValue
-        bind:previousValue
-        {lowerIsBetter}
-        {decimalPrecision}
-        {barColor}
-        {arrowMode}
-      />
-    </div>
+
+    <SingleHorizontalBar
+      {lowerBound}
+      {higherBound}
+      {solutionValue}
+      bind:selectedValue
+      bind:previousValue
+      {lowerIsBetter}
+      {decimalPrecision}
+      {barColor}
+      {arrowMode}
+    />
   </div>
 </div>
 
@@ -111,6 +110,7 @@
   }
   .secondPart {
     width: 100%;
+    justify-content: space-between;
   }
 
   #prev {

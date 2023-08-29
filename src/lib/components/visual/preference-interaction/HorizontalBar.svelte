@@ -36,6 +36,7 @@
   export let lowerIsBetter = true;
   export let decimalPrecision: number | undefined = undefined;
   export let arrowMode = true;
+  export let aspectRatio = 16 / 5;
 
   // $: console.log(selectedValue);
   $: if (selectedValue != null) {
@@ -64,7 +65,7 @@
   let chartDiv: HTMLElement;
   let chart: echarts.EChartsType;
 
-  // Create the option object for the whole chart.
+  // Create the base option object of the horizontal bar.
   let option: echarts.EChartOption = {
     tooltip: {
       // show:false,
@@ -131,11 +132,6 @@
   onMount(() => {
     chart = echarts.init(chartDiv);
     addHorizontalBar(option);
-    // console.log(chart.getOption().graphic);
-    // chart.on("showtip", function (params) {
-    //   console.log(params);
-    //   // console.log(this);
-    // });
   });
 
   // TODO: Better documentation. Also try to make this more understandable.
@@ -885,6 +881,7 @@
     ];
     return arrows;
   }
+  let aspectString = "aspect-ratio:" + aspectRatio + ";";
 </script>
 
-<div style="height:100%; width:100%" bind:this={chartDiv} />
+<div style={aspectString} bind:this={chartDiv} />
