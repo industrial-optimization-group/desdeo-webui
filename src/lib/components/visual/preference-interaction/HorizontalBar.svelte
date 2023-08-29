@@ -9,6 +9,7 @@
       @param {number} previousValue - The previous value to display on the chart.
       @param {number} colorPaletteIndex - The index of the color palette to use for the chart.
       @param {boolean} inputs - Whether to display input fields for the chart.
+      @param {number} height - The height of the chart in viewport height units.
  
 -->
 <!-- 
@@ -36,7 +37,7 @@
   export let lowerIsBetter = true;
   export let decimalPrecision: number | undefined = undefined;
   export let arrowMode = true;
-  export let aspectRatio = 16 / 5;
+  export let height = 10;
 
   // $: console.log(selectedValue);
   $: if (selectedValue != null) {
@@ -132,6 +133,7 @@
   onMount(() => {
     chart = echarts.init(chartDiv);
     addHorizontalBar(option);
+    heightString = "height:" + { height } + "vh;";
   });
 
   // TODO: Better documentation. Also try to make this more understandable.
@@ -881,7 +883,7 @@
     ];
     return arrows;
   }
-  let aspectString = "aspect-ratio:" + aspectRatio + ";";
+  let heightString = "height:" + height + "vh;";
 </script>
 
-<div style={aspectString} bind:this={chartDiv} />
+<div style={heightString} bind:this={chartDiv} />
