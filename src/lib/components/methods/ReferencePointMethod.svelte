@@ -22,6 +22,7 @@ TODO: Create a reusable visualizations component with the control buttons.
   import MethodLayout from "../util/undecorated/MethodLayout.svelte";
   import Card from "../main/Card.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
+  import Table from "$lib/components/util/undecorated/Table.svelte";
 
   /** The problem to solve. */
   export let problem: Problem;
@@ -34,7 +35,7 @@ TODO: Create a reusable visualizations component with the control buttons.
   let method: _.Method;
   $: method = _.reference_point_method(backend, problem);
 
-  // Stores the input values.
+  // Stores the current preference input values.
   let preference: (number | undefined)[];
 
   let visualizations_maximized = false;
@@ -178,7 +179,11 @@ TODO: Create a reusable visualizations component with the control buttons.
         <Card>
           <svelte:fragment slot="header">Solutions</svelte:fragment>
           <div class="flex flex-col gap-2">
-            <span>The solutions table will be here.</span>
+            <p>
+              The first solution is the "current solution" as returned by the
+              method. The other solutions are the "additional solutions".
+            </p>
+            <Table head={_.objective_names_with_goals(method)} body={[]} />
           </div>
         </Card>
       </div>
