@@ -6,7 +6,7 @@
 
   // import NautilusNavigator from "$lib/components/methods/nautilus_navigator/NautilusNavigator.svelte";
   // import NIMBUS from "$lib/components/methods/nimbus/NIMBUS.svelte";
-  import ReferencePointMethod from "$lib/components/methods/ReferencePointMethod.svelte";
+  import ReferencePointMethod from "$lib/components/methods/reference_point_method/ReferencePointMethod.svelte";
   import GeneralError from "../util/undecorated/GeneralError.svelte";
 </script>
 
@@ -23,9 +23,5 @@
 {#if method === "reference_point_method"}
   <ReferencePointMethod {problem} />
 {:else}
-  <!--
-    -- TODO: Do something better. Can we throw exceptions here? Even better 
-    -- would be to get rid of these if blocks as suggested above.
-    -->
   <GeneralError />
 {/if}

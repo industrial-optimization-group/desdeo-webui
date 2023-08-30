@@ -16,11 +16,11 @@ TODO: Create a reusable visualizations component with the control buttons.
   import { backend } from "$lib/api";
   import type { Problem } from "$lib/api";
 
-  import ReferencePointSelect from "../util/undecorated/ReferencePointSelect.svelte";
-  import ProblemDetails from "../main/ProblemDetails.svelte";
+  import ReferencePointSelect from "$lib/components/util/undecorated/ReferencePointSelect.svelte";
+  import ProblemDetails from "$lib/components/main/ProblemDetails.svelte";
   import Visualizations from "$lib/components/util/undecorated/Visualizations.svelte";
-  import MethodLayout from "../util/undecorated/MethodLayout.svelte";
-  import Card from "../main/Card.svelte";
+  import MethodLayout from "$lib/components/util/undecorated/MethodLayout.svelte";
+  import Card from "$lib/components/main/Card.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
   import Table from "$lib/components/util/undecorated/Table.svelte";
 
@@ -89,6 +89,11 @@ TODO: Create a reusable visualizations component with the control buttons.
           >Iterate</button
         >
       </div>
+      {#if !_.is_valid_reference_point(method, preference)}
+        <div class="text-error-500">
+          Please give each of the aspiration levels a valid numeric value.
+        </div>
+      {/if}
     {:else if _.is_iterated(method)}
       <div>
         Please select a new reference point and then click "iterate", if you
@@ -102,6 +107,11 @@ TODO: Create a reusable visualizations component with the control buttons.
           >Iterate</button
         >
       </div>
+      {#if !_.is_valid_reference_point(method, preference)}
+        <div class="text-error-500">
+          Please give each of the aspiration levels a valid numeric value.
+        </div>
+      {/if}
     {:else}
       <GeneralError />
     {/if}
