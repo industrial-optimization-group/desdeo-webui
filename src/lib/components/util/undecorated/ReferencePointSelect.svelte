@@ -37,6 +37,7 @@ if they are defined.
       solutionValue={selected_solution ? selected_solution[j] : undefined}
       barColor={colorPalette[j % colorPalette.length]}
       bind:selectedValue={preference[j]}
+      decimalPrecision={4}
     />
   {/each}
 </div>

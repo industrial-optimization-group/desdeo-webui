@@ -223,6 +223,14 @@ export function tooltipFormatter(
   return result;
 }
 
+/**
+ * Rounds a number to the given number of decimals. If no precision is given, it
+ * gets the number of decimals from the original number.
+ *
+ * @param num - The number to round
+ * @param precicion - The number of decimals to round to
+ * @returns The rounded number
+ */
 export function roundToDecimal(num: number, precicion: number | undefined) {
   if (precicion === undefined) {
     precicion = getDecimalCount(num);
@@ -230,6 +238,12 @@ export function roundToDecimal(num: number, precicion: number | undefined) {
   return Number.parseFloat(num.toFixed(precicion));
 }
 
+/**
+ * Gets the number of decimals in a number
+ *
+ * @param num - The number to get the number of decimals from
+ * @returns The number of decimals in the number
+ */
 function getDecimalCount(num: number) {
   if (Math.floor(num) === num) return 0;
   return num.toString().split(".")[1].length || 0;

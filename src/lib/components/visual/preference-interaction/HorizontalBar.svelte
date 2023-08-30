@@ -41,9 +41,7 @@
 
   // $: console.log(selectedValue);
   $: if (selectedValue != null) {
-    updateAspirationLine(
-      (selectedValue = roundToDecimal(selectedValue, decimalPrecision))
-    );
+    updateAspirationLine(roundToDecimal(selectedValue, decimalPrecision));
   }
   // $: updateAspirationLine(selectedValue);
   $: if (previousValue != null) {
@@ -405,15 +403,21 @@
 
             if (this.x > left && this.x < right) {
               if (Math.abs(this.x - params.offsetX) > 2) {
-                selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-                  this.x,
-                  this.x,
-                ])[0];
+                selectedValue = roundToDecimal(
+                  chart.convertFromPixel({ seriesIndex: 0 }, [
+                    this.x,
+                    this.x,
+                  ])[0],
+                  decimalPrecision
+                );
               } else {
-                selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
-                  params.offsetX,
-                  params.offsetY,
-                ])[0];
+                selectedValue = roundToDecimal(
+                  chart.convertFromPixel({ seriesIndex: 0 }, [
+                    this.x,
+                    this.x,
+                  ])[0],
+                  decimalPrecision
+                );
               }
               lastPosition = params.offsetX;
             } else {
@@ -433,7 +437,13 @@
                 axisPointer: {
                   label: {
                     formatter: () => {
-                      return "Drag value: " + selectedValue;
+                      return (
+                        "Drag value: " +
+                        roundToDecimal(
+                          selectedValue ? selectedValue : 0,
+                          decimalPrecision
+                        )
+                      );
                     },
                   },
                 },
@@ -575,10 +585,11 @@
         targetParentName !== "interactiveButtons" &&
         params.target.id.toString() !== "prevLine"
       ) {
-        selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
+        let newValue = chart.convertFromPixel({ seriesIndex: 0 }, [
           params.offsetX,
           params.offsetY,
         ])[0];
+        selectedValue = roundToDecimal(newValue, decimalPrecision);
       } else if (params.target.id.toString() === "prevLine") {
         selectedValue = previousValue;
       }
