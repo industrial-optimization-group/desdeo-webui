@@ -4,7 +4,7 @@ A component for selecting a reference point with horizontal bars.
 
 NOTE: The user of the component is responsible for verifying that
 `objective_names`, `lower_bounds`, `upper_bounds`, `preference`,
-`previous_preference` and `selected_solution` have the same length,
+`previous_preference` and `reference_solution` have the same length,
 if they are defined.
 -->
 <script lang="ts">
@@ -13,7 +13,7 @@ if they are defined.
   export let upper_bounds: number[];
   export let preference: (number | undefined)[];
   export let previous_preference: number[] | undefined = undefined;
-  export let selected_solution: number[] | undefined = undefined;
+  export let reference_solution: number[] | undefined = undefined;
 
   // Create a local copy to avoid mutating the original copy.
   $: preference = [...preference];
@@ -34,7 +34,7 @@ if they are defined.
       lowerBound={lower_bounds[j]}
       higherBound={upper_bounds[j]}
       previousValue={previous_preference ? previous_preference[j] : undefined}
-      solutionValue={selected_solution ? selected_solution[j] : undefined}
+      solutionValue={reference_solution ? reference_solution[j] : undefined}
       barColor={colorPalette[j % colorPalette.length]}
       bind:selectedValue={preference[j]}
       decimalPrecision={4}

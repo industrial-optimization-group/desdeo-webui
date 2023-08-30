@@ -3,18 +3,18 @@
 A user interface for the reference point method.
 
 NOTE: Non-functional prototype.
-
-TODO: Disable the UI while interacting with the backend.
-
-TODO: Update the selected value in the preference information component when
-  the user selects a solution.
-
-TODO: Create a reusable visualizations component with the control buttons.
 -->
 <script lang="ts">
+  // TODO: Disable the UI while interacting with the backend.
+
+  // TODO: Create a reusable visualization component with the control buttons.
+
+  // TODO: Add a feature to stop the solution process and view and visualize
+  // the obtained solution.
+
   import * as _ from "$lib/methods/reference_point_method/functional_api";
   import { backend } from "$lib/api";
-  import type { Problem } from "$lib/api";
+  import type { Problem, Point } from "$lib/api";
 
   import ReferencePointSelect from "$lib/components/util/undecorated/ReferencePointSelect.svelte";
   import ProblemDetails from "$lib/components/main/ProblemDetails.svelte";
@@ -35,25 +35,76 @@ TODO: Create a reusable visualizations component with the control buttons.
   let method: _.Method;
   $: method = _.reference_point_method(backend, problem);
 
-  // Stores the current preference input values.
+  //
+  // The UI state
+  //
+  // The following variables store the current state of the UI. They are updated
+  // in the handlers and through user interaction.
+  //
+
+  // Preference input values.
   let preference: (number | undefined)[];
+
+  //
+  // When available, the first solution is the "current solution" as returned
+  // by the method, and the rest are the "additional solutions".
+  //
+  let solutions: Point[];
+
+  // Indexes of currently selected solutions.
+  let selected_solutions: number[];
+
+  //
+  // TODO: We currently allow only one selected solution and use this to set
+  // the reference solution property of the preference input component. Can we
+  // do something better?
+  //
+  let reference_solution: Point | undefined;
+
+  $: if (
+    selected_solutions?.length === 1 &&
+    solutions?.length > selected_solutions[0]
+  ) {
+    reference_solution = solutions[selected_solutions[0]];
+  }
+
+  //
+  // Index of currently highlighted solution.
+  //
+  // TODO: Would it be useful to be able to highlight multiple solutions? This
+  // would require changes to the components.
+  //
+  // eslint-disable-next-line
+  let highlighted_solution: number | undefined;
 
   let visualizations_maximized = false;
   let visualizations_tab = 0;
   let gridded_visualizations = false;
 
+  // Always use tab mode if not in maximized mode.
   $: if (!visualizations_maximized) {
     gridded_visualizations = false;
   }
 
+  /** The number of decimals to show for numeric values. */
+  const decimals = 4;
+
+  //
+  // The handlers
+  //
+
   // TODO: Handle errors.
   async function handle_initialize() {
     method = await _.initialize(method);
-    preference = method.problem.objectives.map(() => undefined);
+    preference = problem.objectives.map(() => undefined);
+    solutions = [];
+    selected_solutions = [];
+    reference_solution = undefined;
+    highlighted_solution = undefined;
 
     //
     // This handler can be used to restart the solution process. It is probably
-    // best to also reset the visualizations mode to non-maximized.
+    // best to also reset the visualization mode to non-maximized.
     //
     visualizations_maximized = false;
   }
@@ -65,6 +116,14 @@ TODO: Create a reusable visualizations component with the control buttons.
       _.is_valid_reference_point(method, preference)
     ) {
       method = await _.iterate(method, preference);
+      preference = method.current_solution;
+      solutions = _.all_solutions(method);
+      selected_solutions = [];
+      reference_solution = method.current_solution;
+      highlighted_solution = undefined;
+      //
+    } else {
+      throw new Error("`handle_iterate` called in wrong state.");
     }
   }
 </script>
@@ -146,7 +205,7 @@ TODO: Create a reusable visualizations component with the control buttons.
             upper_bounds={_.upper_bounds(method)}
             bind:preference
             previous_preference={method.previous_preference}
-            selected_solution={method.current_solution}
+            {reference_solution}
           />
         </Card>
       </div>
@@ -173,14 +232,14 @@ TODO: Create a reusable visualizations component with the control buttons.
           </svelte:fragment>
           <Visualizations
             names={_.objective_names_with_goals(method)}
-            values={[method.current_solution, ...method.additional_solutions]}
+            values={solutions}
             lower_bounds={_.lower_bounds(method)}
             upper_bounds={_.upper_bounds(method)}
             lower_is_better={method.problem.objectives.map(
               ({ minimize }) => minimize
             )}
             grid_mode={gridded_visualizations}
-            max_selections={1}
+            bind:selected={selected_solutions}
             bind:tab={visualizations_tab}
           />
         </Card>
@@ -193,8 +252,15 @@ TODO: Create a reusable visualizations component with the control buttons.
               The first solution is the "current solution" as returned by the
               method. The other solutions are the "additional solutions".
             </p>
-            <p>(The solutions table is work in progress.)</p>
-            <Table head={_.objective_names_with_goals(method)} body={[]} />
+            <div class="overflow-x-auto">
+              <Table
+                head={_.objective_names_with_goals(method)}
+                body={solutions.map((solution) => {
+                  return solution.map((value) => value.toFixed(decimals));
+                })}
+                bind:selected_rows={selected_solutions}
+              />
+            </div>
           </div>
         </Card>
       </div>

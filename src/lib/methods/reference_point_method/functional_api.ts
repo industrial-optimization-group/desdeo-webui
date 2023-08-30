@@ -136,3 +136,8 @@ export function upper_bounds(method: CanIterate): Point {
     Math.max(ideal_value, method.nadir_point[j])
   );
 }
+
+/** Returns all solutions, with the current solution as the first one. */
+export function all_solutions(method: Iterated): Point[] {
+  return [method.current_solution, ...method.additional_solutions];
+}
