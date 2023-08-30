@@ -5,8 +5,6 @@
 <script lang="ts">
   import type * as echarts from "echarts";
   import type { EChartOption } from "echarts";
-  // import { onDestroy } from "svelte";
-  // import { chartStore } from "$lib/components/visual/chartStore";
   import {
     colorPalette,
     selectedLineStyle,
@@ -27,8 +25,7 @@
   export let highlightedIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let disableAnimation: boolean | undefined = undefined;
-  export let height: number | undefined = 45;
-  // export let data: SolutionData;
+  export let aspect: string | undefined = "aspect-[5/3]";
 
   let chart: echarts.EChartsType;
   $: if (selectedIndices) {
@@ -114,5 +111,5 @@
   bind:events
   {colors}
   {disableAnimation}
-  {height}
+  {aspect}
 />

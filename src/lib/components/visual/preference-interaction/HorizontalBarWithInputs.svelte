@@ -12,6 +12,7 @@
   export let decimalPrecision: number | undefined = undefined;
   export let barColor: string | undefined = undefined;
   export let arrowMode = false;
+  export let aspect: string | undefined = undefined;
   //   export let barColor = "#a6b1e1";
   //   // export let isMin = true;
   //   // export let divId: string;
@@ -31,7 +32,7 @@
 
 <!-- Horizontal bar with inputs -->
 <!-- <div class="container" style="--barColor:{barColor ? barColor : '#c000'}"> -->
-<div class="container">
+<div class="container {aspect}">
   <div
     class="firstPart"
     style="--justify: {barName ? 'space-between' : 'flex-end'}"

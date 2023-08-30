@@ -26,7 +26,7 @@ T
   export let componentIndex: number | undefined = undefined;
   export let maxSelections: number | undefined = undefined;
   export let disableAnimation: boolean | undefined = undefined;
-  export let height = 10;
+  export let aspect: string | undefined = undefined;
 
   $: if (selectedIndices != undefined) {
     if (componentIndex != undefined) {
@@ -289,6 +289,6 @@ T
   bind:events
   {colors}
   {disableAnimation}
-  {height}
+  {aspect}
 />
 <!-- height = {6/3} -->

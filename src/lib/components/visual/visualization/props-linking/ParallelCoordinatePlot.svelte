@@ -52,6 +52,8 @@
   export let chart: echarts.ECharts | undefined = undefined;
   export let colors: string[] = [colorPalette[0]];
   export let disableAnimation: boolean | undefined = true;
+  export let aspect: string | undefined = "aspect-[5/3]";
+  export let customStyle: string | undefined = undefined;
 
   let option: EChartOption;
 
@@ -326,9 +328,6 @@
       brushIntervalPerAxis = helpArray;
     },
   };
-
-  /** The aspect ratio value for the component. */
-  export let height = 45;
 </script>
 
-<EchartsComponent bind:chart {option} {events} {height} />
+<EchartsComponent bind:chart {option} {events} {aspect} {customStyle} />

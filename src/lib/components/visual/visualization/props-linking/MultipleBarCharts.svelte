@@ -30,7 +30,7 @@
   export let maxSelections: number | undefined = undefined;
   export let asRow = true;
   export let disableAnimation: boolean | undefined = undefined;
-  export let height: number | undefined = 50;
+  export let aspect: string | undefined = "aspect-[5/3]";
 
   //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;
@@ -48,7 +48,10 @@
   // let aspect = "aspect-[1/" + count + "]";
 </script>
 
-<div class="multi" style="--flex-direction:{asRow ? 'row' : 'column'};">
+<div
+  class="multi {aspect}"
+  style="--flex-direction:{asRow ? 'row' : 'column'};"
+>
   {#each values as objectiveValues, i}
     <BarChart
       title={"Solution " + (i + 1)}
@@ -59,7 +62,6 @@
       componentIndex={i}
       {colors}
       {disableAnimation}
-      {height}
     />
     <!-- {aspect} -->
     <!-- {axisNames} -->

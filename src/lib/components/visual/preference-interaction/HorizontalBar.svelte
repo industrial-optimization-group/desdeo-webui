@@ -37,7 +37,7 @@
   export let lowerIsBetter = true;
   export let decimalPrecision: number | undefined = undefined;
   export let arrowMode = true;
-  export let height = 10;
+  export let aspect = "aspect-[11/2]";
 
   // $: console.log(selectedValue);
   $: if (selectedValue != null) {
@@ -131,7 +131,6 @@
   onMount(() => {
     chart = echarts.init(chartDiv);
     addHorizontalBar(option);
-    heightString = "height:" + { height } + "vh;";
   });
 
   // TODO: Better documentation. Also try to make this more understandable.
@@ -899,7 +898,6 @@
     ];
     return arrows;
   }
-  let heightString = "height:" + height + "vh;";
 </script>
 
-<div style={heightString} bind:this={chartDiv} />
+<div class={aspect} bind:this={chartDiv} />

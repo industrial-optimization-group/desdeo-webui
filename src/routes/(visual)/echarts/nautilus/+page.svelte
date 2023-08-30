@@ -96,21 +96,18 @@
   <input type="number" bind:value={boundValue} />
 </div>
 <!-- Single Nautilus bars -->
-<div
-  id="hori"
-  style="width: 70vh; height: 20vh; min-height: 100px; margin-top: 2em;"
->
-  <NautilusNavigationBar
-    higherBound={5}
-    lowerBound={0}
-    iterations={10}
-    bind:currentIterationIndex
-    bind:selectedValue
-    bind:selectedBoundValue={boundValue}
-    uncertaintyBounds={exampleData.uncertainty[0]}
-    bind:disableInteraction
-  />
-</div>
+
+<NautilusNavigationBar
+  higherBound={5}
+  lowerBound={0}
+  iterations={10}
+  bind:currentIterationIndex
+  bind:selectedValue
+  bind:selectedBoundValue={boundValue}
+  uncertaintyBounds={exampleData.uncertainty[0]}
+  bind:disableInteraction
+/>
+
 <!-- Button for simulating iterating -->
 <div style="margin-top: 2em">
   <button

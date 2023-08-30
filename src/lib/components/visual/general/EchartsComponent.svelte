@@ -8,7 +8,7 @@
   export let chart: EChartsType | undefined = undefined;
   export let option: EChartOption;
   export let disableAnimation = true;
-  export let height: number | string = 30;
+  export let aspect: string | undefined = undefined;
   export let customStyle = "";
   export let events:
     | {
@@ -30,11 +30,6 @@
       }
     }
   }
-
-  if (typeof height === "number") {
-    height = height.toString();
-  }
-  let heightString = "height: " + height + "vh;  width:100%" + customStyle;
 
   onMount(() => {
     if (!chart) {
@@ -71,4 +66,8 @@
   });
 </script>
 
-<div style={heightString} bind:this={chartDiv} />
+<div
+  class={aspect}
+  style="height: 100%; width: 100%; {customStyle};"
+  bind:this={chartDiv}
+/>
