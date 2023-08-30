@@ -571,11 +571,16 @@
       }
       const targetParentName: string = params.target.parent.name;
       // Only update the line if click has not happened on the interactive buttons
-      if (targetParentName !== "interactiveButtons") {
+      if (
+        targetParentName !== "interactiveButtons" &&
+        params.target.id.toString() !== "prevLine"
+      ) {
         selectedValue = chart.convertFromPixel({ seriesIndex: 0 }, [
           params.offsetX,
           params.offsetY,
         ])[0];
+      } else if (params.target.id.toString() === "prevLine") {
+        selectedValue = previousValue;
       }
     });
   }
