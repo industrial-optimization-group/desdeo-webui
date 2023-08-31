@@ -57,8 +57,8 @@
       title={"Solution " + (i + 1)}
       values={objectiveValues}
       {axisNames}
-      {selectedIndices}
-      {highlightedIndex}
+      bind:selectedIndices
+      bind:highlightedIndex
       componentIndex={i}
       {colors}
       {disableAnimation}

@@ -51,8 +51,8 @@
     <PetalAsPolar
       title={"Solution " + (i + 1)}
       values={value}
-      {selectedIndices}
-      {highlightedIndex}
+      bind:selectedIndices
+      bind:highlightedIndex
       componentIndex={i}
       {axisNames}
       {colors}
