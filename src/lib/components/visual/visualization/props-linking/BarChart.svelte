@@ -1,21 +1,12 @@
 <!--@component
     @description Makes a petal chart using the ECharts library's pie option.
 -->
-<!-- TODO: Make a component for a single petal chart. This file then could create all wanted petal charts. 
-T
--->
-
+<!-- TODO: Values on the x-axis too tight -->
 <script lang="ts">
-  // import { onDestroy } from "svelte";
-  // import { chartStore } from "$lib/components/visual/chartStore";
   import type * as echarts from "echarts";
   import { handleSelectionChange } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
   import { selectedLineStyle } from "../../constants";
-
-  // export let id: string;
-  // export let title = "Test title";
-  // export let data: SolutionData;
 
   export let title = "";
   export let colors: string[] = [];
@@ -27,6 +18,7 @@ T
   export let maxSelections: number | undefined = undefined;
   export let disableAnimation: boolean | undefined = undefined;
   export let aspect: string | undefined = undefined;
+  export let lowerIsBetter: boolean[] | undefined = undefined;
 
   $: if (selectedIndices != undefined) {
     if (componentIndex != undefined) {
@@ -56,10 +48,6 @@ T
               },
             ],
           });
-          // chart.dispatchAction({
-          // type: "downplay",
-          // seriesIndex: 0,
-          // });
         }
       }
     }
@@ -76,19 +64,8 @@ T
         chart.dispatchAction({
           type: "downplay",
           seriesIndex: 0,
-          // dataIndex: highlightedIndex,
         });
       }
-
-      // chart.setOption({
-      //   tooltip: {
-      //     formatter: tooltipFormatter,
-      //     borderColor: "",
-      //     textStyle: {
-      //       color: "",
-      //     },
-      //   },
-      // });
     }
   }
 
@@ -99,69 +76,38 @@ T
     }
   }
 
-  // const names: string[] = name;
-  // const values: number[][] = data.values;
-
-  // let newSeriesObjects = [];
-  // let subTexts: echarts.EChartTitleOption[] = [{ text: title }];
-  // Change values of "values" to be positive with the map function.
-
-  // let valuesPositive = objectiveValues.map((row) => row.map((value) => Math.abs(value)));
-  // let valuesTransposed = valuesPositive;
-
-  // Transpose values matrix. One liner from https://stackoverflow.com/questions/17428587/transposing-a-2d-array-in-javascript
-  // let valuesTransposed = valuesPositive[0].map((col, i) =>
-  //   valuesPositive.map((row) => row[i])
-  // );
-  // Set the column names
-  // Create the series data for the radar chart.
+  // Create the series data for the radar chart and the data for the markLines (They indicate if lower or higher value is better).
+  let markLineData = [];
   let seriesData: { value: number; name: string }[] = [];
   for (let i = 0; i < values.length; i++) {
     seriesData.push({
       value: values[i],
       name: axisNames[i],
     });
+
+    if (lowerIsBetter != undefined) {
+      let formatter = lowerIsBetter[i] ? "min" : "max"; //Label text to indicate min/max
+      let position = lowerIsBetter[i] ? "start" : "end";
+      markLineData.push([
+        // Arrow to indicate that a lower value is better
+        {
+          x: "10%",
+          yAxis: i,
+          label: { show: true, position: position, formatter: formatter },
+          symbol: lowerIsBetter[i] ? "arrow" : "none",
+        },
+        // Arrow to indicate that a higher value is better
+        {
+          x: "90%",
+          yAxis: i,
+          label: { show: true, position: position, formatter: formatter },
+          symbol: lowerIsBetter[i] ? "none" : "arrow",
+        },
+      ]);
+    }
   }
 
   let dataSet: (string | number)[][] = [["Objective", ...values]];
-
-  // let newRow: (string | number)[] = ["Solution " + (i + 1)];
-  // newRow.push(...valuesTransposed[i]);
-  // dataSet.push(newRow);
-
-  // newSeriesObjects.push(
-
-  // A circle for showing the lines between petals and border line.
-  // {
-  //   type: "pie",
-  //   radius: "30%",
-  //   tooltip: {
-  //     show: false,
-  //   },
-  //   roseType: "area",
-  //   itemStyle: {
-  //     borderWidth: 1,
-  //     borderColor: "gray",
-  //     color: "transparent",
-  //   },
-  //   emphasis: {
-  //     itemStyle: {
-  //       borderWidth: 1,
-  //       borderColor: "gray",
-  //       color: "transparent",
-  //     },
-  //   },
-  //   // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-  //   // To be under the petals when clicking.
-  //   z: 1,
-  //   silent: true,
-  //   label: {
-  //     show: false,
-  //   },
-  //   // data: [[1,2,3]],
-  // }
-  // );
-
   // Create the option object for the whole chart.
   const option: echarts.EChartOption = {
     title: {
@@ -213,48 +159,27 @@ T
             borderWidth: 3,
           },
         },
-
-        // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-        // encode: {
-        //   itemName: "Solution",
-        //   value: name,
-        //   tooltip: name,
-        // },
         data: seriesData,
-      },
-      // A circle for showing the lines between petals and border line.
-      // {
-      //   type: "pie",
-      //   radius: "30%",
+        markLine: {
+          lineStyle: {
+            color: "black",
+            width: 0,
+            opacity: 0.5,
+          },
+          silent: true,
+          symbol: ["arrow", "arrow"],
+          symbolSize: 20,
 
-      //   roseType: "area",
-      //   itemStyle: {
-      //     borderWidth: 1,
-      //     borderColor: "gray",
-      //     color: "transparent",
-      //   },
-      //   emphasis: {
-      //     itemStyle: {
-      //       borderWidth: 1,
-      //       borderColor: "gray",
-      //       color: "transparent",
-      //     },
-      //   },
-      //   // center: [((i + 0.5) / valuesTransposed.length) * 100 + "%", "50%"],
-      //   // To be under the petals when clicking.
-      //   z: 1,
-      //   silent: true,
-      //   label: {
-      //     show: false,
-      //   },
-      //   data: [1],
-      // },
-      // );
+          // TODO: solve type error
+          //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore -- Remove this line to see the error
+          data: markLineData,
+        },
+      },
     ],
   };
-  // let chart: echarts.EChartsType = createChart(id, option);
 
-  // TODO: The following part of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
+  // TODO: The following part (let events...) of the code is duplicated in every chart component. Moving to separate file doesn't work, most likely because of chart.on -functions that might need to be defined in the same file as the chart is created.
   let events = {
     click: function () {
       if (componentIndex != undefined) {

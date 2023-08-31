@@ -31,6 +31,7 @@
   export let asRow = true;
   export let disableAnimation: boolean | undefined = undefined;
   export let aspect: string | undefined = "aspect-[5/3]";
+  export let lowerIsBetter: boolean[] | undefined = undefined;
 
   //TODO: Check if these are needed in this component
   let chart: echarts.EChartsType;
@@ -62,6 +63,7 @@
       componentIndex={i}
       {colors}
       {disableAnimation}
+      {lowerIsBetter}
     />
     <!-- {aspect} -->
     <!-- {axisNames} -->

@@ -72,6 +72,7 @@ length.
         bind:highlightedIndex={highlighted}
         axisNames={names}
         colors={colorPalette}
+        lowerIsBetter={lower_is_better}
       />
     {:else if tab === 3}
       <MultiplePetalCharts

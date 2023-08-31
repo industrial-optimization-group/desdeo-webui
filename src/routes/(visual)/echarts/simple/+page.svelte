@@ -16,6 +16,8 @@
   import type { SolutionData } from "$lib/components/visual/types";
   // import ParallelCoordinatePlot from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlotBase.svelte";
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
+  import BarChart from "$lib/components/visual/visualization/props-linking/BarChart.svelte";
+  import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -127,6 +129,26 @@
     </p> -->
     <!-- <BasicTable selectedSolutions={$selectedSolutions} /> -->
     <!-- <ParallelAxis id="parallelAxis" {title} {names} {values} bind:solutions /> -->
+    <div style="height:40vh; width:70vh">
+      <BarChart
+        title="SingleBar"
+        bind:selectedIndices
+        bind:values={theValues[1]}
+        bind:highlightedIndex={high}
+        aspect="aspect-[1]"
+        lowerIsBetter={[true, true, false, true]}
+      />
+    </div>
+
+    <div style="height:40vh; width:100vh">
+      <MultipleBarCharts
+        axisNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+        bind:selectedIndices
+        bind:values={theValues}
+        bind:highlightedIndex={high}
+      />
+    </div>
+
     <div style="height:40vh; width:100vh">
       <ParallelCoordinatePlotWithSwap
         values={theValues}

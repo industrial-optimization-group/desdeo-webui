@@ -60,6 +60,7 @@ length.
     bind:highlightedIndex={highlighted}
     axisNames={names}
     colors={colorPalette}
+    lowerIsBetter={lower_is_better}
   />
   <MultiplePetalCharts
     {values}
