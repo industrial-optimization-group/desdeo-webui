@@ -5,12 +5,17 @@ A user interface for the reference point method.
 NOTE: Non-functional prototype.
 -->
 <script lang="ts">
-  // TODO: Disable the UI while interacting with the backend.
+  // TODO: Add support for problems that don't have finite ideal and nadir
+  // points as part of the problem description.
+
+  // TODO: Disable the UI and show acitivity indicator while interacting
+  // with the backend.
 
   // TODO: Create a reusable visualization component with the control buttons.
 
   // TODO: Add a feature to stop the solution process and view and visualize
-  // the obtained solution.
+  // the obtained solution (both objectives and variables). There should also
+  // be an option to save the final solution to an archive. Something else?
 
   import * as _ from "$lib/methods/reference_point_method/functional_api";
   import { backend } from "$lib/api";

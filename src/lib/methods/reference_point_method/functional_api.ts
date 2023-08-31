@@ -107,6 +107,10 @@ export function can_iterate(method: Method): method is CanIterate {
   return is_initialized(method) || is_iterated(method);
 }
 
+/**
+ * Checks if `value` is a valid reference point in the sense that it is an array
+ * of finite numbers of the correct length.
+ */
 export function is_valid_reference_point(
   method: Method,
   value: unknown
@@ -125,12 +129,20 @@ export function objective_names_with_goals(method: Method): string[] {
   );
 }
 
+/**
+ * Returns the lower bound for each objective based on the ideal and nadir
+ * points returned by the "start method" request.
+ */
 export function lower_bounds(method: CanIterate): Point {
   return method.ideal_point.map((ideal_value, j) =>
     Math.min(ideal_value, method.nadir_point[j])
   );
 }
 
+/**
+ * Returns the upper bound for each objective based on the ideal and nadir
+ * points returned by the "start method" request.
+ */
 export function upper_bounds(method: CanIterate): Point {
   return method.ideal_point.map((ideal_value, j) =>
     Math.max(ideal_value, method.nadir_point[j])
