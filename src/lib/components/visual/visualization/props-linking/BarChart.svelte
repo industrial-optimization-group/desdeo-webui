@@ -1,23 +1,53 @@
 <!--@component
-    @description Makes a petal chart using the ECharts library's pie option.
+    @description Makes a bar chart using the ECharts library.
 -->
-<!-- TODO: Values on the x-axis too tight -->
+<!-- TODO: Values on the x-axis too close to each other -->
 <script lang="ts">
   import type * as echarts from "echarts";
   import { handleSelectionChange } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
   import { selectedLineStyle } from "../../constants";
 
+  /** The title of the chart. */
   export let title = "";
+
+  /** The colors to use for the chart. */
   export let colors: string[] = [];
+
+  /** The values to use for the chart. */
   export let values: number[];
-  export let axisNames: string[] = [];
+
+  /** The names to use for the individual bars (objective names). */
+  export let names: string[] = [];
+
+  /** The indices of the selected items in the chart. */
   export let selectedIndices: number[] = [];
+
+  /** The index of the highlighted item in the chart. */
   export let highlightedIndex: number | undefined = undefined;
+
+  /** The index of the component in a group of components (multiple bar charts). */
   export let componentIndex: number | undefined = undefined;
+
+  /** The maximum number of items that can be selected in the chart. */
   export let maxSelections: number | undefined = undefined;
+
+  /** Whether to disable animation for the chart. */
   export let disableAnimation: boolean | undefined = undefined;
+
+  /**
+   * The aspect ratio as a tailwind class for the div container, which contains
+   * the chart.
+   *
+   * @example
+   *   aspect - [5 / 3];
+   */
   export let aspect: string | undefined = undefined;
+
+  /**
+   * An array of boolean values indicating whether lower values are better for
+   * each data point (In MOO if the objective is to be minimized or maximized).
+   */
   export let lowerIsBetter: boolean[] | undefined = undefined;
 
   $: if (selectedIndices != undefined) {
@@ -82,7 +112,7 @@
   for (let i = 0; i < values.length; i++) {
     seriesData.push({
       value: values[i],
-      name: axisNames[i],
+      name: names[i],
     });
 
     if (lowerIsBetter != undefined) {

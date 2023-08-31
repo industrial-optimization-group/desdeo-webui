@@ -1,7 +1,7 @@
 <!--@component
     @description Makes a radar chart using the ECharts library.
 -->
-
+<!-- TODO: Add min/max indicator arrows -->
 <script lang="ts">
   import type * as echarts from "echarts";
   import type { EChartOption } from "echarts";
@@ -16,16 +16,37 @@
   } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
 
+  /** The colors to use for the chart. */
   export let colors: string[] = [colorPalette[0]];
+
+  /** The values to use for the chart. */
   export let values: number[][];
-  // export let minimize: boolean[];
-  // export let showIndicators = false;
-  export let indicatorNames: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
+
+  /**
+   * The names to use for the indicators (axis).
+   *
+   * @remarks
+   *   At the moment breaks the graphics if not given the same amount as values
+   *   (objectives/axis).
+   */
+  export let indicatorNames: string[] = [];
+
+  /** The indices of the selected items in the chart. */
   export let selectedIndices: number[] = [];
+
+  /** The index of the highlighted item in the chart. */
   export let highlightedIndex: number | undefined = undefined;
+
+  /** The maximum number of items that can be selected in the chart. */
   export let maxSelections: number | undefined = undefined;
+
+  /** If true, the animation of the chart will be disabled. */
   export let disableAnimation: boolean | undefined = undefined;
+
+  /** The aspect ratio of the div container, which contains the chart. */
   export let aspect: string | undefined = "aspect-[5/3]";
+
+  // export let lowerIsBetter: boolean[];
 
   let chart: echarts.EChartsType;
   $: if (selectedIndices) {

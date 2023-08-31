@@ -131,7 +131,7 @@
   </div>
   <div style="height:50em; width:100vh">
     <MultipleBarCharts
-      axisNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      names={["Objective1", "Objective2", "Objective3", "Objective4"]}
       bind:selectedIndices
       bind:values={theValues}
       bind:highlightedIndex={high}

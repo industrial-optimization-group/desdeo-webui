@@ -1,5 +1,5 @@
 <!--@component
-    @description Makes a petal chart using the ECharts library's pie option.
+    @description Makes a petal chart using the ECharts library's pie option. "polar" option is used also, to make the bars petal chart like
 
     @prop {string} title - The title of the chart (solution name).
     @prop {string} color - The color of the chart (the color of the petals).
@@ -9,9 +9,12 @@
     @prop {number} highlightedIndex - The index of the highlighted altervative.
     @prop {number} maxSelections - The maximum number of selected solutions.
     @prop {number} componentIndex - The index of the component. Is needed when multiple charts are used, for the selection to know which of the charts refers to which alternative (solution).
+    @prop {boolean} disableAnimation - If true, the animation of the chart will be disabled.
+    @prop {string} aspect - The aspect ratio of the div container, which contains the chart.
 -->
 <!-- TODO: Clean code -->
 <!-- TODO: Fix objective text that are now on top of each other (Implementing multiple charts in the same echarts instance could solve this issue)   -->
+<!-- TODO: Add min/max indicator arrows -->
 
 <script lang="ts">
   import type * as echarts from "echarts";
@@ -19,15 +22,40 @@
   import EchartsComponent from "../../general/EchartsComponent.svelte";
   import { selectedLineStyle } from "../../constants";
 
+  /** The title of the chart. */
   export let title = "";
+
+  /** The colors to use for the chart. */
   export let colors: string[] = [];
+
+  /** The values to use for the chart. */
   export let values: number[];
-  export let axisNames: string[] = [];
+
+  /** The names to use for the objectives. */
+  export let names: string[] = [];
+
+  /** The indices of the selected items in the chart. */
   export let selectedIndices: number[] = [];
+
+  /** The index of the highlighted item in the chart. */
   export let highlightedIndex: number | undefined = undefined;
+
+  /** The maximum number of items that can be selected in the chart. */
   export let maxSelections: number | undefined = undefined;
+
+  /** The index of the component in the parent component. */
   export let componentIndex: number | undefined = undefined;
+
+  /** If true, the animation of the chart will be disabled. */
   export let disableAnimation: boolean | undefined = undefined;
+
+  /**
+   * The aspect ratio as a tailwind class for the div container, which contains
+   * the chart.
+   *
+   * @example
+   *   aspect - [5 / 3];
+   */
   export let aspect: string | undefined = undefined;
 
   $: if (selectedIndices != undefined) {
@@ -121,7 +149,7 @@
   for (let i = 0; i < values.length; i++) {
     seriesData.push({
       value: values[i],
-      name: axisNames[i],
+      name: names[i],
     });
   }
 
@@ -181,7 +209,7 @@
     },
     angleAxis: {
       type: "category",
-      data: axisNames ? axisNames : [],
+      data: names ? names : [],
       startAngle: 90,
       axisLabel: {
         show: true,

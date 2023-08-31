@@ -70,7 +70,7 @@ length.
         maxSelections={max_selections}
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
-        axisNames={names}
+        {names}
         colors={colorPalette}
         lowerIsBetter={lower_is_better}
       />
@@ -107,7 +107,7 @@ length.
         maxSelections={max_selections}
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
-        axisNames={names}
+        {names}
         colors={colorPalette}
       />
       <MultiplePetalCharts

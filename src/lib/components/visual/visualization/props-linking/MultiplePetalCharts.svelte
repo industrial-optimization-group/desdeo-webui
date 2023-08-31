@@ -22,14 +22,34 @@
   } from "$lib/components/visual/helperFunctions";
   import PetalAsPolar from "./PetalAsPolar.svelte";
 
+  /** The colors of the petals. If not given, all petals will be blue. */
   export let colors: string[] = [];
+
+  /** The values of the solutions. Each solution is an array of numbers. */
   export let values: number[][];
+
+  /** The names of the axis (objectives). */
   export let axisNames: string[] = [];
+
+  /** The indices of the selected solutions. */
   export let selectedIndices: number[] = [];
+
+  /** The index of the highlighted solution. */
   export let highlightedIndex: number | undefined = undefined;
+
+  /** The maximum number of selected solutions. */
   export let maxSelections: number | undefined = undefined;
+
+  /**
+   * If true, the petal charts will be displayed as a row. If false, they will
+   * be displayed as a column.
+   */
   export let asRow = true;
+
+  /** If true, the animation of the petal charts will be disabled. */
   export let disableAnimation: boolean | undefined = undefined;
+
+  /** The aspect ratio of the div container, which contains all charts. */
   export let aspect: string | undefined = "aspect-[5/3]";
 
   //TODO: Check if these are needed in this component
@@ -54,7 +74,7 @@
       bind:selectedIndices
       bind:highlightedIndex
       componentIndex={i}
-      {axisNames}
+      names={axisNames}
       {colors}
       {disableAnimation}
     />
