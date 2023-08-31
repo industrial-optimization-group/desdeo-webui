@@ -7,9 +7,8 @@
       @param {number} solutionValue - The solution value to display on the chart.
       @param {number} selectedValue - The value that the user has selected.
       @param {number} previousValue - The previous value to display on the chart.
-      @param {number} colorPaletteIndex - The index of the color palette to use for the chart.
-      @param {boolean} inputs - Whether to display input fields for the chart.
-      @param {number} height - The height of the chart in viewport height units.
+      @param {number} barcolor - The color of the bar.
+      TODO: add rest params
  
 -->
 <!-- 
@@ -28,15 +27,34 @@
   } from "$lib/components/visual/helperFunctions";
   // import type { SolutionData } from "$lib/components/visual/types";
 
+  /** The lower bound of the chart. */
   export let lowerBound: number;
+
+  /** The higher bound of the chart. */
   export let higherBound: number;
+
+  /** The solution value to display on the chart. */
   export let solutionValue: number | undefined = undefined;
+
+  /** The value that the user has selected */
   export let selectedValue: number | undefined = undefined;
+
+  /** The previous value to display on the chart. */
   export let previousValue: number | undefined = undefined;
+
+  /** The color of the bar. */
   export let barColor = colorPalette[0];
+
+  /** Whether a lower value is better. */
   export let lowerIsBetter = true;
+
+  /** The decimal precision to use for rounding values. */
   export let decimalPrecision: number | undefined = undefined;
+
+  /** Whether to display the arrow mode. */
   export let arrowMode = true;
+
+  /** The aspect ratio of the chart container. */
   export let aspect = "aspect-[11/2]";
 
   // $: console.log(selectedValue);

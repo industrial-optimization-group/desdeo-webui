@@ -1,5 +1,5 @@
 <!--@component
-  Creates a parallel axis chart using the ECharts library. This component is not linked to other components and can be used independently. 
+  Creates a parallel axis chart using the ECharts library.
   
   @param {number[][]} values - The values for each axis. Outside arrays are the lines and inside arrays are the values of the line.
   @param {boolean[]} [lowerIsBetter=[]] - An array of boolean values that indicate whether each axis should be minimized.
@@ -11,6 +11,13 @@
   @param {boolean} [disableInteraction=false] - A boolean value that indicates whether the user can interact with the chart.
   @param {Ranges} [brushInterval=undefined] - A Ranges -object that defines the latest brush interval. 
   @param {Ranges[]} [BrushIntervalPerAxis=[]] - An array of Ranges -objects that define the brush interval for each axis. 
+  @param {EChartOption} [newOptions=undefined] - An EChartOption -object that defines the new options for the parallel coordinate plot.
+  @param {number} [maxSelections=undefined] - The maximum number of selections allowed.
+  @param {string[]} [colors=[]] - An array of strings that define the colors to use for the chart.
+  @param {boolean} [disableAnimation=undefined] - A boolean value that indicates whether to disable animation for the chart.
+  @param {string} [aspect="aspect-[5/3]"] - The aspect ratio of the chart container.
+  @param {string} [customStyle=undefined] - Custom CSS styles to apply to the chart container.
+  @param {EChartsType} [chart=undefined] - The ECharts instance of the chart.
 
 -->
 <!-- TODO: min/max text should show also when names given manually -->
@@ -24,8 +31,6 @@
   import type { Ranges } from "$lib/components/visual/types";
   import type { EChartOption } from "echarts";
   import {
-    // getAxisY,
-    // getAxisX,
     getChartModel,
     handleHighlightChange,
     tooltipFormatter,
@@ -35,25 +40,58 @@
     handleSelectionChange,
   } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
-  // import EchartsComponent from "$lib/components/visual/EchartsComponent.svelte";
+
   // Props for this component:
+  /** The values to display on the plot. */
   export let values: number[][];
+
+  /** Whether a lower value is better for each axis. */
   export let lowerIsBetter: boolean[] = [];
+
+  /** Whether to show indicators for each axis. */
   export let showIndicators = false;
+
+  /** The ranges for each axis. */
   export let ranges: Ranges[] | undefined = undefined;
-  export let names: string[] = []; // At the moment breaks the graphics if not given the same amount as values (objectives/axis)
+
+  /** The names for each axis. */
+  export let names: string[] = [];
+
+  /** The indices of the selected values. */
   export let selectedIndices: number[] = [];
+
+  /** The index of the highlighted value. */
   export let highlightedIndex: number | undefined = undefined;
+
+  /** Whether to disable interaction with the plot. */
   export let disableInteraction = false;
+
+  /** A Ranges -object that defines the latest brush interval */
   export let brushInterval: Ranges | undefined = undefined;
+
+  /** An array of Ranges -objects that define the brush interval for each axis */
   export let brushIntervalPerAxis: Ranges[] = [];
+
+  /** The new options for the plot. */
   export let newOptions: EChartOption | undefined = undefined;
+
+  /** The maximum number of selections allowed. */
   export let maxSelections: number | undefined = undefined;
-  export let chart: echarts.ECharts | undefined = undefined;
+
+  /** The colors to use for the plot. */
   export let colors: string[] = [colorPalette[0]];
+
+  /** Whether to disable animation for the plot. */
   export let disableAnimation: boolean | undefined = true;
+
+  /** The aspect ratio of the plot container. */
   export let aspect: string | undefined = "aspect-[5/3]";
+
+  /** Custom CSS styles to apply to the chart container. */
   export let customStyle: string | undefined = undefined;
+
+  /** The ECharts instance of the plot */
+  export let chart: echarts.ECharts | undefined = undefined;
 
   let option: EChartOption;
 

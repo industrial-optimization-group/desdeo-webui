@@ -1,15 +1,49 @@
+<!-- 
+  @component
+  A Svelte component that renders an ECharts chart.
+ -->
 <script lang="ts">
   import * as echarts from "echarts";
   import type { EChartOption, EChartsType } from "echarts";
   import { onMount } from "svelte";
   import { highlightedStyle } from "../constants";
 
+  /** An array of colors (kind of a color palette) to use for the chart series. */
   export let colors: string[] = [];
+
+  /** The ECharts instance used to render the chart. */
   export let chart: EChartsType | undefined = undefined;
+
+  /** The ECharts chart options. */
   export let option: EChartOption;
+
+  /** Whether to disable animations on the chart. */
   export let disableAnimation = true;
+
+  /** The aspect ratio of the chart container. */
   export let aspect: string | undefined = undefined;
+
+  /** Custom CSS styles to apply to the chart container. */
   export let customStyle = "";
+
+  /**
+   * Event handlers for the chart events.
+   *
+   * @example
+   *   {
+   *   click: function () {
+   *   if (componentIndex != undefined) {
+   *   selectedIndices = updateSelectedIndices(componentIndex);
+   *   }
+   *   },
+   *   mouseover: function () {
+   *   highlightedIndex = componentIndex;
+   *   },
+   *   mouseout: function () {
+   *   highlightedIndex = undefined;
+   *   },
+   *   };
+   */
   export let events:
     | {
         [key: string]: (params: {
@@ -21,7 +55,10 @@
         }) => void;
       }
     | undefined = undefined;
+
   let chartDiv: HTMLDivElement;
+
+  //Attaches the given event handlers to the chart instance.
   $: if (events) {
     if (chart) {
       for (const [eventName, eventHandler] of Object.entries(events)) {
@@ -62,7 +99,6 @@
     } else {
       chart.resize();
     }
-    // chartDiv.setAttribute("style", heightString);
   });
 </script>
 

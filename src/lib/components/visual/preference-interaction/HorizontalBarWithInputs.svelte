@@ -1,18 +1,47 @@
+<!-- 
+  @component
+  Uses HorizontalBar.svelte and BasicInput.svelte components to create a component with inputs and the horizontal bar.
+ -->
 <script lang="ts">
   import Input from "$lib/components/visual/preference-interaction/BasicInput.svelte";
   import SingleHorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBar.svelte";
 
+  /** The lower bound of the chart. */
   export let lowerBound: number;
+
+  /** The higher bound of the chart. */
   export let higherBound: number;
+
+  /** The name to be shown on top of the component. */
   export let barName: string | undefined = undefined;
+
+  /** The solution value to display on the chart. */
   export let solutionValue: number | undefined = undefined;
+
+  /** The value that the user has selected */
   export let selectedValue: number | undefined = undefined;
+
+  /** The previous value to display on the chart. */
   export let previousValue: number | undefined = undefined;
+
+  /** Whether a lower value is better. */
   export let lowerIsBetter = true;
+
+  /** The decimal precision to use for rounding values. */
   export let decimalPrecision: number | undefined = undefined;
+
+  /** The color of the bar. */
   export let barColor: string | undefined = undefined;
+
+  /**
+   * Whether to display the arrow on the sides of the bar. Also restricts the
+   * input values to the range of lower and higher bounds
+   */
   export let arrowMode = false;
+
+  /** The aspect ratio of the chart container div element. */
   export let aspect: string | undefined = undefined;
+
   //   export let barColor = "#a6b1e1";
   //   // export let isMin = true;
   //   // export let divId: string;
