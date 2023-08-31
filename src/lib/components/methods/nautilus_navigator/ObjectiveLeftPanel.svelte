@@ -1,11 +1,12 @@
 <!--
 @component
 The left-hand side panel of the navigation bar.
-
-TODO: Do we want to put restrictions on the aspiration and bound values that
-the user can choose?
 -->
 <script lang="ts">
+  //
+  // TODO: Update the inputs to use theme based styling.
+  //
+  //
   export let name: string;
   export let best_reachable: number;
   export let worst_reachable: number;

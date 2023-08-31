@@ -1,6 +1,8 @@
 //
 // TODO: Rename this module to `backend_client.ts`?
 //
+// TODO: Some response data isn't currently validated.
+//
 
 import axios, { type AxiosInstance } from "axios";
 import { z } from "zod";

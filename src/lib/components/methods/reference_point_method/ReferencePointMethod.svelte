@@ -1,21 +1,21 @@
 <!--
 @component
 A user interface for the reference point method.
-
-NOTE: Non-functional prototype.
 -->
 <script lang="ts">
+  //
   // TODO: Add support for problems that don't have finite ideal and nadir
   // points as part of the problem description.
-
-  // TODO: Disable the UI and show acitivity indicator while interacting
-  // with the backend.
-
+  //
   // TODO: Create a reusable visualization component with the control buttons.
-
+  //
   // TODO: Add a feature to stop the solution process and view and visualize
   // the obtained solution (both objectives and variables). There should also
   // be an option to save the final solution to an archive. Something else?
+  //
+  // TODO: Improve error handling. Currently we show very general error
+  // messages.
+  //
 
   import * as _ from "$lib/methods/reference_point_method/functional_api";
   import { backend } from "$lib/api";
@@ -60,9 +60,10 @@ NOTE: Non-functional prototype.
   let selected_solutions: number[];
 
   //
-  // TODO: We currently allow only one selected solution and use this to set
-  // the reference solution property of the preference input component. Can we
-  // do something better?
+  // TODO: We currently allow selecting multiple solutions but set the reference
+  // solution of the preference input component only when precisely one solution
+  // is selected. This seemed to provide a nicer UI than only allowing one
+  // selection. Do we want to change this behaviour?
   //
   let reference_solution: Point | undefined;
 
@@ -76,10 +77,14 @@ NOTE: Non-functional prototype.
   //
   // Index of currently highlighted solution.
   //
+  // TODO: Highlighting not implemented. The highlight feature needs to be
+  // added to the table component, and then this variable should be used to
+  // connect the table and the visualization components.
+  //
   // TODO: Would it be useful to be able to highlight multiple solutions? This
   // would require changes to the components.
   //
-  // eslint-disable-next-line
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let highlighted_solution: number | undefined;
 
   let visualizations_maximized = false;
