@@ -20,6 +20,7 @@ A user interface for the reference point method.
   import * as _ from "$lib/methods/reference_point_method/functional_api";
   import { backend } from "$lib/api";
   import type { Problem, Point } from "$lib/api";
+  import { toastStore } from "@skeletonlabs/skeleton";
 
   import ReferencePointSelect from "$lib/components/util/undecorated/ReferencePointSelect.svelte";
   import ProblemDetails from "$lib/components/main/ProblemDetails.svelte";
@@ -103,35 +104,69 @@ A user interface for the reference point method.
   // The handlers
   //
 
-  // TODO: Handle errors.
+  //
+  // TODO: Handle errors bettter.
+  //
   async function handle_initialize() {
-    method = await _.initialize(method);
-    preference = problem.objectives.map(() => undefined);
-    solutions = [];
-    selected_solutions = [];
-    reference_solution = undefined;
-    highlighted_solution = undefined;
+    try {
+      method = await _.initialize(method);
+      preference = problem.objectives.map(() => undefined);
+      solutions = [];
+      selected_solutions = [];
+      reference_solution = undefined;
+      highlighted_solution = undefined;
 
-    //
-    // This handler can be used to restart the solution process. It is probably
-    // best to also reset the visualization mode to non-maximized.
-    //
-    visualizations_maximized = false;
+      //
+      // This handler can be used to restart the solution process. It is probably
+      // best to also reset the visualization mode to non-maximized.
+      //
+      visualizations_maximized = false;
+      //
+    } catch (err) {
+      toastStore.trigger({
+        // prettier-ignore
+        message: "Oops! Something went wrong.",
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+      console.error(err);
+    }
   }
 
-  // TODO: Handle errors.
+  //
+  // TODO: Handle errors better.
+  //
   async function handle_iterate() {
     if (
       _.can_iterate(method) &&
       _.is_valid_reference_point(method, preference)
     ) {
-      method = await _.iterate(method, preference);
-      preference = method.current_solution;
-      solutions = _.all_solutions(method);
-      selected_solutions = [];
-      reference_solution = method.current_solution;
-      highlighted_solution = undefined;
-      //
+      try {
+        method = await _.iterate(method, preference);
+        preference = method.current_solution;
+        solutions = _.all_solutions(method);
+        selected_solutions = [];
+        reference_solution = method.current_solution;
+        highlighted_solution = undefined;
+        //
+      } catch (err) {
+        toastStore.trigger({
+          // prettier-ignore
+          message: "Oops! Something went wrong.",
+          background: "variant-filled-error",
+          timeout: 5000,
+        });
+        console.error(err);
+
+        //
+        // TODO: We really should do something better. The correct behaviour
+        // should depend on the reason for failing and should probably involve
+        // adding new states to the state machine. Now we can't really leave
+        // the method in the previous state because we don't know the reason
+        // for the failure.
+        //
+        method = _.reference_point_method(backend, problem);
+      }
     } else {
       throw new Error("`handle_iterate` called in wrong state.");
     }
