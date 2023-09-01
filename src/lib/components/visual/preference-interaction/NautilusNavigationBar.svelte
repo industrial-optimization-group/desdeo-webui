@@ -19,6 +19,7 @@
   TODO: Why the lines on the drawn region are not smooth?
   TODO: Add restriction which prevents dragging line outside feasible region
   TODO: Divide applyForMultipleLines to 2 different functions
+  TODO: Update dragging lines
    -->
 <script lang="ts">
   import { onMount } from "svelte";

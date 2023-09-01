@@ -8,11 +8,12 @@
       @param {number} selectedValue - The value that the user has selected.
       @param {number} previousValue - The previous value to display on the chart.
       @param {number} barcolor - The color of the bar.
-      TODO: add rest params
+      TODO: add rest of the props
  
 -->
 <!-- 
   TODO: When drag line is outside the bounds, dragging should start from that position. Now it starts from the edge of the chart. It's not a big problem, but a little annoying to use.
+  TODO: Include ideal and nadir points at both ends of the horizontal bar
  -->
 <script lang="ts">
   import * as echarts from "echarts";
