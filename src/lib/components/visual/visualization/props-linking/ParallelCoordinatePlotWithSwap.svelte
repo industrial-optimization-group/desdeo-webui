@@ -1,4 +1,5 @@
 <!--@component
+  THIS COMPONENT DOES NOT WORK IN REAL APPLICATION. The swap arrows are too buggy
   Creates a parallel axis chart using the ECharts library. This component is not linked to other components and can be used independently. 
   
   @param {number[][]} values - The values for each axis. Outside arrays are the lines and inside arrays are the values of the line.

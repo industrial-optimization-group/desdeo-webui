@@ -1,9 +1,8 @@
 <!--@component
-    @description 
+    @description Makes multiple petal charts in one component using echarts. 
 -->
-<!-- TODO: Make a component for a single bar chart. 
-TODO: Highlighting and selection don't work properly. Most propably bug in the using of seriesIndex and dataIndex
--->
+<!-- TODO: Highlighting and selection don't work properly. Most propably bug in the using of seriesIndex and dataIndex -->
+<!--TODO: Add prop for selecting whether bars should be placed horizontally or vertically. -->
 
 <script lang="ts">
   // import { onDestroy } from "svelte";

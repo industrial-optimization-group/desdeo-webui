@@ -21,6 +21,8 @@
   import PetalAsPolar from "$lib/components/visual/visualization/props-linking/PetalAsPolar.svelte";
   import PetalChart from "$lib/components/visual/visualization/props-linking/PetalAsPie.svelte";
   import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
+  import PetalsInOneChart from "$lib/components/visual/visualization/props-linking/multi-charts/PetalsInOneChart.svelte";
+  import BarsInOneChart from "$lib/components/visual/visualization/props-linking/multi-charts/BarsInOneChart.svelte";
 
   // let data = [
   //   [12.99, 100, 82, "Good"],
@@ -147,6 +149,22 @@
         {disableInteraction}
       />
     </div>
+  </div>
+  <div style="height:40vh; width:100vh">
+    <PetalsInOneChart
+      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+      bind:highlightedIndices={high}
+    />
+  </div>
+  <div style="height:40vh; width:100vh">
+    <BarsInOneChart
+      indicatorNames={["Objective1", "Objective2", "Objective3", "Objective4"]}
+      bind:selectedIndices
+      bind:values={theValues}
+      bind:highlightedIndices={high}
+    />
   </div>
   <div style="height:40vh; width:100vh">
     <RadarChart

@@ -1,9 +1,7 @@
 <!--@component
-    @description Makes a petal chart using the ECharts library's pie option.
+    @description Makes multiple petal charts in one component. 
 -->
-<!-- TODO: Make a component for a single petal chart. This file then could create all wanted petal charts. 
-TODO: Selection doesn't work properly. Objectives and solutions are mixed up
--->
+<!-- TODO: Highlighting and selection don't work properly. Most propably bug in the using of seriesIndex and dataIndex -->
 
 <script lang="ts">
   // import { onDestroy } from "svelte";
