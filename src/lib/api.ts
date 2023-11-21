@@ -34,7 +34,7 @@ export const backend: Backend = {
 //
 // TODO: Move this to a configuration file.
 //
-const baseURL = "http://localhost:5000";
+const baseURL = "http://127.0.0.1:5000";
 
 /** A missing token is represented by `undefined`. */
 type Token = string | undefined;
