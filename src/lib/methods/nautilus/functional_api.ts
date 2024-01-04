@@ -77,9 +77,35 @@ export async function iterate(
     n_iterations,
     preference_method,
     preference_info,
-    (use_previous_preference = undefined),
-    (step_back = undefined),
-    (short_step = undefined)
+    use_previous_preference,
+    step_back,
+    short_step
+  );
+
+  return {
+    _tag: "Iterated",
+    backend: method.backend,
+    problem: method.problem,
+    current_iteration_point: response.current_iteration_point,
+    distance: response.distance,
+    lower_bounds: response.lower_bounds,
+    message: response.message,
+    upper_bounds: response.upper_bounds,
+  };
+}
+
+export async function firstIteraion(
+  method: CanIterate,
+  n_iterations?: number,
+  preference_method?: number,
+  preference_info?: number[]
+): Promise<Iterated> {
+  const { response } = await requests.iterateNautilus(
+    method.backend,
+    method.problem,
+    n_iterations,
+    preference_method,
+    preference_info
   );
 
   return {

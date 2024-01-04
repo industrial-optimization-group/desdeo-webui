@@ -1,38 +1,45 @@
 <script lang="ts">
   import Card from "./Card.svelte";
-  import type * as _ from "$lib/methods/nautilus/functional_api";
+  import { createEventDispatcher } from "svelte";
+  import GDMNautilusBar from "$lib/components/visual/preference-interaction/GDMNautilusBar.svelte";
+  import type {
+    ObjectiveData,
+    IterationData,
+  } from "$lib/methods/nautilus/types";
 
-  interface Objective {
-    name: string;
-    minimize: boolean;
-  }
+  export let objectives: ObjectiveData[];
 
-  export let objectives: Objective[];
-  export let method: _.Method;
+  export let iterationData: IterationData[];
 
   let showDetails = Array(objectives.length).fill(true);
-  let weights: Array<{ rank?: number; weight?: number }> = objectives.map(
-    () => ({})
-  );
+  let useRank = false; // Global switch for using rank or weight
+
+  const dispatch = createEventDispatcher();
+  $: {
+    dispatch("toggleRankWeight", { useRank });
+  }
 
   function toggleDetails(index: number) {
     showDetails[index] = !showDetails[index];
   }
 
-  function updateWeight(index: number, type: "rank" | "weight", value: number) {
-    const otherType = type === "rank" ? "weight" : "rank";
-    weights[index][type] = value;
-    if (value != null) {
-      weights[index][otherType] = undefined; // Clear the other field
-    }
+  function updateValue(index: number, value: number) {
+    objectives[index].value = value;
+    dispatch("rankUpdate", { index, value });
   }
-
-  console.log("weights", weights);
-  console.log("method", method);
 </script>
 
 <Card>
-  <svelte:fragment slot="header">Preference information</svelte:fragment>
+  <svelte:fragment slot="header">
+    Preference information
+    <div class="rank-weight-toggle">
+      <label class="switch">
+        <input type="checkbox" bind:checked={useRank} />
+        <span class="slider round" />
+      </label>
+      <span class="toggle-label">{useRank ? "Rank" : "Weight"}</span>
+    </div>
+  </svelte:fragment>
   <div class="objectives-container">
     {#each objectives as objective, j}
       <div class="objective-card" id={objective.name}>
@@ -52,44 +59,38 @@
               <span>Minimize:</span>
               <span>{objective.minimize ? "Yes" : "No"}</span>
             </div>
-            <div class="data-point">
-              <span>Ideal Point:</span>
-              <span>{method.problem.ideal_point[j]}</span>
-            </div>
-            <div class="data-point">
-              <span>Nadir Point:</span>
-              <span>{method.problem.nadir_point[j]}</span>
-            </div>
+
             <div class="input-field">
-              <label for={`input-rank-${j}`}>Rank:</label>
+              <label for={`input-value-${j}`}
+                >{useRank ? "Rank" : "Weight (%)"}:</label
+              >
               <input
-                id={`input-rank-${j}`}
+                id={`input-value-${j}`}
                 type="number"
-                min="1"
+                min={useRank ? "1" : "0"}
                 max="100"
-                placeholder="Rank"
-                bind:value={weights[j].rank}
-                on:input={() => updateWeight(j, "rank", weights[j]?.rank ?? 0)}
-              />
-            </div>
-            <div class="input-field">
-              <label for={`input-weight-${j}`}>Weight (%):</label>
-              <input
-                id={`input-weight-${j}`}
-                type="number"
-                min="0"
-                max="100"
-                placeholder="Weight"
-                bind:value={weights[j].weight}
+                placeholder={useRank ? "Rank" : "Weight"}
+                bind:value={objective.value}
                 on:input={() =>
-                  updateWeight(j, "weight", weights[j]?.weight ?? 0)}
+                  updateValue(j, objective.value ? objective.value : 0)}
               />
             </div>
           </div>
         {/if}
-        <div class="objective-slider">
-          <!-- Slider and iteration container as before -->
-        </div>
+        {#each iterationData as data, index}
+          <div class="iteration-section">
+            <GDMNautilusBar
+              reachableRanges={[data.lower_bounds[j], data.upper_bounds[j]]}
+              higherBound={data.nadir_point[j]}
+              lowerBound={data.ideal_point[j]}
+              currentValue={data.current_iteration_point[j]}
+              objIndex={index}
+              iteration={data.iteration_counter}
+              arrowMode={false}
+            />
+            <!-- Add other iteration-specific details here -->
+          </div>
+        {/each}
       </div>
     {/each}
   </div>
@@ -148,9 +149,58 @@
     border-radius: 4px;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
   }
+  .rank-weight-toggle {
+    margin-left: auto; /* This will push the toggle to the right */
+    display: flex;
+    align-items: center;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px; /* Width of the slider */
+    height: 34px; /* Height of the slider */
+    margin: 0 10px; /* Add some margin around the slider */
+  }
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
 
-  .objective-slider {
-    margin-top: 16px;
+  .toggle-label {
+    font-size: 0.9em;
+    color: #333;
+    /* No margin needed here, the text will follow the slider */
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+  }
+
+  input:checked + .slider {
+    background-color: #2196f3;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
   }
 
   @media (max-width: 600px) {
