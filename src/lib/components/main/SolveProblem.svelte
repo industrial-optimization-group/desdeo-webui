@@ -7,6 +7,7 @@
   // import NautilusNavigator from "$lib/components/methods/nautilus_navigator/NautilusNavigator.svelte";
   // import NIMBUS from "$lib/components/methods/nimbus/NIMBUS.svelte";
   import ReferencePointMethod from "$lib/components/methods/reference_point_method/ReferencePointMethod.svelte";
+  import NautilusMethod from "$lib/components/methods/nautilus/NautilusMethod.svelte";
   import GeneralError from "../util/undecorated/GeneralError.svelte";
 </script>
 
@@ -22,6 +23,8 @@
 <!-- {:else if method === "reference_point_method"} -->
 {#if method === "reference_point_method"}
   <ReferencePointMethod {problem} />
+{:else if method === "nautilus"}
+  <NautilusMethod {problem} />
 {:else}
   <GeneralError />
 {/if}

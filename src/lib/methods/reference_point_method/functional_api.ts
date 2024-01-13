@@ -59,6 +59,7 @@ export function reference_point_method(
 export async function initialize(method: Method): Promise<Initialized> {
   await requests.setup(method.backend, method.problem);
   const { response } = await requests.start(method.backend, method.problem);
+
   return {
     _tag: "Initialized",
     backend: method.backend,

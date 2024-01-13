@@ -13,6 +13,10 @@
     //   display: "NIMBUS",
     // },
     {
+      id: "nautilus",
+      display: "NAUTILUS",
+    },
+    {
       id: "reference_point_method",
       display: "Reference Point Method",
     },
