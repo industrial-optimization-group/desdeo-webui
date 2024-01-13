@@ -48,10 +48,7 @@ export function nautilus_method(
  */
 export async function initialize(method: Method): Promise<Initialized> {
   await requests.setup_nautilus(method.backend, method.problem);
-
   const { response } = await requests.startNew(method.backend, method.problem);
-  console.log("initialize", response);
-
   return {
     _tag: "Initialized",
     backend: method.backend,
