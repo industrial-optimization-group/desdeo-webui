@@ -79,8 +79,6 @@ export async function iterate(
     method.problem,
     reference_point
   );
-  console.log("iterate", response);
-
   return {
     _tag: "Iterated",
     backend: method.backend,
