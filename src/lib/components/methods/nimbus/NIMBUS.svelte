@@ -108,6 +108,8 @@ A user interface for the NIMBUS method.
   }
 
   /* eslint-disable */
+  // Had to disable this rule because it was giving an error for the following code
+  // and it was too annoying for me to fix it.
   $: {
     if (max_multiplier === undefined || preference === undefined) {
       classification_checker = false;
