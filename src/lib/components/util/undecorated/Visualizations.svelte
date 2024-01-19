@@ -25,6 +25,7 @@ length.
   export let disabled = false;
   export let tab = 0;
   export let grid_mode = false;
+  export let mini_nimbus = false;
 </script>
 
 {#if grid_mode}
@@ -38,6 +39,7 @@ length.
     {max_selections}
     bind:highlighted
     {disabled}
+    {mini_nimbus}
   />
 {:else}
   <TabbedVisualizations
@@ -51,5 +53,6 @@ length.
     bind:highlighted
     bind:tab
     {disabled}
+    {mini_nimbus}
   />
 {/if}

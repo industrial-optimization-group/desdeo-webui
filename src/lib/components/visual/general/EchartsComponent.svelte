@@ -72,30 +72,41 @@
     if (!chart) {
       chart = echarts.init(chartDiv, "", { renderer: "svg" });
       chart.setOption(option);
-      chart.setOption({
-        color: colors,
-        // TODO: solve type error
-        //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore -- Error says that colorBy doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property (v.5.2.0), so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.colorBy
-        colorBy: "data",
-        animation: !disableAnimation,
-        series: [
-          {
-            type: "",
-            emphasis: {
-              itemStyle: {
-                color: highlightedStyle.color,
-                opacity: highlightedStyle.opacity,
-              },
-              lineStyle: {
-                color: highlightedStyle.color,
-                width: highlightedStyle.width,
-                opacity: highlightedStyle.opacity,
+      if (disableAnimation) {
+        chart.setOption({
+          color: colors,
+          // TODO: solve type error
+          //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore -- Error says that colorBy doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property (v.5.2.0), so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.colorBy
+          colorBy: "data",
+          animation: !disableAnimation,
+        });
+      } else {
+        chart.setOption({
+          color: colors,
+          // TODO: solve type error
+          //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore -- Error says that colorBy doesn't exist in the echarts series type, but in the documentation it exists. Might be because it's a new property (v.5.2.0), so they have not updated the type yet. https://echarts.apache.org/en/option.html#series-bar.colorBy
+          colorBy: "data",
+          animation: !disableAnimation,
+          series: [
+            {
+              type: "",
+              emphasis: {
+                itemStyle: {
+                  color: highlightedStyle.color,
+                  opacity: highlightedStyle.opacity,
+                },
+                lineStyle: {
+                  color: highlightedStyle.color,
+                  width: highlightedStyle.width,
+                  opacity: highlightedStyle.opacity,
+                },
               },
             },
-          },
-        ],
-      });
+          ],
+        });
+      }
     } else {
       chart.resize();
     }

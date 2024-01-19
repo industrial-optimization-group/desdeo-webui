@@ -148,7 +148,13 @@
   };
 
   onMount(() => {
-    chart = echarts.init(chartDiv);
+    // todo: fix the height issue!
+    if (chartDiv.clientHeight == 0) {
+      chart = echarts.init(chartDiv, null, { height: 100 });
+    } else {
+      chart = echarts.init(chartDiv);
+    }
+
     addHorizontalBar(option);
   });
 

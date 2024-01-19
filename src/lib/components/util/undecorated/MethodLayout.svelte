@@ -12,7 +12,9 @@
   </div>
 {:else}
   <div class="grid grid-cols-2 items-start gap-10">
-    <slot name="preferences" />
+    <div class="flex flex-col gap-10">
+      <slot name="preferences" />
+    </div>
     <div class="flex flex-col gap-10">
       <slot name="visualizations" />
       <slot name="solutions" />

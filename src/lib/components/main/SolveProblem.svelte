@@ -5,9 +5,10 @@
   export let method: string;
 
   // import NautilusNavigator from "$lib/components/methods/nautilus_navigator/NautilusNavigator.svelte";
-  // import NIMBUS from "$lib/components/methods/nimbus/NIMBUS.svelte";
+  import NIMBUS from "$lib/components/methods/nimbus/NIMBUS.svelte";
   import ReferencePointMethod from "$lib/components/methods/reference_point_method/ReferencePointMethod.svelte";
   import GeneralError from "../util/undecorated/GeneralError.svelte";
+  import { get_access_token, baseURL } from "$lib/api";
 </script>
 
 <!--
@@ -22,6 +23,8 @@
 <!-- {:else if method === "reference_point_method"} -->
 {#if method === "reference_point_method"}
   <ReferencePointMethod {problem} />
+{:else if method === "nimbus"}
+  <NIMBUS {problem} API_URL={baseURL} AUTH_TOKEN={get_access_token()} />
 {:else}
   <GeneralError />
 {/if}

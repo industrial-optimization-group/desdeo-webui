@@ -15,6 +15,7 @@ length.
   import { colorPalette } from "$lib/components/visual/constants";
   import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
   import MultiplePetalCharts from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
+  import MultiMiniBarChart from "$lib/components/visual/visualization/props-linking/MultiMiniBarChart.svelte";
 
   export let names: string[] | undefined = undefined;
   export let values: Point[];
@@ -25,6 +26,7 @@ length.
   export let max_selections: number | undefined = undefined;
   export let highlighted: number | undefined = undefined;
   export let disabled = false;
+  export let mini_nimbus = false;
 
   $: bounds = transform_bounds(lower_bounds, upper_bounds);
 
@@ -70,4 +72,13 @@ length.
     axisNames={names}
     colors={colorPalette}
   />
+  {#if mini_nimbus}
+    <MultiMiniBarChart
+      solutions={values}
+      lowerBounds={lower_bounds}
+      upperBounds={upper_bounds}
+      lowerIsBetter={lower_is_better}
+      bind:selectedIndices={selected}
+    />
+  {/if}
 </div>

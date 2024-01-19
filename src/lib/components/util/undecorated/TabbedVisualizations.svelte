@@ -24,12 +24,14 @@ length.
   export let highlighted: number | undefined = undefined;
   export let tab = 0;
   export let disabled = false;
+  export let mini_nimbus = false;
 
   $: bounds = transform_bounds(lower_bounds, upper_bounds);
 
   // Import the visualizations here.
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
   import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
+  import MultiMiniBarChart from "$lib/components/visual/visualization/props-linking/MultiMiniBarChart.svelte";
   // import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
   import MultiplePetalCharts from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
@@ -42,6 +44,9 @@ length.
   <Tab bind:group={tab} name="tab3" value={2}>Bar Plot</Tab>
   <Tab bind:group={tab} name="tab4" value={3}>Petal Plot</Tab>
   <Tab bind:group={tab} name="tab5" value={4}>All</Tab>
+  {#if mini_nimbus}
+    <Tab bind:group={tab} name="tab6" value={5}>Mini NIMBUS</Tab>
+  {/if}
 
   <svelte:fragment slot="panel">
     {#if tab === 0}
@@ -117,6 +122,14 @@ length.
         bind:highlightedIndex={highlighted}
         axisNames={names}
         colors={colorPalette}
+      />
+    {:else if tab === 5}
+      <MultiMiniBarChart
+        solutions={values}
+        lowerBounds={lower_bounds}
+        upperBounds={upper_bounds}
+        lowerIsBetter={lower_is_better}
+        bind:selectedIndices={selected}
       />
     {/if}
   </svelte:fragment>

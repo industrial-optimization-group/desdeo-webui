@@ -8,10 +8,10 @@
     //   id: "nautilus_navigator",
     //   display: "Nautilus Navigator",
     // },
-    // {
-    //   id: "nimbus",
-    //   display: "NIMBUS",
-    // },
+    {
+      id: "nimbus",
+      display: "NIMBUS",
+    },
     {
       id: "reference_point_method",
       display: "Reference Point Method",

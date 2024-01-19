@@ -20,6 +20,7 @@ export function handleClickSelection(
     selectedIndices = [...selectedIndices, params.dataIndex];
   }
   if (maxSelections == undefined) {
+    // TODO: #32 This evaluates to the number of objectives. This is clearly not what we want. FIX THIS!
     maxSelections = params.data.value.length;
   }
   if (selectedIndices.length > maxSelections) {

@@ -215,8 +215,8 @@
         let nameObj = {
           dim: i,
           name: nameString,
-          min: min ? min : "dataMin",
-          max: max ? max : "dataMax",
+          min: min,
+          max: max,
         };
         parallelAxisOption.push(nameObj);
       }
