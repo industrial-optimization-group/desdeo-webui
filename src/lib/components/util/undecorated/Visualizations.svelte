@@ -25,6 +25,8 @@ length.
   export let disabled = false;
   export let tab = 0;
   export let grid_mode = false;
+  export let inclusion = false;
+  export let exclusion = false;
 </script>
 
 {#if grid_mode}

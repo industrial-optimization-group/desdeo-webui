@@ -13,6 +13,8 @@ export const colorPalette = [
 
 export const referencePointStyle = {
   stroke: "black",
+  min: "blue",
+  max: "red",
   // lineDash: [4],
   lineWidth: 3,
 };

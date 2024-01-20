@@ -1,6 +1,6 @@
 <!--
 @component
-A user interface for the reference point method.
+A user interface for the EMO temp method.
 -->
 <script lang="ts">
   //
@@ -17,12 +17,15 @@ A user interface for the reference point method.
   // messages.
   //
 
+  //removed disabled={!_.is_valid_reference_point(method, preference)} from line 241 and 259
+
   import * as _ from "$lib/methods/reference_point_method/functional_api";
   import { backend } from "$lib/api";
   import type { Problem, Point } from "$lib/api";
   import { toastStore } from "@skeletonlabs/skeleton";
 
   import ReferencePointSelect from "$lib/components/util/undecorated/ReferencePointSelect.svelte";
+  import PreferredRangesSelect from "$lib/components/util/undecorated/PreferredRangesSelect.svelte";
   import ProblemDetails from "$lib/components/main/ProblemDetails.svelte";
   import Visualizations from "$lib/components/util/undecorated/Visualizations.svelte";
   import MethodLayout from "$lib/components/util/undecorated/MethodLayout.svelte";
@@ -50,6 +53,10 @@ A user interface for the reference point method.
 
   // Preference input values.
   let preference: (number | undefined)[];
+
+  let minPreference: (number | undefined)[];
+
+  let maxPreference: (number | undefined)[];
 
   //
   // When available, the first solution is the "current solution" as returned
@@ -100,6 +107,30 @@ A user interface for the reference point method.
   /** The number of decimals to show for numeric values. */
   const decimals = 4;
 
+  // Variable to control the visibility of the "Preference information" section
+  let preferenceVisible = true;
+
+  // Toggle the visibility of the "Preference information" section
+  function togglePreferenceVisibility() {
+    preferenceVisible = !preferenceVisible;
+  }
+
+  let selectedRadio = "none";
+
+  function resetSelectedSolutions() {
+    selected_solutions = [];
+  }
+
+  // Reactive statement to determine if the "Iterate" button should be disabled
+  $: isDisabled = (selectedRadio === "inclusion" || selectedRadio === "exclusion") && selected_solutions.length === 0 
+    || (selectedRadio === "point" && preference.some(val => val === undefined)) 
+    || (selectedRadio === "range" && (minPreference.some(val => val === undefined) || maxPreference.some(val => val === undefined)));
+
+  // Reactive statement to reset selected_solutions when selectedRadio changes
+  $: if (selectedRadio === "inclusion" || selectedRadio === "exclusion") {
+    resetSelectedSolutions();
+  }
+
   //
   // The handlers
   //
@@ -111,6 +142,8 @@ A user interface for the reference point method.
     try {
       method = await _.initialize(method);
       preference = problem.objectives.map(() => undefined);
+      minPreference = problem.objectives.map(() => undefined);
+      maxPreference = problem.objectives.map(() => undefined);
       solutions = [];
       selected_solutions = [];
       reference_solution = undefined;
@@ -167,15 +200,87 @@ A user interface for the reference point method.
         //
         method = _.reference_point_method(backend, problem);
       }
+    } else if (
+      _.can_iterate(method) &&
+      _.is_valid_reference_point(method, _.lower_bounds(method))
+    ) {
+      try {
+        method = await _.iterate(method, _.lower_bounds(method));
+        preference = method.current_solution;
+        solutions = _.all_solutions(method);
+        selected_solutions = [];
+        reference_solution = method.current_solution;
+        highlighted_solution = undefined;
+        //
+      } catch (err) {
+        toastStore.trigger({
+          // prettier-ignore
+          message: "Oops! Something went wrong.",
+          background: "variant-filled-error",
+          timeout: 5000,
+        });
+        console.error(err);
+
+        //
+        // TODO: We really should do something better. The correct behaviour
+        // should depend on the reason for failing and should probably involve
+        // adding new states to the state machine. Now we can't really leave
+        // the method in the previous state because we don't know the reason
+        // for the failure.
+        //
+        method = _.reference_point_method(backend, problem);
+      }
     } else {
       throw new Error("`handle_iterate` called in wrong state.");
     }
+  }
+
+  async function handle_iterate2() {
+    switch (selectedRadio) {
+      case "none":
+        await iterateNone();
+        break;
+      case "point":
+        await iteratePoint();
+        break;
+      case "range":
+        await iterateRange();
+        break;
+      case "inclusion":
+        await iterateInclusion();
+        break;
+      case "exclusion":
+        await iterateExclusion();
+        break;
+      default:
+        console.error("Unknown radio selection");
+    }
+  }
+
+  async function iterateNone() {
+    // Implementation for 'none' preference
+  }
+
+  async function iteratePoint() {
+    // Implementation for 'point' preference
+  }
+
+  async function iterateRange() {
+    // Implementation for 'range' preference
+  }
+
+  async function iterateInclusion() {
+    // Implementation for 'inclusion' preference
+  }
+
+  async function iterateExclusion() {
+    // Implementation for 'exclusion' preference
   }
 </script>
 
 <div class="flex flex-col gap-10">
   <div class="flex flex-col items-start gap-4">
-    <h1 class="font-bold">Reference point method</h1>
+    <h1 class="font-bold">EMO temp method</h1>
     {#if _.is_uninitialized(method)}
       <div>
         Please click "start" to start solving the problem with the method.
@@ -184,12 +289,12 @@ A user interface for the reference point method.
         >Start</button
       >
     {:else if _.is_initialized(method)}
-      <div>Please select a reference point and then click "iterate".</div>
+      <div>Please provide initial preference information and then click "Iterate".</div>
       <div class="flex gap-4">
         <button
           class="btn variant-filled"
           on:click={handle_iterate}
-          disabled={!_.is_valid_reference_point(method, preference)}
+          disabled={isDisabled}
           >Iterate</button
         >
       </div>
@@ -200,14 +305,14 @@ A user interface for the reference point method.
       {/if}
     {:else if _.is_iterated(method)}
       <div>
-        Please select a new reference point and then click "iterate", if you
+        Please provide additional preference information and then click "Iterate", if you
         wish to continue.
       </div>
       <div class="flex gap-4">
         <button
           class="btn variant-filled"
           on:click={handle_iterate}
-          disabled={!_.is_valid_reference_point(method, preference)}
+          disabled={isDisabled}
           >Iterate</button
         >
       </div>
@@ -229,29 +334,93 @@ A user interface for the reference point method.
     <div class="grid grid-cols-2 items-start gap-10">
       <Card>
         <svelte:fragment slot="header">Preference information</svelte:fragment>
-        <ReferencePointSelect
-          objective_names={_.objective_names_with_goals(method)}
-          lower_bounds={_.lower_bounds(method)}
-          upper_bounds={_.upper_bounds(method)}
-          bind:preference
-        />
-      </Card>
-      <ProblemDetails {problem} />
-    </div>
-  {:else if _.is_iterated(method)}
-    <MethodLayout {visualizations_maximized}>
-      <div slot="preferences">
-        <Card>
-          <svelte:fragment slot="header">Preference information</svelte:fragment
-          >
+
+        <div class="radio-group">
+          <div class="radio-buttons">
+            <label>
+              <input type="radio" bind:group={selectedRadio} value="none" /> No preference
+            </label>
+            <label>
+              <input type="radio" bind:group={selectedRadio} value="point" /> Reference point
+            </label>
+            <label>
+              <input type="radio" bind:group={selectedRadio} value="range" /> Preferred ranges
+            </label>
+          </div>
+        </div>
+
+        {#if selectedRadio === 'point'}
           <ReferencePointSelect
             objective_names={_.objective_names_with_goals(method)}
             lower_bounds={_.lower_bounds(method)}
             upper_bounds={_.upper_bounds(method)}
             bind:preference
-            previous_preference={method.previous_preference}
-            {reference_solution}
           />
+        {:else if selectedRadio === 'range'}
+          <PreferredRangesSelect
+            objective_names={_.objective_names_with_goals(method)}
+            lower_bounds={_.lower_bounds(method)}
+            upper_bounds={_.upper_bounds(method)}
+            bind:minPreference
+            bind:maxPreference
+          />
+        {/if}
+      </Card>
+    </div>
+  
+    {:else if _.is_iterated(method)}
+    <div class="flex gap-4">
+      <button class="btn variant-filled" on:click={togglePreferenceVisibility}>
+        {#if preferenceVisible}Hide Preference Info{:else}Show Preference Info{/if}
+      </button>
+    </div>
+
+    {#if preferenceVisible}
+    <MethodLayout {visualizations_maximized}>
+      <div slot="preferences">
+        <Card>
+          <svelte:fragment slot="header">Preference information</svelte:fragment>
+          
+          <div class="radio-group">
+            <div class="radio-buttons">
+              <label>
+                <input type="radio" bind:group={selectedRadio} value="none" /> No preference
+              </label>
+              <label>
+                <input type="radio" bind:group={selectedRadio} value="point" /> Reference point
+              </label>
+              <label>
+                <input type="radio" bind:group={selectedRadio} value="range" /> Preferred ranges
+              </label>
+              <label>
+                <input type="radio" bind:group={selectedRadio} value="inclusion" /> Preferred solutions
+              </label>
+              <label>
+                <input type="radio" bind:group={selectedRadio} value="exclusion" /> Non-preferred solutions
+              </label>
+            </div>
+          </div>
+
+          {#if selectedRadio === 'point'}
+            <ReferencePointSelect
+              objective_names={_.objective_names_with_goals(method)}
+              lower_bounds={_.lower_bounds(method)}
+              upper_bounds={_.upper_bounds(method)}
+              bind:preference
+            />
+          {:else if selectedRadio === 'range'}
+            <PreferredRangesSelect
+              objective_names={_.objective_names_with_goals(method)}
+              lower_bounds={_.lower_bounds(method)}
+              upper_bounds={_.upper_bounds(method)}
+              bind:minPreference
+              bind:maxPreference
+            />
+          {:else if selectedRadio === 'inclusion' || 'exclusion'}
+            <button class="btn variant-filled" on:click={resetSelectedSolutions} disabled={selected_solutions.length === 0}>
+              {#if selected_solutions.length > 0}Reset Selections{:else}Nothing Selected{/if}
+            </button>
+          {/if}
         </Card>
       </div>
       <div slot="visualizations">
@@ -310,5 +479,94 @@ A user interface for the reference point method.
         </Card>
       </div>
     </MethodLayout>
+    {/if}
+
+    {#if !preferenceVisible}
+    <MethodLayout {visualizations_maximized}>
+      <div slot="visualizations">
+        <Card>
+          <svelte:fragment slot="header"
+            >Solution visualizations</svelte:fragment
+          >
+          <svelte:fragment slot="buttons">
+            <button
+              class="anchor"
+              on:click={() => {
+                gridded_visualizations = !gridded_visualizations;
+              }}
+              disabled={!visualizations_maximized}>Grid</button
+            >
+            <button
+              class="anchor"
+              on:click={() => {
+                visualizations_maximized = !visualizations_maximized;
+              }}
+              >{#if visualizations_maximized}Minimize{:else}Maximize{/if}
+            </button>
+          </svelte:fragment>
+          <Visualizations
+            names={_.objective_names_with_goals(method)}
+            values={solutions}
+            lower_bounds={_.lower_bounds(method)}
+            upper_bounds={_.upper_bounds(method)}
+            lower_is_better={method.problem.objectives.map(
+              ({ minimize }) => minimize
+            )}
+            grid_mode={gridded_visualizations}
+            bind:selected={selected_solutions}
+            bind:tab={visualizations_tab}
+          />
+        </Card>
+      </div>
+      <div slot="solutions">
+        <Card>
+          <svelte:fragment slot="header">Solutions</svelte:fragment>
+          <div class="flex flex-col gap-4">
+            <p>
+              The first solution is the "current solution" as returned by the
+              method. The other solutions are the "additional solutions".
+            </p>
+            <div class="overflow-x-auto">
+              <Table
+                head={_.objective_names_with_goals(method)}
+                body={solutions.map((solution) => {
+                  return solution.map((value) => value.toFixed(decimals));
+                })}
+                bind:selected_rows={selected_solutions}
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+    </MethodLayout>
+    {/if}
   {/if}
 </div>
+
+<style>
+  .container {
+    display: flex;
+  }
+
+  .preference-info {
+    flex: 1;
+  }
+
+  .visualizations {
+    flex: 1;
+  }
+
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .radio-buttons {
+    display: flex;
+  }
+
+  .radio-buttons label {
+    margin: 0 10px; /* Adjust the spacing between radio buttons */
+  }
+</style>
