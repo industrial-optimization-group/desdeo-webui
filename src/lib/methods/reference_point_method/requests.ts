@@ -15,16 +15,6 @@ export async function setup(backend: Backend, problem: Problem): Promise<void> {
   });
 }
 
-export async function setup_nautilus(
-  backend: Backend,
-  problem: Problem
-): Promise<void> {
-  await backend.with_instance().post("/method/create", {
-    problem_id: problem.id,
-    method: "nautilus",
-  });
-}
-
 /**
  * Starts the method.
  *
@@ -36,14 +26,6 @@ export async function start(
 ): Promise<StartResponse> {
   const response = await backend.with_instance().get("/method/control");
   return startResponseS(problem.objectives.length).parse(response.data);
-}
-
-export async function startNew(
-  backend: Backend,
-  problem: Problem
-): Promise<StartResponseNew> {
-  const response = await backend.with_instance().get("/method/control");
-  return startResponseSNew(problem.objectives.length).parse(response.data);
 }
 
 /**
@@ -67,29 +49,6 @@ export async function iterate(
     },
   });
   return iterateResponseS(problem.objectives.length).parse(response.data);
-}
-
-export async function iterateNautilus(
-  backend: Backend,
-  problem: Problem,
-  n_iterations?: number,
-  preference_method?: number,
-  preference_info?: number[],
-  use_previous_preference?: boolean,
-  step_back?: boolean,
-  short_step?: boolean
-): Promise<IterateResponseNew> {
-  const response = await backend.with_instance().post("/method/control", {
-    response: {
-      n_iterations: n_iterations,
-      preference_method: preference_method,
-      preference_info: preference_info,
-      use_previous_preference: use_previous_preference,
-      step_back: step_back,
-      short_step: short_step,
-    },
-  });
-  return iterateResponseSNew(problem.objectives.length).parse(response.data);
 }
 
 /**
@@ -174,66 +133,6 @@ function iterateResponseS(n: number) {
     })
     .strict();
 }
-const StartResponseSNew = z
-  .object({
-    response: z
-      .object({
-        message: z.string(),
-        ideal: PointS,
-        nadir: PointS,
-      })
-      .strict(),
-  })
-  .strict();
-
-function startResponseSNew(n: number) {
-  return z
-    .object({
-      response: z
-        .object({
-          message: z.string(),
-          ideal: PointS.length(n),
-          nadir: PointS.length(n),
-        })
-        .strict(),
-    })
-    .strict();
-}
-
-const IterateResponseSNew = z
-  .object({
-    response: z
-      .object({
-        message: z.string(),
-        current_iteration_point: PointS,
-        lower_bounds: PointS,
-        upper_bounds: PointS,
-        step_back: z.boolean().optional(),
-        short_step: z.boolean().optional(),
-        use_previous_preference: z.boolean().optional(),
-        distance: z.array(z.number()).length(1),
-      })
-      .strict(),
-  })
-  .strict();
-
-function iterateResponseSNew(n: number) {
-  return z
-    .object({
-      response: z
-        .object({
-          message: z.string(),
-          current_iteration_point: PointS.length(n),
-          lower_bounds: PointS.length(n),
-          upper_bounds: PointS.length(n),
-          distance: z.array(z.number()).length(1),
-        })
-        .strict(),
-    })
-    .strict();
-}
 
 export type StartResponse = z.infer<typeof StartResponseS>;
 export type IterateResponse = z.infer<typeof IterateResponseS>;
-export type StartResponseNew = z.infer<typeof StartResponseSNew>;
-export type IterateResponseNew = z.infer<typeof IterateResponseSNew>;

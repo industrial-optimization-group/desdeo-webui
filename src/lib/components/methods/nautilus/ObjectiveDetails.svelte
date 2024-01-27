@@ -57,12 +57,12 @@
         {#each iterationData as data, index}
           <div class="iteration-section">
             <GDMNautilusBar
-              reachableRanges={[data.lower_bounds[j], data.upper_bounds[j]]}
-              higherBound={data.nadir_point[j]}
-              lowerBound={data.ideal_point[j]}
-              currentValue={data.current_iteration_point[j]}
+              reachableRanges={[data.lowerBounds[j], data.upperBounds[j]]}
+              higherBound={data.nadirPoint[j]}
+              lowerBound={data.idealPoint[j]}
+              currentValue={data.currentIterationPoint[j]}
               objIndex={index}
-              iteration={data.iteration_counter}
+              iteration={data.iterationCounter}
               arrowMode={false}
             />
           </div>

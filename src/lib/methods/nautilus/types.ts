@@ -5,11 +5,11 @@ export type ObjectiveData = {
 };
 
 export type IterationData = {
-  current_iteration_point: number[];
+  currentIterationPoint: number[];
   distance: number[];
-  nadir_point: number[];
-  ideal_point: number[];
-  lower_bounds: number[];
-  upper_bounds: number[];
-  iteration_counter: number;
+  nadirPoint: number[];
+  idealPoint: number[];
+  lowerBounds: number[];
+  upperBounds: number[];
+  iterationCounter: number;
 };

@@ -9,6 +9,7 @@
   import ReferencePointMethod from "$lib/components/methods/reference_point_method/ReferencePointMethod.svelte";
   import NautilusMethod from "$lib/components/methods/nautilus/NautilusMethod.svelte";
   import GeneralError from "../util/undecorated/GeneralError.svelte";
+  import { get_access_token, baseURL } from "$lib/api";
 </script>
 
 <!--
@@ -24,7 +25,7 @@
 {#if method === "reference_point_method"}
   <ReferencePointMethod {problem} />
 {:else if method === "nautilus"}
-  <NautilusMethod {problem} />
+  <NautilusMethod {problem} API_URL={baseURL} AUTH_TOKEN={get_access_token()} />
 {:else}
   <GeneralError />
 {/if}

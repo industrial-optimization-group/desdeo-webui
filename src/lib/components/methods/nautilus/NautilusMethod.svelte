@@ -3,9 +3,7 @@
 A user interface for the NAUTILUS method.
 -->
 <script lang="ts">
-  import * as _ from "$lib/methods/nautilus/functional_api";
-  import { backend } from "$lib/api";
-  import type { Backend, Problem } from "$lib/api";
+  import type { Problem } from "$lib/api";
   import { toastStore } from "@skeletonlabs/skeleton";
   import ProblemDetails from "$lib/components/main/ProblemDetails.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
@@ -17,22 +15,37 @@ A user interface for the NAUTILUS method.
 
   /** The problem to be solved. */
   export let problem: Problem;
-  /** The method to be used to solve the problem. */
-  let method: _.Method;
-  $: method = _.nautilus_method(backend, problem);
 
-  /**
-   * Flag whether the first iteration has been completed. let
-   * isFirstIterationCompleted = false; $: if (_.is_iterated(method)) {
-   * isFirstIterationCompleted = true; }
-   */
+  //Flag whether the first iteration has been completed. let
+  let isFirstIterationCompleted = false;
+
   /** Flag whether the preferences have been changed. */
-  let isPreferencesChanged = false;
+  let isPreferencesChanged = true;
 
   /** The data for each iteration. */
   export let iterationData: IterationData[] = [];
   /** The objectives of the problem. */
   export let objectives: ObjectiveData[] = problem.objectives;
+
+  export let API_URL = "http://localhost:5000/";
+  // The authentication token.
+  export let AUTH_TOKEN = "";
+
+  // Enum to represent the state of the method.
+  enum State {
+    Uninitialized,
+    Initialized,
+    Iterated,
+  }
+
+  let state: State = State.Uninitialized;
+
+  let current_iteration_point: number[];
+  let distance: number[];
+  let nadir_point: number[];
+  let ideal_point: number[];
+  let lower_bounds: number[];
+  let upper_bounds: number[];
 
   /** The number of iterations to be performed. */
   let preference_info: number[];
@@ -44,22 +57,66 @@ A user interface for the NAUTILUS method.
    * Flag whether to perform a short step. Used if preferences are not changed
    * after step back.
    */
-  let short_step = false;
+  let short_step: boolean;
   /** Flag whether to step back to previous iteration. */
-  let step_back = false;
+  let step_back: boolean;
   /** Use the preference information from previous iteration. */
-  let use_previous_preference = false;
+  let use_previous_preference: boolean;
   /** The iteration counter used to keep track of the number of iterations. */
   let iteration_counter = 0;
 
   /** Initialize the method. */
   async function handle_initialize() {
     try {
-      method = await _.initialize(method);
+      let endpoint = API_URL + "/method/create";
 
-      updateIterationSpecs(method);
-      preference_info = Array(method.problem.objectives.length).fill(0);
-      preference_method = 2;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + AUTH_TOKEN,
+        },
+        body: JSON.stringify({
+          problem_id: problem.id,
+          method: "nautilus",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to initialize NAUTILUS method.");
+      }
+    } catch (err) {
+      toastStore.trigger({
+        // prettier-ignore
+        message: "Oops! Something went wrong.",
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+      console.error(err);
+    }
+    try {
+      let endpoint = API_URL + "/method/control";
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + AUTH_TOKEN,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        ideal_point = data.response.ideal;
+        nadir_point = data.response.nadir;
+        preference_info = Array(problem.objectives.length).fill(0);
+        current_iteration_point = [];
+        distance = [];
+        lower_bounds = [];
+        upper_bounds = [];
+        preference_method = 1;
+        state = State.Initialized;
+      } else {
+        throw new Error("Failed to start NAUTILUS method.");
+      }
     } catch (err) {
       toastStore.trigger({
         // prettier-ignore
@@ -73,50 +130,68 @@ A user interface for the NAUTILUS method.
 
   /** Function to perform an iteration. */
   async function handle_iterate() {
-    if (validate_preferences() === false) {
+    if (!validate_preferences()) {
       return;
     }
-    if (_.can_iterate(method)) {
-      if (_.is_iterated(method) === false) {
-        try {
-          method = await _.firstIteraion(
-            method,
-            n_iterations,
-            preference_method,
-            preference_info
-          );
-          updateIterationSpecs(method);
-        } catch (err) {
-          toastStore.trigger({
-            // prettier-ignore
-            message: "Oops! Something went wrong.",
-            background: "variant-filled-error",
-            timeout: 5000,
-          });
-          console.error(err);
-        }
+
+    is_iterated() ? (isFirstIterationCompleted = true) : false;
+    if (isFirstIterationCompleted) {
+      isPreferencesChanged = false;
+      short_step = false;
+      use_previous_preference = false;
+      step_back = false;
+    }
+
+    try {
+      let endpoint = API_URL + "/method/control";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + AUTH_TOKEN,
+        },
+        body: JSON.stringify({
+          response: {
+            n_iterations: n_iterations,
+            preference_method: preference_method,
+            preference_info: preference_info,
+            use_previous_preference: use_previous_preference,
+            step_back: step_back,
+            short_step: short_step,
+          },
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        current_iteration_point = data.response.current_iteration_point;
+        distance = data.response.distance;
+        lower_bounds = data.response.lower_bounds;
+        upper_bounds = data.response.upper_bounds;
+        iteration_counter++;
+
+        let newIteration: IterationData = {
+          currentIterationPoint: current_iteration_point,
+          distance: distance,
+          nadirPoint: nadir_point,
+          idealPoint: ideal_point,
+          lowerBounds: lower_bounds,
+          upperBounds: upper_bounds,
+          iterationCounter: iteration_counter,
+        };
+        iterationData = [...iterationData, newIteration];
+
+        state = State.Iterated;
       } else {
-        try {
-          method = await _.iterate(
-            method,
-            n_iterations,
-            short_step,
-            step_back,
-            use_previous_preference,
-            preference_method,
-            preference_info
-          );
-          updateIterationSpecs(method);
-        } catch (err) {
-          toastStore.trigger({
-            // prettier-ignore
-            message: "Oops! Something went wrong.",
-            background: "variant-filled-error",
-            timeout: 5000,
-          });
-          console.error(err);
-        }
+        throw new Error("Failed to iterate NAUTILUS method.");
       }
+    } catch (err) {
+      toastStore.trigger({
+        // prettier-ignore
+        message: "Oops! Something went wrong.",
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+      console.error(err);
     }
   }
 
@@ -221,97 +296,74 @@ A user interface for the NAUTILUS method.
     isPreferencesChanged = true;
   }
 
-  /**
-   * Function to update the iteration data.
-   *
-   * @param method
-   */
-  function updateIterationSpecs(method: {
-    _tag?: "Initialized" | "Iterated";
-    backend?: Backend;
-    problem: Problem;
-    message?: string;
-    ideal_point?: number[];
-    nadir_point?: number[];
-    current_iteration_point?: number[];
-    lower_bounds?: number[];
-    upper_bounds?: number[];
-    distance?: number[];
-  }) {
-    let newIteration: IterationData = {
-      current_iteration_point: method.current_iteration_point
-        ? method.current_iteration_point
-        : [],
-      distance: method.distance ? method.distance : [],
-      nadir_point: method.problem.nadir_point ? method.problem.nadir_point : [],
-      ideal_point: method.problem.ideal_point ? method.problem.ideal_point : [],
-      lower_bounds: method.lower_bounds ? method.lower_bounds : [],
-      upper_bounds: method.upper_bounds ? method.upper_bounds : [],
-      iteration_counter: iteration_counter ? iteration_counter : 0,
-    };
+  /*function can_iterate(): boolean {
+    return is_initialized() || is_iterated();
+  }
 
-    iterationData = [...iterationData, newIteration];
+  function is_uninitialized(): boolean {
+    return state === State.Uninitialized;
+  }
 
-    iteration_counter++;
-    isPreferencesChanged = false;
-    short_step = false;
-    use_previous_preference = false;
-    step_back = false;
+  function is_initialized(): boolean {
+    return state === State.Initialized;
+  }*/
+
+  function is_iterated(): boolean {
+    return state === State.Iterated;
   }
 </script>
 
 <div class="flex flex-col gap-10">
   <div class="flex flex-col items-start gap-4">
     <h1 class="font-bold">Nautilus method</h1>
-    {#if _.is_uninitialized(method)}
-      <div>
-        Please click "start" to start solving the problem with the method.
-      </div>
-      <button class="btn variant-filled" on:click={handle_initialize}
-        >Start</button
-      >
+
+    <div>
+      Please click "start" to start solving the problem with the method.
+    </div>
+    <button class="btn variant-filled" on:click={handle_initialize}
+      >Start</button
+    >
+    {#if state === State.Uninitialized}
       <ProblemDetails {problem} />
-    {:else if _.is_initialized(method) || _.is_iterated(method)}
-      <div>click "iterate".</div>
-      <div class="flex gap-4">
-        <div class="iteration-controls">
-          <label for="iteration-input" class="iteration-label"
-            >Iterations:</label
-          >
-        </div>
-        <input
-          class="iteration-input"
-          type="number"
-          id="iteration-input"
-          min="1"
-          bind:value={n_iterations}
-          on:input={updateIterations}
-        />
-        <button class="btn variant-filled" on:click={handle_iterate}
-          >Iterate</button
-        >
-        {#if iterationData.length > 1}
-          <button
-            class="btn variant-filled"
-            on:click={handleGoBack}
-            disabled={isPreferencesChanged}>Go Back</button
-          >
-        {/if}
-      </div>
-    {:else}
-      <GeneralError />
     {/if}
+    <div>click "iterate".</div>
+    <div class="flex gap-4">
+      <div class="iteration-controls">
+        <label for="iteration-input" class="iteration-label">Iterations:</label>
+      </div>
+      <input
+        class="iteration-input"
+        type="number"
+        id="iteration-input"
+        min="1"
+        bind:value={n_iterations}
+        on:input={updateIterations}
+      />
+      <button class="btn variant-filled" on:click={handle_iterate}
+        >Iterate</button
+      >
+
+      {#if iterationData.length > 1}
+        <button
+          class="btn variant-filled"
+          on:click={handleGoBack}
+          disabled={isPreferencesChanged}>Go Back</button
+        >
+      {/if}
+    </div>
+
+    <GeneralError />
   </div>
 </div>
-{#if _.is_initialized(method) || _.is_iterated(method)}
-  <div class="objectives-container">
-    <Objective
-      {iterationData}
-      {objectives}
-      on:rankUpdate={handleRankUpdate}
-      on:toggleRankWeight={handleToggleRankWeight}
-    />
-  </div>
+{#if state === State.Initialized || state === State.Iterated}
+  <div class="objectives-container" />
+
+  <Objective
+    {iterationData}
+    {objectives}
+    on:rankUpdate={handleRankUpdate}
+    on:toggleRankWeight={handleToggleRankWeight}
+  />
 {/if}
 
 <style>

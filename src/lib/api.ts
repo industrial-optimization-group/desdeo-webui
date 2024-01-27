@@ -34,7 +34,7 @@ export const backend: Backend = {
 //
 // TODO: Move this to a configuration file.
 //
-const baseURL = "http://localhost:5000";
+export const baseURL = "http://localhost:5000";
 
 /** A missing token is represented by `undefined`. */
 type Token = string | undefined;
@@ -65,7 +65,7 @@ function set_access_token(token: Token) {
   state.access_token.set(token);
 }
 
-function get_access_token() {
+export function get_access_token() {
   return get(state.access_token);
 }
 
