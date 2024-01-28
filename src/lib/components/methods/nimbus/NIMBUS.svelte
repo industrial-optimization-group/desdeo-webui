@@ -21,11 +21,10 @@ A user interface for the NIMBUS method.
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
   import { transform_bounds } from "$lib/components/util/util";
 
-  import { ConicGradient } from "@skeletonlabs/skeleton";
-  import type { ConicStop } from "@skeletonlabs/skeleton";
   import ClassificationPreference from "$lib/components/visual/preference-interaction/ClassificationPreference.svelte";
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import Input from "$lib/components/visual/preference-interaction/BasicInput.svelte";
+  import { onMount } from "svelte";
 
   /** The problem to solve. */
   export let problem: Problem;
@@ -57,7 +56,7 @@ A user interface for the NIMBUS method.
     is_maximized: boolean[];
     lower_bounds: number[];
     upper_bounds: number[];
-    previousPreference: number[];
+    previous_preference: number[];
     current_solutions: number[][];
     saved_solutions: number[][];
     all_solutions: number[][];
@@ -71,7 +70,7 @@ A user interface for the NIMBUS method.
   // Preference input values.
   let preference: (number | undefined)[];
 
-  let problemInfo: problemInfoType | undefined = undefined;
+  let problemInfo: problemInfoType;
 
   // Indexes of currently selected solutions.
   let selected_solutions: number[];
@@ -80,12 +79,17 @@ A user interface for the NIMBUS method.
   let reference_solution: number[] | undefined;
 
   // The objective values of the solutions to be visualized.
-  let solutions_to_visualize: number[][] | undefined = undefined;
+  let solutions_to_visualize: number[][];
 
   // The number of intermediate solutions to generate.
   let numIntermediates = 5;
   let MIN_NUM_INTERMEDIATES = 1;
   let MAX_NUM_INTERMEDIATES = 10;
+
+  // The number of solutions NIMBUS should generate.
+  let numSolutions = 1;
+  let MIN_NUM_SOLUTIONS = 1;
+  let MAX_NUM_SOLUTIONS = 4;
 
   // Flags to check if the classification/intermediate/save selection are valid.
   let is_classification_valid = false;
@@ -177,10 +181,21 @@ A user interface for the NIMBUS method.
       solutions_to_visualize !== undefined &&
       selected_solutions?.length >= 1
     ) {
-      reference_solution =
-        solutions_to_visualize[
-          selected_solutions[selected_solutions.length - 1]
-        ];
+      // if any selected solution index is larger than the number of solutions, set reference_solution to the last solution
+      if (
+        selected_solutions.some(
+          (index) => index >= solutions_to_visualize.length
+        )
+      ) {
+        reference_solution =
+          solutions_to_visualize[solutions_to_visualize.length - 1];
+        selected_solutions = [solutions_to_visualize.length - 1];
+      } else {
+        reference_solution =
+          solutions_to_visualize[
+            selected_solutions[selected_solutions.length - 1]
+          ];
+      }
     }
   }
 
@@ -241,7 +256,7 @@ A user interface for the NIMBUS method.
   }
 
   /** The number of decimals to show for numeric values. */
-  const decimals = 4;
+  const decimals = 3;
 
   //
   // The handlers
@@ -261,15 +276,16 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem, // TODO: This should be the id in the database.
+          problemID: problem.id, // TODO: This should be the id in the database.
           initialSolution: null, // Backend technically supports this, but we need to add support for it in the UI.
         }),
       });
 
       if (response.ok) {
         const data: problemInfoType = await response.json();
+        console.log(data);
         problemInfo = data;
-        preference = problemInfo.previousPreference;
+        preference = problemInfo.previous_preference;
         state = State.ClassifySelected;
         reference_solution = problemInfo.current_solutions[0];
         selected_solutions = [0];
@@ -299,7 +315,7 @@ A user interface for the NIMBUS method.
         is_maximized: [false, false, true],
         lower_bounds: [-0, -5, 10],
         upper_bounds: [1, 5, 20],
-        previousPreference: [0.6, 1, 15],
+        previous_preference: [0.6, 1, 15],
         current_solutions: [
           [0.5, 2, 14],
           [0.6, 1, 15],
@@ -318,7 +334,7 @@ A user interface for the NIMBUS method.
         ],
       };
 
-      preference = problemInfo.previousPreference;
+      preference = problemInfo.previous_preference;
       state = State.ClassifySelected;
 
       // TODO: Uncomment this when the backend is ready.
@@ -336,6 +352,9 @@ A user interface for the NIMBUS method.
   //
   // TODO: Handle errors better.
   //
+  onMount(async () => {
+    await handle_initialize();
+  });
   async function handle_iterate() {
     if (!is_classification_valid) {
       const err = Error("`handle_iterate` called in wrong state.");
@@ -357,17 +376,19 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem, // The problem is reconstructed from the database each time we iterate.
+          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
           preference: preference, // Technically sent as a reference point, the classification is generated in the backend.
-          reference_solution: reference_solution, // The reference solution is needed to generate the classification.
+          referenceSolution: reference_solution, // The reference solution is needed to generate the classification.
+          numSolutions: numSolutions,
         }),
       });
 
       if (response.ok) {
         const data: problemInfoType = await response.json();
         problemInfo = data;
-        preference = problemInfo.previousPreference;
+        preference = problemInfo.previous_preference;
         state = State.ClassifySelected;
+        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
         reference_solution = problemInfo.current_solutions[0];
         selected_solutions = [0];
       } else {
@@ -414,7 +435,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem, // The problem is reconstructed from the database each time we iterate.
+          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
           solution1: solutions_to_visualize[selected_solutions[0]],
           solution2: solutions_to_visualize[selected_solutions[1]],
           numIntermediates: numIntermediates,
@@ -424,8 +445,9 @@ A user interface for the NIMBUS method.
       if (response.ok) {
         const data: problemInfoType = await response.json();
         problemInfo = data;
-        preference = problemInfo.previousPreference;
+        preference = problemInfo.previous_preference;
         state = State.ClassifySelected; // TODO: Should this be IntermediateSelected? Or should we always return to ClassifySelected?
+        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
         reference_solution = problemInfo.current_solutions[0];
         selected_solutions = [0];
       } else {
@@ -461,16 +483,20 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem, // The problem is reconstructed from the database each time we iterate.
-          solutionsIds: selected_solutions, // Perhaps these should be solution ids from the database.
+          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          previousPreference: problemInfo.previous_preference,
+          objectiveValues: selected_solutions.map(
+            (index) => solutions_to_visualize[index]
+          ),
         }),
       });
 
       if (response.ok) {
         const data: problemInfoType = await response.json();
         problemInfo = data;
-        preference = problemInfo.previousPreference;
+        preference = problemInfo.previous_preference;
         state = State.ClassifySelected; // TODO: Should this be SaveSolutionsSelected? Or should we always return to ClassifySelected?
+        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
         reference_solution = problemInfo.current_solutions[0];
         selected_solutions = [0];
       } else {
@@ -491,58 +517,51 @@ A user interface for the NIMBUS method.
     }
   }
 
-  const conicStops: ConicStop[] = [
-    { color: "transparent", start: 0, end: 25 },
-    { color: "rgb(var(--color-primary-500))", start: 75, end: 100 },
-  ];
+  async function handle_final_choice() {
+    if (!is_classification_valid) {
+      const err = Error("`handle_iterate` called in wrong state.");
+      toastStore.trigger({
+        // prettier-ignore
+        message: "Oops! Something went wrong.",
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+      console.error(err);
+    }
+    try {
+      let endpoint = API_URL + "/nimbus/choose";
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + AUTH_TOKEN,
+        },
+        body: JSON.stringify({
+          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          solution: reference_solution, // The reference solution is needed to generate the classification.
+        }),
+      });
+      if (response.ok) {
+        // route to the next page
+      } else {
+        throw new Error("Failed to save final choice.");
+      }
+    } catch (err) {
+      toastStore.trigger({
+        // prettier-ignore
+        message: "Oops! Something went wrong.",
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+      console.error(err);
+    }
+  }
 </script>
 
 <div class="flex flex-col gap-10">
   <div class="flex flex-col items-start gap-4">
     <h1 class="font-bold">NIMBUS method</h1>
-    {#if state === State.InitialLoad}
-      <ConicGradient stops={conicStops} spin>Loading</ConicGradient>
-      <button class="btn variant-filled" on:click={handle_initialize}>
-        click me!
-      </button>
-    {:else if state === State.ClassifySelected}
-      <div class="flex gap-4">
-        <button
-          class="btn variant-filled"
-          on:click={handle_iterate}
-          disabled={!is_classification_valid}>Iterate</button
-        >
-      </div>
-      {#if !is_classification_valid}
-        <div class="text-error-500">
-          Please give a valid classification for the objectives.
-        </div>
-      {/if}
-    {:else if state === State.IntermediateSelected}
-      <div class="flex gap-4">
-        <button
-          class="btn variant-filled"
-          on:click={handle_intermediate}
-          disabled={!is_intermediate_selection_valid}>Iterate</button
-        >
-      </div>
-      {#if !is_intermediate_selection_valid}
-        <div class="text-error-500">Please select two solutions.</div>
-      {/if}
-    {:else if state === State.SaveSolutionsSelected}
-      <div class="flex gap-4">
-        <button
-          class="btn variant-filled"
-          on:click={handle_save_solutions}
-          disabled={!is_save_solutions_valid}>Save</button
-        >
-      </div>
-      {#if !is_save_solutions_valid}
-        <div class="text-error-500">Please select at least one solution.</div>
-      {/if}
-    {:else}
-      <GeneralError />
-    {/if}
   </div>
 
   {#if state === State.InitialLoad}
@@ -572,27 +591,8 @@ A user interface for the NIMBUS method.
               <RadioItem
                 bind:group={state}
                 name="justify"
-                value={State.SaveSolutionsSelected}>Save solutions</RadioItem
-              >
-            </RadioGroup>
-            <RadioGroup>
-              <RadioItem
-                bind:group={visualizationChoiceState}
-                name="justify"
-                value={VisualizationChoiceState.CurrentSolutions}
-                >Current solutions</RadioItem
-              >
-              <RadioItem
-                bind:group={visualizationChoiceState}
-                name="justify"
-                value={VisualizationChoiceState.SavedSolutions}
-                >Saved solutions</RadioItem
-              >
-              <RadioItem
-                bind:group={visualizationChoiceState}
-                name="justify"
-                value={VisualizationChoiceState.AllSolutions}
-                >All solutions</RadioItem
+                value={State.SaveSolutionsSelected}
+                >Highlight solutions</RadioItem
               >
             </RadioGroup>
             {#if state === State.ClassifySelected}
@@ -602,13 +602,25 @@ A user interface for the NIMBUS method.
                 preference for each objective. You must improve and impair at
                 least one objective.
               </div>
+              <Input
+                labelName="Approximate number of solutions to generate using NIMBUS:"
+                bind:value={numSolutions}
+                onChange={() => {
+                  if (numSolutions < MIN_NUM_SOLUTIONS) {
+                    numSolutions = MIN_NUM_SOLUTIONS;
+                  }
+                  if (numSolutions > MAX_NUM_SOLUTIONS) {
+                    numSolutions = MAX_NUM_SOLUTIONS;
+                  }
+                }}
+              />
               <ClassificationPreference
                 objective_names={problemInfo.objective_names}
                 is_maximized={problemInfo.is_maximized}
                 lower_bounds={problemInfo.lower_bounds}
                 upper_bounds={problemInfo.upper_bounds}
                 solutionValue={reference_solution}
-                previousValue={problemInfo.previousPreference}
+                previousValue={problemInfo.previous_preference}
                 bind:preference
                 decimalPrecision={3}
               />
@@ -668,6 +680,74 @@ A user interface for the NIMBUS method.
                   bind:selectedIndices={selected_solutions}
                 />
               {/if}
+            {/if}
+
+            <RadioGroup>
+              <RadioItem
+                bind:group={visualizationChoiceState}
+                name="justify"
+                value={VisualizationChoiceState.CurrentSolutions}
+                >Current solutions</RadioItem
+              >
+              <RadioItem
+                bind:group={visualizationChoiceState}
+                name="justify"
+                value={VisualizationChoiceState.SavedSolutions}
+                >Saved solutions</RadioItem
+              >
+              <RadioItem
+                bind:group={visualizationChoiceState}
+                name="justify"
+                value={VisualizationChoiceState.AllSolutions}
+                >All solutions</RadioItem
+              >
+            </RadioGroup>
+
+            {#if state === State.ClassifySelected}
+              <div class="flex gap-4">
+                <button
+                  class="btn variant-filled inline"
+                  on:click={handle_iterate}
+                  disabled={!is_classification_valid}>Iterate</button
+                >
+                <button
+                  class="btn variant-filled inline"
+                  on:click={handle_final_choice}
+                  disabled={!is_classification_valid}
+                  >Finish with chosen solution</button
+                >
+              </div>
+              {#if !is_classification_valid}
+                <div class="text-error-500">
+                  Please give a valid classification for the objectives.
+                </div>
+              {/if}
+            {:else if state === State.IntermediateSelected}
+              <div class="flex gap-4">
+                <button
+                  class="btn variant-filled"
+                  on:click={handle_intermediate}
+                  disabled={!is_intermediate_selection_valid}>Iterate</button
+                >
+              </div>
+              {#if !is_intermediate_selection_valid}
+                <div class="text-error-500">Please select two solutions.</div>
+              {/if}
+            {:else if state === State.SaveSolutionsSelected}
+              <div class="flex gap-4">
+                <button
+                  class="btn variant-filled"
+                  on:click={handle_save_solutions}
+                  disabled={!is_save_solutions_valid}>Save</button
+                >
+              </div>
+              {#if !is_save_solutions_valid}
+                <div class="text-error-500">
+                  Please select at least one solution.
+                </div>
+              {/if}
+            {:else}
+              <GeneralError />
             {/if}
           </Card>
         {/if}

@@ -43,7 +43,7 @@
   $: preference = [...preference];
 
   /** The decimal precision to use for rounding values. */
-  export let decimalPrecision: number | undefined = undefined;
+  export let decimalPrecision = 3;
 
   // Extract the right number of colors from the color palette.
   let colors = colorPalette.slice(0, objective_names.length);

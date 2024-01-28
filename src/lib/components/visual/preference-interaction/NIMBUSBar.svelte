@@ -4,7 +4,7 @@
  -->
 <script lang="ts">
   import Input from "$lib/components/visual/preference-interaction/BasicInput.svelte";
-  import SingleHorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBar.svelte";
+  import SingleHorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBarAlt.svelte";
 
   enum classification {
     ChangeFreely = "Change freely",
