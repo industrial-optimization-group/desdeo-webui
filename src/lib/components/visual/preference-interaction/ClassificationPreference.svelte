@@ -52,7 +52,7 @@
 <div class="flex flex-col gap-4">
   {#each objective_names as objective_name, j}
     <NimbusBar
-      barName={objective_name}
+      barName={objective_name + " (" + (is_maximized[j] ? "max" : "min") + ")"}
       lowerBound={lower_bounds[j]}
       higherBound={upper_bounds[j]}
       previousValue={previousValue[j]}
