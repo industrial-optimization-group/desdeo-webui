@@ -129,7 +129,7 @@
   for (let i = values.length - 1; i >= 0; i--) {
     valueTemp =
       (values[i] - lowerBounds[i]) / (upperBounds[i] - lowerBounds[i]);
-    if (lowerIsBetter === undefined || lowerIsBetter[i]) {
+    if (!(lowerIsBetter === undefined || lowerIsBetter[i])) {
       seriesData[0].data?.push({
         value: valueTemp,
         itemStyle: {

@@ -786,7 +786,6 @@ A user interface for the NIMBUS method.
                 bind:selected={selected_solutions}
                 bind:tab={visualizations_tab}
                 max_selections={1}
-                mini_nimbus={true}
               />
             {:else}
               <GeneralError />

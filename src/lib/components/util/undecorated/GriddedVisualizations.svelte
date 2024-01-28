@@ -12,9 +12,6 @@ length.
 
 <script lang="ts">
   import { transform_bounds } from "$lib/components/util/util";
-  import { colorPalette } from "$lib/components/visual/constants";
-  import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
-  import MultiplePetalCharts from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
   import MultiMiniBarChart from "$lib/components/visual/visualization/props-linking/MultiMiniBarChart.svelte";
 
   export let names: string[] | undefined = undefined;
@@ -54,23 +51,6 @@ length.
     maxSelections={max_selections}
     bind:selectedIndices={selected}
     bind:highlightedIndex={highlighted}
-  />
-  <MultipleBarCharts
-    {values}
-    maxSelections={max_selections}
-    bind:selectedIndices={selected}
-    bind:highlightedIndex={highlighted}
-    {names}
-    colors={colorPalette}
-    lowerIsBetter={lower_is_better}
-  />
-  <MultiplePetalCharts
-    {values}
-    maxSelections={max_selections}
-    bind:selectedIndices={selected}
-    bind:highlightedIndex={highlighted}
-    axisNames={names}
-    colors={colorPalette}
   />
   {#if mini_nimbus}
     <MultiMiniBarChart

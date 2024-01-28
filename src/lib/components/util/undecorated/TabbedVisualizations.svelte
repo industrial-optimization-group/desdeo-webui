@@ -24,7 +24,6 @@ length.
   export let highlighted: number | undefined = undefined;
   export let tab = 0;
   export let disabled = false;
-  export let mini_nimbus = false;
 
   $: bounds = transform_bounds(lower_bounds, upper_bounds);
 
@@ -33,20 +32,13 @@ length.
   import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
   import MultiMiniBarChart from "$lib/components/visual/visualization/props-linking/MultiMiniBarChart.svelte";
   // import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
-  import MultipleBarCharts from "$lib/components/visual/visualization/props-linking/MultipleBarCharts.svelte";
-  import MultiplePetalCharts from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
-  import { colorPalette } from "$lib/components/visual/constants";
 </script>
 
 <TabGroup>
   <Tab bind:group={tab} name="tab1" value={0}>Parallel Coordinate Plot</Tab>
   <Tab bind:group={tab} name="tab2" value={1}>Radar Chart</Tab>
-  <Tab bind:group={tab} name="tab3" value={2}>Bar Plot</Tab>
-  <Tab bind:group={tab} name="tab4" value={3}>Petal Plot</Tab>
-  <Tab bind:group={tab} name="tab5" value={4}>All</Tab>
-  {#if mini_nimbus}
-    <Tab bind:group={tab} name="tab6" value={5}>Mini NIMBUS</Tab>
-  {/if}
+  <Tab bind:group={tab} name="tab6" value={2}>Mini NIMBUS</Tab>
+  <Tab bind:group={tab} name="tab5" value={3}>All</Tab>
 
   <svelte:fragment slot="panel">
     {#if tab === 0}
@@ -70,25 +62,14 @@ length.
         bind:highlightedIndex={highlighted}
       />
     {:else if tab === 2}
-      <MultipleBarCharts
-        {values}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-        {names}
-        colors={colorPalette}
+      <MultiMiniBarChart
+        solutions={values}
+        lowerBounds={lower_bounds}
+        upperBounds={upper_bounds}
         lowerIsBetter={lower_is_better}
+        bind:selectedIndices={selected}
       />
     {:else if tab === 3}
-      <MultiplePetalCharts
-        {values}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-        axisNames={names}
-        colors={colorPalette}
-      />
-    {:else if tab === 4}
       <ParallelCoordinatePlotBase
         {names}
         {values}
@@ -107,23 +88,6 @@ length.
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}
       />
-      <MultipleBarCharts
-        {values}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-        {names}
-        colors={colorPalette}
-      />
-      <MultiplePetalCharts
-        {values}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-        axisNames={names}
-        colors={colorPalette}
-      />
-    {:else if tab === 5}
       <MultiMiniBarChart
         solutions={values}
         lowerBounds={lower_bounds}
