@@ -23,7 +23,7 @@
   //
   import "mathlive/fonts.css";
 
-  import { Drawer, drawerStore } from "@skeletonlabs/skeleton";
+  import { Drawer, Modal, drawerStore } from "@skeletonlabs/skeleton";
   import { Toast } from "@skeletonlabs/skeleton";
   import Citation from "$lib/components/main/Citation.svelte";
   import CitationDownload from "$lib/components/main/CitationDownload.svelte";
@@ -65,5 +65,6 @@
   -- close button's styling (see `CloseButton.svelte`).
   -->
 <Toast />
+<Modal />
 
 <slot />

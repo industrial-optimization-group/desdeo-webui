@@ -38,6 +38,7 @@ length.
     {max_selections}
     bind:highlighted
     {disabled}
+    mini_nimbus={true}
   />
 {:else}
   <TabbedVisualizations

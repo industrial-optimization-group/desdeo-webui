@@ -29,7 +29,7 @@
   export let selectedValue: number | undefined = undefined;
 
   /** The previous value to display on the chart. */
-  export let previousValue: number | undefined = undefined;
+  export let previousValue: number;
 
   /** Whether a lower value is better. */
   export let lowerIsBetter = true;
@@ -51,19 +51,23 @@
 
   let classificationValue: classification = classification.ChangeFreely;
 
+  const precision = 1e-3;
+
   $: {
+    // Todo: This only works if lowerIsBetter is false, I think.
+
     if (selectedValue === undefined || solutionValue === undefined) {
       classificationValue = classification.ChangeFreely;
-    } else if (selectedValue === lowerBound) {
+    } else if (Math.abs(selectedValue - lowerBound) < precision) {
       classificationValue = classification.ChangeFreely;
-    } else if (selectedValue === higherBound) {
+    } else if (Math.abs(selectedValue - higherBound) < precision) {
       classificationValue = classification.ImproveFreely;
+    } else if (Math.abs(selectedValue - previousValue) < precision) {
+      classificationValue = classification.KeepContant;
     } else if (selectedValue < solutionValue) {
       classificationValue = classification.WorsenUntil;
     } else if (selectedValue > solutionValue) {
       classificationValue = classification.ImproveUntil;
-    } else {
-      classificationValue = classification.KeepContant;
     }
   }
   //   export let barColor = "#a6b1e1";

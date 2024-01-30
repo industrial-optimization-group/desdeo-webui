@@ -164,10 +164,16 @@
     let originalBarColor = barColor.slice();
     let datalowerBar;
     let backgroundStyle;
-    let color = originalBarColor;
+    let color =
+      higherBound < 0
+        ? "transparent"
+        : lowerBound < 0
+        ? (solutionValue as number) < 0
+          ? "white"
+          : originalBarColor
+        : originalBarColor;
 
     if (lowerIsBetter) {
-      color = originalBarColor;
       backgroundStyle = {
         color: "white",
         // opacity: 1,
@@ -177,12 +183,23 @@
         color: originalBarColor,
         // opacity: 1,
       };
+      let oldBarColor = originalBarColor;
       originalBarColor = "white";
-
-      color = "white";
+      color =
+        higherBound < 0
+          ? "transparent"
+          : lowerBound < 0
+          ? (solutionValue as number) < 0
+            ? oldBarColor
+            : originalBarColor
+          : originalBarColor;
     }
 
-    datalowerBar = [[lowerBound]];
+    if (solutionValue != null) {
+      datalowerBar = higherBound < 0 ? [[lowerBound]] : [[lowerBound]];
+    } else {
+      datalowerBar = higherBound < 0 ? [[0]] : [[lowerBound]];
+    }
 
     chart.setOption({
       series: [

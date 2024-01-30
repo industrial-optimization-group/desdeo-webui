@@ -29,16 +29,14 @@ length.
 
   // Import the visualizations here.
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
-  import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
   import MultiMiniBarChart from "$lib/components/visual/visualization/props-linking/MultiMiniBarChart.svelte";
   // import Petals from "$lib/components/visual/visualization/props-linking/MultiplePetalCharts.svelte";
 </script>
 
 <TabGroup>
   <Tab bind:group={tab} name="tab1" value={0}>Parallel Coordinate Plot</Tab>
-  <Tab bind:group={tab} name="tab2" value={1}>Radar Chart</Tab>
-  <Tab bind:group={tab} name="tab6" value={2}>Mini NIMBUS</Tab>
-  <Tab bind:group={tab} name="tab5" value={3}>All</Tab>
+  <Tab bind:group={tab} name="tab2" value={1}>Bar Chart</Tab>
+  <Tab bind:group={tab} name="tab3" value={2}>All</Tab>
 
   <svelte:fragment slot="panel">
     {#if tab === 0}
@@ -54,14 +52,6 @@ length.
         bind:highlightedIndex={highlighted}
       />
     {:else if tab === 1}
-      <RadarChart
-        indicatorNames={names}
-        {values}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-      />
-    {:else if tab === 2}
       <MultiMiniBarChart
         solutions={values}
         lowerBounds={lower_bounds}
@@ -69,7 +59,7 @@ length.
         lowerIsBetter={lower_is_better}
         bind:selectedIndices={selected}
       />
-    {:else if tab === 3}
+    {:else if tab === 2}
       <ParallelCoordinatePlotBase
         {names}
         {values}
@@ -77,13 +67,6 @@ length.
         lowerIsBetter={lower_is_better}
         showIndicators={true}
         disableInteraction={disabled}
-        maxSelections={max_selections}
-        bind:selectedIndices={selected}
-        bind:highlightedIndex={highlighted}
-      />
-      <RadarChart
-        indicatorNames={names}
-        {values}
         maxSelections={max_selections}
         bind:selectedIndices={selected}
         bind:highlightedIndex={highlighted}

@@ -10,6 +10,8 @@ A user interface for the NIMBUS method.
   // messages.
   //
 
+  import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
+
   import type { Problem } from "$lib/api";
   import { toastStore } from "@skeletonlabs/skeleton";
 
@@ -25,6 +27,7 @@ A user interface for the NIMBUS method.
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import Input from "$lib/components/visual/preference-interaction/BasicInput.svelte";
   import { onMount } from "svelte";
+  import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
 
   /** The problem to solve. */
   export let problem: Problem;
@@ -98,6 +101,10 @@ A user interface for the NIMBUS method.
 
   let max_multiplier: number[] | undefined = undefined;
   let classification_checker = false;
+
+  let mapOptions: object | undefined = undefined;
+  let geoJSON: object | undefined = undefined;
+  let mapName: string | undefined = undefined;
 
   $: {
     if (problemInfo !== undefined) {
@@ -255,8 +262,30 @@ A user interface for the NIMBUS method.
     gridded_visualizations = false;
   }
 
+  $: if (reference_solution !== undefined) {
+    get_maps(reference_solution);
+  }
+
   /** The number of decimals to show for numeric values. */
   const decimals = 3;
+
+  function press_final_button() {
+    const modal: ModalSettings = {
+      type: "confirm",
+      // Data
+      title: "Please Confirm",
+      body: "Are you sure you wish to proceed?",
+      // TRUE if confirm pressed, FALSE if cancel pressed
+      response: (r: boolean) => {
+        if (r) {
+          handle_final_choice();
+        } else {
+          console.log("Cancelled");
+        }
+      },
+    };
+    modalStore.trigger(modal);
+  }
 
   //
   // The handlers
@@ -355,6 +384,7 @@ A user interface for the NIMBUS method.
   onMount(async () => {
     await handle_initialize();
   });
+
   async function handle_iterate() {
     if (!is_classification_valid) {
       const err = Error("`handle_iterate` called in wrong state.");
@@ -412,6 +442,48 @@ A user interface for the NIMBUS method.
     }
   }
 
+  async function get_maps(mapped_solution: number[]) {
+    if (!(state === State.ClassifySelected)) {
+      throw new Error("`get_maps` called in wrong state.");
+    }
+
+    try {
+      let endpoint = API_URL + "/nimbus/utopia";
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + AUTH_TOKEN,
+        },
+        body: JSON.stringify({
+          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          solution: mapped_solution,
+          Year: "2030",
+        }),
+      });
+      if (response.ok) {
+        const mapdata = await response.json();
+        mapOptions = mapdata.option;
+        geoJSON = mapdata.forestMap;
+        mapName = mapdata.mapName;
+        console.log(mapOptions);
+        console.log(geoJSON);
+      } else {
+        throw new Error("Failed to get maps.");
+      }
+    } catch (err) {
+      toastStore.trigger({
+        // prettier-ignore
+        message: "Oops! Something went wrong.",
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+      console.error(err);
+
+      //
+    }
+  }
   async function handle_intermediate() {
     if (
       !is_intermediate_selection_valid ||
@@ -580,19 +652,13 @@ A user interface for the NIMBUS method.
               <RadioItem
                 bind:group={state}
                 name="justify"
-                value={State.ClassifySelected}>Classify</RadioItem
-              >
-              <RadioItem
-                bind:group={state}
-                name="justify"
-                value={State.IntermediateSelected}
-                >Generate Intermediate</RadioItem
+                value={State.ClassifySelected}>Provide classification</RadioItem
               >
               <RadioItem
                 bind:group={state}
                 name="justify"
                 value={State.SaveSolutionsSelected}
-                >Highlight solutions</RadioItem
+                >Save best candidate solutions</RadioItem
               >
             </RadioGroup>
             {#if state === State.ClassifySelected}
@@ -600,10 +666,11 @@ A user interface for the NIMBUS method.
                 Provide your preferences by classifying the objectives by either
                 clicking on the bars or using the input boxes. You must give a
                 preference for each objective. You must improve and impair at
-                least one objective.
+                least one objective. You can choose the maximum number of new
+                solutions to generate.
               </div>
               <Input
-                labelName="Approximate number of solutions to generate using NIMBUS:"
+                labelName="Maximum number of solutions to generate using NIMBUS:"
                 bind:value={numSolutions}
                 onChange={() => {
                   if (numSolutions < MIN_NUM_SOLUTIONS) {
@@ -683,6 +750,7 @@ A user interface for the NIMBUS method.
             {/if}
 
             <RadioGroup>
+              <legend>Choose which solutions to visualize</legend>
               <RadioItem
                 bind:group={visualizationChoiceState}
                 name="justify"
@@ -693,7 +761,7 @@ A user interface for the NIMBUS method.
                 bind:group={visualizationChoiceState}
                 name="justify"
                 value={VisualizationChoiceState.SavedSolutions}
-                >Saved solutions</RadioItem
+                >Best candidate solutions</RadioItem
               >
               <RadioItem
                 bind:group={visualizationChoiceState}
@@ -712,8 +780,8 @@ A user interface for the NIMBUS method.
                 >
                 <button
                   class="btn variant-filled inline"
-                  on:click={handle_final_choice}
-                  disabled={!is_classification_valid}
+                  on:click={press_final_button}
+                  disabled={!(state === State.ClassifySelected)}
                   >Finish with chosen solution</button
                 >
               </div>
@@ -769,7 +837,7 @@ A user interface for the NIMBUS method.
                 on:click={() => {
                   visualizations_maximized = !visualizations_maximized;
                 }}
-                >{#if visualizations_maximized}Minimize{:else}Maximize{/if}
+                >{#if visualizations_maximized}Minimize view{:else}Maximize view{/if}
               </button>
             </svelte:fragment>
 
@@ -818,5 +886,15 @@ A user interface for the NIMBUS method.
         </Card>
       </div>
     </MethodLayout>
+  {/if}
+</div>
+<div class="">
+  {#if mapOptions !== undefined && geoJSON !== undefined}
+    <EchartsComponent
+      option={mapOptions}
+      {geoJSON}
+      {mapName}
+      customStyle="height: 500px; width: 100%;"
+    />
   {/if}
 </div>

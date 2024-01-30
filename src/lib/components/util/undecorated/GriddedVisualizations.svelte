@@ -29,7 +29,6 @@ length.
 
   // Import the visualizations here.
   import ParallelCoordinatePlotBase from "$lib/components/visual/visualization/props-linking/ParallelCoordinatePlot.svelte";
-  import RadarChart from "$lib/components/visual/visualization/props-linking/RadarChart.svelte";
   // import { colorPalette } from "$lib/components/visual/constants";
 </script>
 
@@ -41,13 +40,6 @@ length.
     lowerIsBetter={lower_is_better}
     showIndicators={true}
     disableInteraction={disabled}
-    maxSelections={max_selections}
-    bind:selectedIndices={selected}
-    bind:highlightedIndex={highlighted}
-  />
-  <RadarChart
-    indicatorNames={names}
-    {values}
     maxSelections={max_selections}
     bind:selectedIndices={selected}
     bind:highlightedIndex={highlighted}

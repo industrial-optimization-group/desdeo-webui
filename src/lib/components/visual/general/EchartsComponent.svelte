@@ -23,6 +23,12 @@
   /** The aspect ratio of the chart container. */
   export let aspect: string | undefined = undefined;
 
+  /** The GeoJSON data to use for the chart. */
+  export let geoJSON: object | undefined = undefined;
+
+  /** The name of the map to use for the chart. */
+  export let mapName: string | undefined = undefined;
+
   /** Custom CSS styles to apply to the chart container. */
   export let customStyle = "";
 
@@ -71,6 +77,9 @@
   onMount(() => {
     if (!chart) {
       chart = echarts.init(chartDiv, "", { renderer: "svg" });
+      if (geoJSON !== undefined && mapName !== undefined) {
+        echarts.registerMap(mapName, { geoJSON: geoJSON });
+      }
       chart.setOption(option);
       if (disableAnimation) {
         chart.setOption({
