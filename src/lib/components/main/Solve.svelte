@@ -37,14 +37,7 @@
   <svelte:fragment slot="panel">
     {#if tab === 0}
       <div class="mb-8">
-        Please select a problem. Then <button
-          class="anchor"
-          on:click={() => {
-            tab = 1;
-          }}
-          disabled={!selected_problem}
-          >continue to selecting a solution method</button
-        >.
+        Please select a problem. Then continue to selecting a solution method.
       </div>
       <SelectProblem
         {problems}
@@ -53,14 +46,7 @@
       />
     {:else if tab === 1 && selected_problem}
       <div class="mb-8">
-        Please select a solution method. Then <button
-          class="anchor"
-          on:click={() => {
-            tab = 2;
-          }}
-          disabled={!selected_problem || !selected_method}
-          >continue to solving the problem</button
-        >.
+        Please select a solution method. Then continue to solving the problem.
       </div>
       <SelectMethod problem={selected_problem} bind:selected_method />
     {:else if tab === 2 && selected_problem && selected_method}

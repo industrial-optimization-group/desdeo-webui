@@ -208,7 +208,7 @@
           stack: "negative",
           type: "bar",
           color: color,
-          showBackground: solutionValue ? true : false,
+          showBackground: solutionValue !== undefined ? true : false,
           backgroundStyle: backgroundStyle,
           data: solutionValue ? [[solutionValue]] : [[0]],
           barWidth: "100%",

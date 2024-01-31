@@ -120,6 +120,10 @@
       chart.resize();
     }
   });
+
+  $: if (chart) {
+    chart.setOption(option);
+  }
 </script>
 
 <div

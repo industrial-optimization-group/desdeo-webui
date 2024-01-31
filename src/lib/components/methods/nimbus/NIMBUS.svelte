@@ -16,7 +16,6 @@ A user interface for the NIMBUS method.
   import { toastStore } from "@skeletonlabs/skeleton";
 
   import Visualizations from "$lib/components/util/undecorated/Visualizations.svelte";
-  import MethodLayout from "$lib/components/util/undecorated/MethodLayout.svelte";
   import Card from "$lib/components/main/Card.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
   import Table from "$lib/components/util/undecorated/Table.svelte";
@@ -28,6 +27,7 @@ A user interface for the NIMBUS method.
   import Input from "$lib/components/visual/preference-interaction/BasicInput.svelte";
   import { onMount } from "svelte";
   import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
+  import NimbusLayout from "$lib/components/util/undecorated/NIMBUSLayout.svelte";
 
   /** The problem to solve. */
   export let problem: Problem;
@@ -102,9 +102,28 @@ A user interface for the NIMBUS method.
   let max_multiplier: number[] | undefined = undefined;
   let classification_checker = false;
 
-  let mapOptions: object | undefined = undefined;
+  type mapOptionsType = {
+    one: object;
+    two: object;
+    three: object;
+  };
+  let mapOptions: mapOptionsType = {
+    one: Object,
+    two: Object,
+    three: Object,
+  };
+
+  enum PeriodChoice {
+    one = "one",
+    two = "two",
+    three = "three",
+  }
+
+  let periodChoice: PeriodChoice = PeriodChoice.one;
   let geoJSON: object | undefined = undefined;
   let mapName: string | undefined = undefined;
+
+  let finalChoiceState = false;
 
   $: {
     if (problemInfo !== undefined) {
@@ -125,22 +144,22 @@ A user interface for the NIMBUS method.
     if (max_multiplier === undefined || preference === undefined) {
       classification_checker = false;
     } else {
-      const pref_less_ref = preference.every(
+      const pref_less_ref = preference.some(
         (value, index) =>
           value! * max_multiplier![index] <
           reference_solution![index] * max_multiplier![index]
       );
 
-      const pref_greater_ref = preference.every(
+      const pref_greater_ref = preference.some(
         (value, index) =>
           value! * max_multiplier![index] >
           reference_solution![index] * max_multiplier![index]
       );
 
-      if (pref_less_ref || pref_greater_ref) {
-        classification_checker = false;
-      } else {
+      if (pref_less_ref && pref_greater_ref) {
         classification_checker = true;
+      } else {
+        classification_checker = false;
       }
     }
   }
@@ -262,7 +281,7 @@ A user interface for the NIMBUS method.
     gridded_visualizations = false;
   }
 
-  $: if (reference_solution !== undefined) {
+  $: if (reference_solution !== undefined && state === State.ClassifySelected) {
     get_maps(reference_solution);
   }
 
@@ -312,7 +331,6 @@ A user interface for the NIMBUS method.
 
       if (response.ok) {
         const data: problemInfoType = await response.json();
-        console.log(data);
         problemInfo = data;
         preference = problemInfo.previous_preference;
         state = State.ClassifySelected;
@@ -390,7 +408,7 @@ A user interface for the NIMBUS method.
       const err = Error("`handle_iterate` called in wrong state.");
       toastStore.trigger({
         // prettier-ignore
-        message: "Oops! Something went wrong.",
+        message: "Oops! Something went wrong. Iteration called with invalid classification.",
         background: "variant-filled-error",
         timeout: 5000,
       });
@@ -427,7 +445,7 @@ A user interface for the NIMBUS method.
     } catch (err) {
       toastStore.trigger({
         // prettier-ignore
-        message: "Oops! Something went wrong.",
+        message: "Oops! Something went wrong. Iteration failed at the backend.",
         background: "variant-filled-error",
         timeout: 5000,
       });
@@ -442,7 +460,7 @@ A user interface for the NIMBUS method.
     }
   }
 
-  async function get_maps(mapped_solution: number[]) {
+  async function actually_get_maps(mapped_solution: number[], year: string) {
     if (!(state === State.ClassifySelected)) {
       throw new Error("`get_maps` called in wrong state.");
     }
@@ -459,23 +477,18 @@ A user interface for the NIMBUS method.
         body: JSON.stringify({
           problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
           solution: mapped_solution,
-          Year: "2030",
+          Year: year,
         }),
       });
       if (response.ok) {
-        const mapdata = await response.json();
-        mapOptions = mapdata.option;
-        geoJSON = mapdata.forestMap;
-        mapName = mapdata.mapName;
-        console.log(mapOptions);
-        console.log(geoJSON);
+        return await response.json();
       } else {
         throw new Error("Failed to get maps.");
       }
     } catch (err) {
       toastStore.trigger({
         // prettier-ignore
-        message: "Oops! Something went wrong.",
+        message: "Oops! Something went wrong with map visualization.",
         background: "variant-filled-error",
         timeout: 5000,
       });
@@ -483,6 +496,17 @@ A user interface for the NIMBUS method.
 
       //
     }
+  }
+
+  async function get_maps(mapped_solution: number[]) {
+    const data = await actually_get_maps(mapped_solution, "2025");
+    mapOptions["one"] = data.option;
+    geoJSON = data.forestMap;
+    mapName = data.mapName;
+    const data2 = await actually_get_maps(mapped_solution, "2030");
+    mapOptions["two"] = data2.option;
+    const data3 = await actually_get_maps(mapped_solution, "2035");
+    mapOptions["three"] = data3.option;
   }
   async function handle_intermediate() {
     if (
@@ -579,7 +603,7 @@ A user interface for the NIMBUS method.
       // Network error. Authentication error. Server error. etc.
       toastStore.trigger({
         // prettier-ignore
-        message: "Oops! Something went wrong.",
+        message: "Oops! Something went wrong while saving solutions.",
         background: "variant-filled-error",
         timeout: 5000,
       });
@@ -594,7 +618,7 @@ A user interface for the NIMBUS method.
       const err = Error("`handle_iterate` called in wrong state.");
       toastStore.trigger({
         // prettier-ignore
-        message: "Oops! Something went wrong.",
+        message: "Oops! Something went wrong while saving final choice.",
         background: "variant-filled-error",
         timeout: 5000,
       });
@@ -615,7 +639,7 @@ A user interface for the NIMBUS method.
         }),
       });
       if (response.ok) {
-        // route to the next page
+        finalChoiceState = true;
       } else {
         throw new Error("Failed to save final choice.");
       }
@@ -641,7 +665,10 @@ A user interface for the NIMBUS method.
       <!-- <ProblemDetails {problem} /> -->
     </div>
   {:else}
-    <MethodLayout {visualizations_maximized}>
+    <NimbusLayout
+      classify={state === State.ClassifySelected ? true : false}
+      finalChoice={finalChoiceState}
+    >
       <div slot="preferences">
         {#if problemInfo !== undefined && reference_solution !== undefined}
           <Card>
@@ -748,29 +775,6 @@ A user interface for the NIMBUS method.
                 />
               {/if}
             {/if}
-
-            <RadioGroup>
-              <legend>Choose which solutions to visualize</legend>
-              <RadioItem
-                bind:group={visualizationChoiceState}
-                name="justify"
-                value={VisualizationChoiceState.CurrentSolutions}
-                >Current solutions</RadioItem
-              >
-              <RadioItem
-                bind:group={visualizationChoiceState}
-                name="justify"
-                value={VisualizationChoiceState.SavedSolutions}
-                >Best candidate solutions</RadioItem
-              >
-              <RadioItem
-                bind:group={visualizationChoiceState}
-                name="justify"
-                value={VisualizationChoiceState.AllSolutions}
-                >All solutions</RadioItem
-              >
-            </RadioGroup>
-
             {#if state === State.ClassifySelected}
               <div class="flex gap-4">
                 <button
@@ -820,26 +824,47 @@ A user interface for the NIMBUS method.
           </Card>
         {/if}
       </div>
+      <div slot="solutionSetChoice">
+        <Card>
+          <svelte:fragment slot="header"
+            >Choose which solution set to visualize</svelte:fragment
+          >
+          <RadioGroup>
+            <RadioItem
+              bind:group={visualizationChoiceState}
+              name="justify"
+              value={VisualizationChoiceState.CurrentSolutions}
+              >Current solutions</RadioItem
+            >
+            <RadioItem
+              bind:group={visualizationChoiceState}
+              name="justify"
+              value={VisualizationChoiceState.SavedSolutions}
+              >Best candidate solutions</RadioItem
+            >
+            <RadioItem
+              bind:group={visualizationChoiceState}
+              name="justify"
+              value={VisualizationChoiceState.AllSolutions}
+              >All solutions</RadioItem
+            >
+          </RadioGroup>
+
+          {#if visualizationChoiceState === VisualizationChoiceState.CurrentSolutions}
+            <div>
+              Visualize solutions generated by NIMBUS in the latest iteration.
+            </div>
+          {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions}
+            <div>Visualize best candidate solutions saved by you.</div>
+          {:else if visualizationChoiceState === VisualizationChoiceState.AllSolutions}
+            <div>Visualize all solutions generated by NIMBUS.</div>
+          {/if}
+        </Card>
+      </div>
       <div slot="visualizations">
-        {#if state === State.ClassifySelected}
+        {#if state === State.ClassifySelected && !finalChoiceState}
           <Card>
             <svelte:fragment slot="header">Solution Explorer</svelte:fragment>
-            <svelte:fragment slot="buttons">
-              <button
-                class="anchor"
-                on:click={() => {
-                  gridded_visualizations = !gridded_visualizations;
-                }}
-                disabled={!visualizations_maximized}>Grid</button
-              >
-              <button
-                class="anchor"
-                on:click={() => {
-                  visualizations_maximized = !visualizations_maximized;
-                }}
-                >{#if visualizations_maximized}Minimize view{:else}Maximize view{/if}
-              </button>
-            </svelte:fragment>
 
             {#if problemInfo !== undefined && solutions_to_visualize !== undefined}
               <Visualizations
@@ -859,6 +884,26 @@ A user interface for the NIMBUS method.
               <GeneralError />
             {/if}
           </Card>
+        {:else if finalChoiceState}
+          <Card>
+            <svelte:fragment slot="header">Solution Explorer</svelte:fragment>
+
+            {#if problemInfo !== undefined && reference_solution !== undefined}
+              <ParallelCoordinatePlotBase
+                names={problemInfo.objective_names}
+                values={[reference_solution]}
+                ranges={transform_bounds(
+                  problemInfo.lower_bounds,
+                  problemInfo.upper_bounds
+                )}
+                lowerIsBetter={problemInfo.is_maximized.map((value) => !value)}
+                showIndicators={true}
+                disableInteraction={true}
+              />
+            {:else}
+              <GeneralError />
+            {/if}
+          </Card>
         {/if}
       </div>
       <div slot="solutions">
@@ -871,13 +916,23 @@ A user interface for the NIMBUS method.
             </p>
             <div class="overflow-x-auto">
               {#if problemInfo !== undefined && solutions_to_visualize !== undefined}
-                <Table
-                  head={problemInfo.objective_names}
-                  body={solutions_to_visualize.map((solution) => {
-                    return solution.map((value) => value.toFixed(decimals));
-                  })}
-                  bind:selected_rows={selected_solutions}
-                />
+                {#if !finalChoiceState}
+                  <Table
+                    head={problemInfo.objective_names}
+                    body={solutions_to_visualize.map((solution) => {
+                      return solution.map((value) => value.toFixed(decimals));
+                    })}
+                    bind:selected_rows={selected_solutions}
+                  />
+                {:else if reference_solution !== undefined}
+                  <Table
+                    head={problemInfo.objective_names}
+                    body={[reference_solution].map((solution) => {
+                      return solution.map((value) => value.toFixed(decimals));
+                    })}
+                    bind:selected_rows={selected_solutions}
+                  />
+                {/if}
               {:else}
                 <GeneralError />
               {/if}
@@ -885,16 +940,38 @@ A user interface for the NIMBUS method.
           </div>
         </Card>
       </div>
-    </MethodLayout>
-  {/if}
-</div>
-<div class="">
-  {#if mapOptions !== undefined && geoJSON !== undefined}
-    <EchartsComponent
-      option={mapOptions}
-      {geoJSON}
-      {mapName}
-      customStyle="height: 500px; width: 100%;"
-    />
+      <div slot="Map">
+        <Card>
+          <svelte:fragment slot="header"
+            >Treatment options visualized on a map</svelte:fragment
+          >
+          {#if mapOptions[periodChoice] !== undefined && geoJSON !== undefined}
+            <EchartsComponent
+              option={mapOptions[periodChoice]}
+              {geoJSON}
+              {mapName}
+              customStyle="height: 500px; width: 100%;"
+            />
+          {/if}
+          <RadioGroup>
+            <RadioItem
+              bind:group={periodChoice}
+              name="justify"
+              value={PeriodChoice.one}>2025</RadioItem
+            >
+            <RadioItem
+              bind:group={periodChoice}
+              name="justify"
+              value={PeriodChoice.two}>2030</RadioItem
+            >
+            <RadioItem
+              bind:group={periodChoice}
+              name="justify"
+              value={PeriodChoice.three}>2035</RadioItem
+            >
+          </RadioGroup>
+        </Card>
+      </div>
+    </NimbusLayout>
   {/if}
 </div>

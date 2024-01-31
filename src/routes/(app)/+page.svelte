@@ -3,7 +3,8 @@
   <p class="max-w-prose">
     During the study, you will have the opportunity to work with an interactive
     multiobjective optimization method and contribute to our research by
-    providing valuable insights. The study takes about <b>XX minutes</b> to be completed.
+    providing valuable insights. The study takes about 20-30 minutes to be
+    completed.
   </p>
   <p class="max-w-prose">
     All data collected in this study is anonymized. The data does not contain

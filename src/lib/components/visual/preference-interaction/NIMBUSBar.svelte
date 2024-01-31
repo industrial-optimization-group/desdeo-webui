@@ -58,11 +58,17 @@
 
     if (selectedValue === undefined || solutionValue === undefined) {
       classificationValue = classification.ChangeFreely;
-    } else if (Math.abs(selectedValue - lowerBound) < precision) {
+    } else if (
+      Math.abs(selectedValue - lowerBound) < precision ||
+      selectedValue < lowerBound
+    ) {
       classificationValue = classification.ChangeFreely;
-    } else if (Math.abs(selectedValue - higherBound) < precision) {
+    } else if (
+      Math.abs(selectedValue - higherBound) < precision ||
+      selectedValue > higherBound
+    ) {
       classificationValue = classification.ImproveFreely;
-    } else if (Math.abs(selectedValue - previousValue) < precision) {
+    } else if (Math.abs(selectedValue - solutionValue) < precision) {
       classificationValue = classification.KeepContant;
     } else if (selectedValue < solutionValue) {
       classificationValue = classification.WorsenUntil;
@@ -128,7 +134,7 @@
       {higherBound}
       {solutionValue}
       bind:selectedValue
-      bind:previousValue
+      {previousValue}
       {lowerIsBetter}
       {decimalPrecision}
       {barColor}
