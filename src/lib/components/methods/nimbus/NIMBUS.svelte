@@ -930,7 +930,6 @@ A user interface for the NIMBUS method.
                     body={[reference_solution].map((solution) => {
                       return solution.map((value) => value.toFixed(decimals));
                     })}
-                    bind:selected_rows={selected_solutions}
                   />
                 {/if}
               {:else}
