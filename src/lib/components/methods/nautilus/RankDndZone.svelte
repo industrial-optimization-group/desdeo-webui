@@ -1,5 +1,6 @@
 <script>
   import { flip } from "svelte/animate";
+  import { onMount } from "svelte";
 
   export let objectives;
   export let preferenceInfo;
@@ -18,6 +19,10 @@
   console.log(objectives);
 
   let hoveringOverRank;
+
+  onMount(() => {
+    preferenceInfo = Array(objectives.length).fill(0);
+  });
 
   function dragStart(event, rankIndex, objectiveIndex) {
     const data = { rankIndex, objectiveIndex };
@@ -57,10 +62,7 @@
         const objectiveIndex = objectives.findIndex(
           (obj) => obj.id === item.id
         );
-        // Update the corresponding position in preferenceInfo with the current rank
-        if (objectiveIndex !== -1) {
-          preferenceInfo[objectiveIndex] = rankIndex;
-        }
+        preferenceInfo[objectiveIndex] = rankIndex;
       });
     });
     console.log(preferenceInfo);
@@ -84,7 +86,7 @@
       ondragover="return false"
     >
       {#each rank.items as item, itemIndex (item)}
-        <div class="item" animate:flip>
+        <div class="item" animate:flip style="--objective-color: {item.color};">
           <li
             draggable={true}
             on:dragstart={(event) => dragStart(event, rankIndex, itemIndex)}
@@ -112,6 +114,9 @@
     display: inline-block;
     margin-right: 10px;
     padding: 10px;
+    height: 30px;
+    width: 30px;
+    font-size: 12px;
   }
   li:hover {
     background: orange;
@@ -123,6 +128,7 @@
     height: 40px; /* needed when empty */
     padding: 10px;
   }
+
   .reset-button {
     background-color: #d9534f; /* Red color to match the screenshot's button */
     color: white;
