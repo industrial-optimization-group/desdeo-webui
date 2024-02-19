@@ -1,20 +1,10 @@
 <script lang="ts">
+  import { weightPreferences, inputWeights } from "./stores";
   export let objectives;
-  export let preferenceInfo;
-  import { onMount } from "svelte";
-
-  let inputWeights: number[] = Array(objectives.length).fill(0);
-
-  onMount(() => {
-    inputWeights = Array(objectives.length).fill(0);
-    preferenceInfo = Array(objectives.length).fill(0);
-    // If you need to perform any action after resetting
-    updateWeights();
-  });
 
   function updateWeights() {
-    const totalWeight = inputWeights.reduce((sum, weight) => sum + weight, 0);
-    let unroundedPreferenceInfo = inputWeights.map((weight) =>
+    const totalWeight = $inputWeights.reduce((sum, weight) => sum + weight, 0);
+    let unroundedPreferenceInfo = $inputWeights.map((weight) =>
       totalWeight > 0 ? (weight / totalWeight) * 100 : 0
     );
 
@@ -31,6 +21,7 @@
     let total = weights.reduce((sum, weight) => sum + weight, 0);
     let difference = 100 - total;
     let increment = difference / weights.length;
+    let preferenceInfo = $weightPreferences;
 
     preferenceInfo = weights.map(
       (weight) => Math.round((weight + increment) * 10) / 10
@@ -38,11 +29,22 @@
 
     // If the normalization step caused any weight to become negative, set it to 0
     preferenceInfo = preferenceInfo.map((weight) => (weight < 0 ? 0 : weight));
-    console.log(preferenceInfo);
+
+    weightPreferences.set(preferenceInfo);
   }
 
   function handleInput(index: number, value: number) {
-    inputWeights[index] = value;
+    inputWeights.update((currentWeights) => {
+      // Make a copy of the current array to avoid direct mutation
+      let updatedWeights = [...currentWeights];
+
+      // Update the value at the specific index
+      updatedWeights[index] = value;
+
+      // Return the updated array to replace the old one
+      return updatedWeights;
+    });
+
     updateWeights();
   }
 </script>
@@ -55,7 +57,7 @@
       type="range"
       min="0"
       max="100"
-      bind:value={inputWeights[index]}
+      bind:value={$inputWeights[index]}
       on:input={(event) => handleInput(index, Number(event.target.value))}
     />
     <input
@@ -63,14 +65,14 @@
       min="0"
       max="100"
       class="spinner"
-      bind:value={inputWeights[index]}
+      bind:value={$inputWeights[index]}
       on:change={(event) => handleInput(index, Number(event.target.value))}
     />
   </div>
 {/each}
 
 <div class="percentage-bar">
-  {#each preferenceInfo as weight, index}
+  {#each $weightPreferences as weight, index}
     <div
       class="percentage"
       style="width: {weight}%; background-color: {objectives[index].color};"

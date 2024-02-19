@@ -1,27 +1,15 @@
 <script>
   import { flip } from "svelte/animate";
   import { onMount } from "svelte";
+  import { rankPreferences, inputRanks } from "./stores";
 
   export let objectives;
-  export let preferenceInfo;
-
-  let ranks = Array.from({ length: objectives.length + 1 }, (_, i) => ({
-    name: i === 0 ? "Objectives" : `Rank ${i}`,
-    items: [], // Initialize as an empty array for each rank
-  }));
-
-  objectives = objectives.map((objective) => ({
-    ...objective,
-    id: objective.name.replace(/\W/g, "_"),
-  }));
-
-  ranks[0].items = [...objectives];
-  console.log(objectives);
+  export let ranks;
 
   let hoveringOverRank;
 
   onMount(() => {
-    preferenceInfo = Array(objectives.length).fill(0);
+    updatePreferenceInfo();
   });
 
   function dragStart(event, rankIndex, objectiveIndex) {
@@ -33,6 +21,8 @@
     event.preventDefault();
     const json = event.dataTransfer.getData("text/plain");
     const data = JSON.parse(json);
+
+    console.log(data);
 
     // Ensure you're accessing the correct item
     const item = ranks[data.rankIndex].items[data.objectiveIndex];
@@ -46,11 +36,13 @@
     // Trigger Svelte's reactivity by re-assigning the array
     ranks = [...ranks];
 
+    inputRanks.set(ranks);
+
     hoveringOverRank = null;
   }
   function updatePreferenceInfo() {
     // Reset preferenceInfo with zeros, assuming the length is equal to the objectives count.
-    preferenceInfo = Array(objectives.length).fill(0);
+    let preferenceInfo = $rankPreferences;
 
     // Iterate over ranks to assign new ranks based on current positions
     ranks.forEach((rank, rankIndex) => {
@@ -65,14 +57,14 @@
         preferenceInfo[objectiveIndex] = rankIndex;
       });
     });
-    console.log(preferenceInfo);
+    rankPreferences.set(preferenceInfo);
+    inputRanks.set(ranks);
+    console.log($inputRanks);
   }
-  function resetRanks() {
-    // Logic to reset the ranks
-  }
+  function resetRanks() {}
 </script>
 
-{#each ranks as rank, rankIndex (rank)}
+{#each $inputRanks as rank, rankIndex (rank)}
   <div animate:flip>
     <b>{rank.name}</b>
     <ul
