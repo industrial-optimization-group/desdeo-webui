@@ -52,7 +52,6 @@ module.exports = {
     // Turn off rules that conflict with Prettier
     "prettier",
     "plugin:svelte/prettier",
-    "plugin:storybook/recommended",
   ],
 
   // See https://eslint.org/docs/latest/use/configure/language-options

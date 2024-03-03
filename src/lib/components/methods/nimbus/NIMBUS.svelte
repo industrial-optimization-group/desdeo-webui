@@ -32,9 +32,9 @@ A user interface for the NIMBUS method.
   /** The problem to solve. */
   export let problem: Problem;
   // Link to the backend.
-  export let API_URL = "http://localhost:5000/";
+  export let API_URL: string;
   // The authentication token.
-  export let AUTH_TOKEN = "";
+  export let AUTH_TOKEN: string;
   // Flag to visualize the decision space. Useful for UTOPIA maybe? Unused for now.
   //export let visualize_decision_space: boolean = false;
 

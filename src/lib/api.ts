@@ -12,7 +12,7 @@ import { z } from "zod";
 // the module reusable elsewhere. Currently only the state uses Svelte stores.
 // These stores could be replaced with RxJS observables.
 //
-import { derived, writable, get, readonly } from "svelte/store";
+import { derived, get, readonly, writable } from "svelte/store";
 
 /** An interface for accessing a backend server. */
 export interface Backend {
@@ -29,12 +29,16 @@ export const backend: Backend = {
   with_instance: with_access_token,
 };
 
+type OAuth2Response = {
+  access_token: string;
+  token_type: string;
+};
 //
 // The backend URL
 //
 // TODO: Move this to a configuration file.
 //
-export const baseURL = "http://localhost:5000";
+export const baseURL = "http://localhost:8000";
 
 /** A missing token is represented by `undefined`. */
 type Token = string | undefined;
@@ -94,9 +98,9 @@ export enum LoginStatus {
 
 /** See {@link state} for how the login status is determined. */
 export const login_status = derived(
-  [state.refresh_token, state.username],
-  ([$refresh_token, $username]) => {
-    if ($refresh_token === undefined) {
+  [state.access_token, state.username],
+  ([$access_token, $username]) => {
+    if ($access_token === undefined) {
       return LoginStatus.LoggedOut;
     }
     if ($username === undefined) {
@@ -157,7 +161,7 @@ export function login(
   password: string
 ): Promise<{ message: string }> {
   return without_token()
-    .post("/login", {
+    .post("/token", {
       username,
       password,
     })
@@ -177,6 +181,43 @@ export function login(
         message: <string>response.data.message,
       };
     });
+}
+
+export async function loginOAuth2(
+  username: string,
+  password: string
+): Promise<{ message: string }> {
+  // Note that the backend does not send a refresh token. The access token currently expires after 2 hours.
+  try {
+    const response = await fetch("http://localhost:8000/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        username: username,
+        password: password,
+        grant_type: "password",
+      }),
+    });
+    if (response.ok) {
+      const data: OAuth2Response = await response.json();
+      set_access_token(data.access_token);
+      set_username(username);
+      return {
+        message: "Logged in successfully",
+      };
+    } else {
+      return {
+        message: "Failed to log in",
+      };
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      message: "Failed to log in",
+    };
+  }
 }
 
 /**
@@ -482,3 +523,6 @@ export function is_point_of_length(value: unknown, n: number): value is Point {
 export function problem_has_finite_bounds(problem: Problem) {
   return is_point(problem.ideal_point) && is_point(problem.nadir_point);
 }
+
+export const methodHeaderText = writable("No method selected yet");
+export const selectedProblem = writable(-1);
