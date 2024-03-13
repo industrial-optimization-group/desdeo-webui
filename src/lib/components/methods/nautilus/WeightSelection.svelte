@@ -18,19 +18,36 @@
   }
 
   function normalizeWeights(weights) {
+    // Calculate the total weight
     let total = weights.reduce((sum, weight) => sum + weight, 0);
-    let difference = 100 - total;
-    let increment = difference / weights.length;
-    let preferenceInfo = $weightPreferences;
 
-    preferenceInfo = weights.map(
-      (weight) => Math.round((weight + increment) * 10) / 10
+    // Calculate the percentage weights
+    let percentageWeights = weights.map((weight) => (weight / total) * 100);
+
+    // Initially round the weights
+    let roundedWeights = percentageWeights.map(
+      (weight) => Math.round(weight * 10) / 10
     );
 
-    // If the normalization step caused any weight to become negative, set it to 0
-    preferenceInfo = preferenceInfo.map((weight) => (weight < 0 ? 0 : weight));
+    // Calculate the error due to rounding
+    let roundingError =
+      100 - roundedWeights.reduce((sum, weight) => sum + weight, 0);
 
-    weightPreferences.set(preferenceInfo);
+    // Distribute the error
+    let errorPerWeight = roundingError / weights.length;
+    for (let i = 0; i < roundedWeights.length; i++) {
+      roundedWeights[i] += errorPerWeight;
+      // Round again after adjusting for error
+      roundedWeights[i] = Math.round(roundedWeights[i] * 10) / 10;
+    }
+
+    // Due to the second rounding, there might still be an error, fix it by adjusting the last weight
+    let finalError =
+      100 - roundedWeights.reduce((sum, weight) => sum + weight, 0);
+    roundedWeights[roundedWeights.length - 1] += finalError;
+
+    // Set the adjusted weights to the store
+    weightPreferences.set(roundedWeights);
   }
 
   function handleInput(index: number, value: number) {

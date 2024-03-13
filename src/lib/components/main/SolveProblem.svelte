@@ -10,6 +10,7 @@
   import NautilusMethod from "$lib/components/methods/nautilus/NautilusMethod.svelte";
   import GeneralError from "../util/undecorated/GeneralError.svelte";
   import { get_access_token, baseURL } from "$lib/api";
+  import NautilusNew from "../methods/nautilus/NautilusNew.svelte";
 </script>
 
 <!--
@@ -25,7 +26,8 @@
 {#if method === "reference_point_method"}
   <ReferencePointMethod {problem} />
 {:else if method === "nautilus"}
-  <NautilusMethod {problem} API_URL={baseURL} AUTH_TOKEN={get_access_token()} />
+  <!-- <NautilusMethod {problem} API_URL={baseURL} AUTH_TOKEN={get_access_token()} /> -->
+  <NautilusNew {problem} API_URL={baseURL} AUTH_TOKEN={get_access_token()} />
 {:else}
   <GeneralError />
 {/if}

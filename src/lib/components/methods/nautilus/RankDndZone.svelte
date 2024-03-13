@@ -21,36 +21,20 @@
     event.preventDefault();
     const json = event.dataTransfer.getData("text/plain");
     const data = JSON.parse(json);
-
-    console.log(data);
-
-    // Ensure you're accessing the correct item
     const item = ranks[data.rankIndex].items[data.objectiveIndex];
 
-    // Remove the item from its original place
     ranks[data.rankIndex].items.splice(data.objectiveIndex, 1);
-
-    // Add the item to the new place
     ranks[rankIndex].items.push(item);
-
-    // Trigger Svelte's reactivity by re-assigning the array
     ranks = [...ranks];
 
     inputRanks.set(ranks);
-
     hoveringOverRank = null;
   }
   function updatePreferenceInfo() {
-    // Reset preferenceInfo with zeros, assuming the length is equal to the objectives count.
     let preferenceInfo = $rankPreferences;
-
-    // Iterate over ranks to assign new ranks based on current positions
     ranks.forEach((rank, rankIndex) => {
-      // Skip the first entry as it's not a rank but the header/"Objectives" placeholder
       if (rankIndex === 0) return;
-
       rank.items.forEach((item) => {
-        // Find the index of the item in the original objectives array to map the rank correctly
         const objectiveIndex = objectives.findIndex(
           (obj) => obj.id === item.id
         );
@@ -59,9 +43,26 @@
     });
     rankPreferences.set(preferenceInfo);
     inputRanks.set(ranks);
-    console.log($inputRanks);
   }
-  function resetRanks() {}
+
+  function resetRanks() {
+    ranks.forEach((rank, index) => {
+      if (index > 0) {
+        rank.items = [];
+      }
+    });
+
+    ranks[0].items = objectives.map((obj) => ({
+      name: obj.name,
+      minimize: obj.minimize,
+      color: obj.color,
+      id: obj.id,
+    }));
+
+    ranks = [...ranks];
+    inputRanks.set(ranks);
+    updatePreferenceInfo();
+  }
 </script>
 
 {#each $inputRanks as rank, rankIndex (rank)}
@@ -80,8 +81,10 @@
       {#each rank.items as item, itemIndex (item)}
         <div class="item" animate:flip style="--objective-color: {item.color};">
           <li
-            draggable={true}
+            class="mr-2 inline-block h-8 w-8 cursor-pointer rounded bg-gray-200 p-2 text-xs font-medium text-gray-700 hover:bg-orange-500 hover:text-white"
+            draggable="true"
             on:dragstart={(event) => dragStart(event, rankIndex, itemIndex)}
+            style="background-color: {item.color};"
           >
             {item.name.substr(0, 6)}
           </li>
@@ -100,20 +103,7 @@
   .item {
     display: inline; /* required for flip to work */
   }
-  li {
-    background-color: lightgray;
-    cursor: pointer;
-    display: inline-block;
-    margin-right: 10px;
-    padding: 10px;
-    height: 30px;
-    width: 30px;
-    font-size: 12px;
-  }
-  li:hover {
-    background: orange;
-    color: white;
-  }
+
   ul {
     border: solid lightgray 1px;
     display: flex; /* required for drag & drop to work when .item display is inline */

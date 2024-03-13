@@ -18,26 +18,35 @@
 </script>
 
 <h2>Preference Information</h2>
-<label>
-  <input
-    type="radio"
-    bind:group={selectedPreference}
-    value={PreferenceType.WEIGHT}
-    on:change={() => setPreference(PreferenceType.WEIGHT)}
-  />
-  Weight
-</label>
-<label>
-  <input
-    type="radio"
-    bind:group={selectedPreference}
-    value={PreferenceType.RANK}
-    on:change={() => setPreference(PreferenceType.RANK)}
-    checked
-  />
-  Rank
-</label>
+<div class="radio-group">
+  <label>
+    <input
+      type="radio"
+      bind:group={selectedPreference}
+      value={PreferenceType.WEIGHT}
+      on:change={() => setPreference(PreferenceType.WEIGHT)}
+    />
+    <span />
+    <!-- This is the custom radio button -->
+    Weight
+  </label>
+  <label>
+    <input
+      type="radio"
+      bind:group={selectedPreference}
+      value={PreferenceType.RANK}
+      on:change={() => setPreference(PreferenceType.RANK)}
+      checked
+    />
+    <span />
+    <!-- This is the custom radio button -->
+    Rank
+  </label>
+</div>
 
 <style>
-  /* Your styles here */
+  .radio-group {
+    display: flex; /* Align radio buttons side by side */
+    margin-right: 10px; /* Space between radio buttons and the number input */
+  }
 </style>
