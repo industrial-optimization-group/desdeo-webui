@@ -17,9 +17,8 @@
   }
 </script>
 
-<h2>Preference Information</h2>
-<div class="radio-group">
-  <label>
+<div class="mr-10 flex">
+  <label class="mr-10">
     <input
       type="radio"
       bind:group={selectedPreference}
@@ -27,7 +26,6 @@
       on:change={() => setPreference(PreferenceType.WEIGHT)}
     />
     <span />
-    <!-- This is the custom radio button -->
     Weight
   </label>
   <label>
@@ -39,14 +37,6 @@
       checked
     />
     <span />
-    <!-- This is the custom radio button -->
     Rank
   </label>
 </div>
-
-<style>
-  .radio-group {
-    display: flex; /* Align radio buttons side by side */
-    margin-right: 10px; /* Space between radio buttons and the number input */
-  }
-</style>

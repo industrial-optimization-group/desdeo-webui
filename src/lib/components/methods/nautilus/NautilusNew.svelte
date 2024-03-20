@@ -21,6 +21,7 @@
   } from "./stores";
 
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
+  import Card from "$lib/components/main/Card.svelte";
 
   export let API_URL = "http://localhost:5000/";
 
@@ -186,54 +187,60 @@
 </script>
 
 <div class="wrapper">
-  <div class="preference-panel">
-    <PreferenceSelector on:preferenceChange={handlePreferenceTypeChange} />
-    <InfoBox />
-
-    {#if preferenceType === PreferenceType.RANK}
-      <RankDndZone {objectives} {ranks} />
-    {:else if preferenceType === PreferenceType.WEIGHT}
-      <WeightSelection {objectives} />
-    {/if}
-    <IterationsControl />
-    <button
-      on:click={handleStepBack}
-      class="iterate-button"
-      disabled={$iterationDetails.length < 1}>Step Backwards</button
-    >
-    <button on:click={handleIterate} class="iterate-button">Step Forward</button
-    >
+  <div class="">
+    <Card>
+      <svelte:fragment slot="header">Preference information</svelte:fragment>
+      <PreferenceSelector on:preferenceChange={handlePreferenceTypeChange} />
+      {#if preferenceType === PreferenceType.RANK}
+        <RankDndZone {objectives} {ranks} />
+      {:else if preferenceType === PreferenceType.WEIGHT}
+        <WeightSelection {objectives} />
+      {/if}
+    </Card>
+    <Card>
+      <svelte:fragment slot="header"
+        >Steps before Pareto optimality</svelte:fragment
+      >
+      <IterationsControl />
+      <div class="button-container">
+        <button
+          on:click={handleStepBack}
+          class="iterate-button"
+          disabled={$iterationDetails.length < 1}>Step Backwards</button
+        >
+        <button on:click={handleIterate} class="iterate-button"
+          >Step Forward</button
+        >
+      </div>
+    </Card>
   </div>
-  <div class="dashboard">
+  <div class="">
     <ProgressObjectiveGrid {objectives} />
   </div>
 </div>
 
 <style>
   .iterate-button {
-    background-color: #4f9dd9; /* Red color to match the screenshot's button */
+    background-color: #4f9dd9;
     color: rgb(0, 0, 0);
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    box-shadow: none; /* No shadow for a flat button */
+    padding: 10px 10px;
+    border-radius: 2px;
+    box-shadow: none;
     font-size: 16px;
-    margin-top: 20px; /* Space above the reset button */
+    margin-top: 20px;
+  }
+  .button-container {
+    display: flex; /* Ensures buttons are in a row */
+    gap: 8px; /* Adds some space between buttons */
+    align-items: center;
+    justify-content: center;
   }
   .wrapper {
     display: grid;
+    margin: 10px;
     grid-template-columns: 1fr 2fr;
-    height: 100vh;
     gap: 10px;
-  }
-
-  .preference-panel {
-    background-color: #fff; /* Updated to white to match the screenshot */
-    border-right: 2px solid #ddd;
-    padding: 20px;
-    box-sizing: border-box;
-    color: #333; /* Dark grey text to match the screenshot */
-    font-family: "Arial", sans-serif; /* Assuming Arial is similar to the UI font */
   }
 
   button:hover.iterate-button {
@@ -243,11 +250,5 @@
   button:active {
     background-color: #ac2925; /* Even darker red for the press effect */
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* subtle inset shadow for depth */
-  }
-
-  .dashboard {
-    background-color: #ffffff;
-    padding: 20px;
-    box-sizing: border-box;
   }
 </style>

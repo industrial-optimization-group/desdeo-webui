@@ -7,7 +7,6 @@ A user interface for the NAUTILUS method.
   import { toastStore } from "@skeletonlabs/skeleton";
   import ProblemDetails from "$lib/components/main/ProblemDetails.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
-  import Objective from "$lib/components/methods/nautilus/Objective.svelte";
   import type {
     ObjectiveData,
     IterationData,
@@ -105,6 +104,8 @@ A user interface for the NAUTILUS method.
       });
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
+
         ideal_point = data.response.ideal;
         nadir_point = data.response.nadir;
         preference_info = Array(problem.objectives.length).fill(0);
@@ -163,6 +164,8 @@ A user interface for the NAUTILUS method.
       });
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
+
         current_iteration_point = data.response.current_iteration_point;
         distance = data.response.distance;
         lower_bounds = data.response.lower_bounds;
@@ -357,13 +360,6 @@ A user interface for the NAUTILUS method.
 </div>
 {#if state === State.Initialized || state === State.Iterated}
   <div class="objectives-container" />
-
-  <Objective
-    {iterationData}
-    {objectives}
-    on:rankUpdate={handleRankUpdate}
-    on:toggleRankWeight={handleToggleRankWeight}
-  />
 {/if}
 
 <style>

@@ -67,9 +67,14 @@
 
 {#each $inputRanks as rank, rankIndex (rank)}
   <div animate:flip>
-    <b>{rank.name}</b>
+    {#if rank.name !== "Objectives"}
+      <b>{rank.name}</b>
+    {/if}
     <ul
-      class:hovering={hoveringOverRank === rank.name}
+      class="{rankIndex === 0 ? 'first-container' : ''} {hoveringOverRank ===
+      rank.name
+        ? 'hovering'
+        : ''}"
       on:dragenter={() => (hoveringOverRank = rank.name)}
       on:dragleave={() => (hoveringOverRank = null)}
       on:drop={(event) => {
@@ -81,7 +86,7 @@
       {#each rank.items as item, itemIndex (item)}
         <div class="item" animate:flip style="--objective-color: {item.color};">
           <li
-            class="mr-2 inline-block h-8 w-8 cursor-pointer rounded bg-gray-200 p-2 text-xs font-medium text-gray-700 hover:bg-orange-500 hover:text-white"
+            class="mr-2 inline-block h-10 w-10 cursor-pointer rounded bg-gray-200 p-2 text-xs font-medium text-gray-700 hover:text-white"
             draggable="true"
             on:dragstart={(event) => dragStart(event, rankIndex, itemIndex)}
             style="background-color: {item.color};"
@@ -103,11 +108,14 @@
   .item {
     display: inline; /* required for flip to work */
   }
+  .first-container {
+    border-color: transparent; /* Or use 'none' if you want to remove the border */
+  }
 
   ul {
     border: solid lightgray 1px;
     display: flex; /* required for drag & drop to work when .item display is inline */
-    height: 40px; /* needed when empty */
+    height: 60px; /* needed when empty */
     padding: 10px;
   }
 
@@ -115,8 +123,9 @@
     background-color: #d9534f; /* Red color to match the screenshot's button */
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 10px 10px;
+    width: 100px;
+    border-radius: 2px;
     box-shadow: none; /* No shadow for a flat button */
     font-size: 16px;
     margin-top: 20px; /* Space above the reset button */
