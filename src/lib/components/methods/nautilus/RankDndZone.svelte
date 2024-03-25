@@ -2,6 +2,7 @@
   import { flip } from "svelte/animate";
   import { onMount } from "svelte";
   import { rankPreferences, inputRanks } from "./stores";
+  import Button from "./Button.svelte";
 
   export let objectives;
   export let ranks;
@@ -65,43 +66,54 @@
   }
 </script>
 
-{#each $inputRanks as rank, rankIndex (rank)}
-  <div animate:flip>
-    {#if rank.name !== "Objectives"}
-      <b>{rank.name}</b>
-    {/if}
-    <ul
-      class="{rankIndex === 0 ? 'first-container' : ''} {hoveringOverRank ===
-      rank.name
-        ? 'hovering'
-        : ''}"
-      on:dragenter={() => (hoveringOverRank = rank.name)}
-      on:dragleave={() => (hoveringOverRank = null)}
-      on:drop={(event) => {
-        drop(event, rankIndex);
-        updatePreferenceInfo();
-      }}
-      ondragover="return false"
-    >
-      {#each rank.items as item, itemIndex (item)}
-        <div class="item" animate:flip style="--objective-color: {item.color};">
-          <li
-            class="mr-2 inline-block h-10 w-10 cursor-pointer rounded bg-gray-200 p-2 text-xs font-medium text-gray-700 hover:text-white"
-            draggable="true"
-            on:dragstart={(event) => dragStart(event, rankIndex, itemIndex)}
-            style="background-color: {item.color};"
+<div class="mb-4">
+  {#each $inputRanks as rank, rankIndex (rank)}
+    <div animate:flip>
+      <ul
+        class="{rankIndex === 0 ? 'first-container' : ''} {hoveringOverRank ===
+        rank.name
+          ? 'hovering'
+          : ''}"
+        on:dragenter={() => (hoveringOverRank = rank.name)}
+        on:dragleave={() => (hoveringOverRank = null)}
+        on:drop={(event) => {
+          drop(event, rankIndex);
+          updatePreferenceInfo();
+        }}
+        ondragover="return false"
+      >
+        {#if rank.items.length === 0}
+          <div class="rank-placeholder">{rank.name}</div>
+        {/if}
+        {#each rank.items as item, itemIndex (item)}
+          <div
+            class="item"
+            animate:flip
+            style="--objective-color: {item.color};"
           >
-            {item.name.substr(0, 6)}
-          </li>
-        </div>
-      {/each}
-    </ul>
+            <li
+              class="mb-2 mr-2 inline-block h-10 w-10 cursor-pointer rounded bg-gray-200 p-2 text-xs font-medium text-gray-700 hover:text-white"
+              draggable="true"
+              on:dragstart={(event) => dragStart(event, rankIndex, itemIndex)}
+              style="background-color: {item.color};"
+            >
+              {item.name.substr(0, 6)}
+            </li>
+          </div>
+        {/each}
+      </ul>
+    </div>
+  {/each}
+  <div class="mt-2 flex justify-end">
+    <Button on:click={resetRanks} mode="reset" text={"Reset"} />
   </div>
-{/each}
-
-<button on:click={resetRanks} class="reset-button">Reset</button>
+</div>
 
 <style>
+  .rank-placeholder {
+    padding: 5px;
+    color: #afafaf; /* Light grey color for the placeholder */
+  }
   .hovering {
     border-color: orange;
   }
@@ -115,19 +127,8 @@
   ul {
     border: solid lightgray 1px;
     display: flex; /* required for drag & drop to work when .item display is inline */
-    height: 60px; /* needed when empty */
-    padding: 10px;
-  }
-
-  .reset-button {
-    background-color: #d9534f; /* Red color to match the screenshot's button */
-    color: white;
-    border: none;
-    padding: 10px 10px;
-    width: 100px;
-    border-radius: 2px;
-    box-shadow: none; /* No shadow for a flat button */
-    font-size: 16px;
-    margin-top: 20px; /* Space above the reset button */
+    height: 50px; /* needed when empty */
+    padding: 5px;
+    margin-bottom: 5px;
   }
 </style>

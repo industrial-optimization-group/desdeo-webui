@@ -21,7 +21,7 @@
   } from "./stores";
 
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
-  import Card from "$lib/components/main/Card.svelte";
+  import Button from "./Button.svelte";
 
   export let API_URL = "http://localhost:5000/";
 
@@ -186,69 +186,39 @@
   }
 </script>
 
-<div class="wrapper">
-  <div class="">
-    <Card>
-      <svelte:fragment slot="header">Preference information</svelte:fragment>
+<div class={"m-2.5 flex"}>
+  <div class={"mr-3 w-72 flex-none"}>
+    <div>
+      <h2 class="text-lg font-semibold">Preference information</h2>
+
       <PreferenceSelector on:preferenceChange={handlePreferenceTypeChange} />
+      <InfoBox
+        text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."}
+      />
       {#if preferenceType === PreferenceType.RANK}
         <RankDndZone {objectives} {ranks} />
       {:else if preferenceType === PreferenceType.WEIGHT}
         <WeightSelection {objectives} />
       {/if}
-    </Card>
-    <Card>
-      <svelte:fragment slot="header"
-        >Steps before Pareto optimality</svelte:fragment
-      >
+    </div>
+    <div>
+      <h2 class="text-lg font-semibold">Steps before Pareto optimality</h2>
       <IterationsControl />
-      <div class="button-container">
-        <button
+      <div class="mt-2 flex gap-1">
+        <Button
           on:click={handleStepBack}
-          class="iterate-button"
-          disabled={$iterationDetails.length < 1}>Step Backwards</button
-        >
-        <button on:click={handleIterate} class="iterate-button"
-          >Step Forward</button
-        >
+          mode="blue"
+          disabled={$iterationDetails.length < 1}
+          text={"Step Backwards"}
+        />
+        <Button on:click={handleIterate} mode="blue" text={"Step Forward"} />
       </div>
-    </Card>
+    </div>
   </div>
-  <div class="">
+  <div class={"flex w-[1500] min-w-[1200px] overflow-x-auto"}>
     <ProgressObjectiveGrid {objectives} />
   </div>
 </div>
 
 <style>
-  .iterate-button {
-    background-color: #4f9dd9;
-    color: rgb(0, 0, 0);
-    border: none;
-    padding: 10px 10px;
-    border-radius: 2px;
-    box-shadow: none;
-    font-size: 16px;
-    margin-top: 20px;
-  }
-  .button-container {
-    display: flex; /* Ensures buttons are in a row */
-    gap: 8px; /* Adds some space between buttons */
-    align-items: center;
-    justify-content: center;
-  }
-  .wrapper {
-    display: grid;
-    margin: 10px;
-    grid-template-columns: 1fr 2fr;
-    gap: 10px;
-  }
-
-  button:hover.iterate-button {
-    background-color: #2cb1c9; /* Darker red on hover to maintain consistency */
-  }
-
-  button:active {
-    background-color: #ac2925; /* Even darker red for the press effect */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* subtle inset shadow for depth */
-  }
 </style>

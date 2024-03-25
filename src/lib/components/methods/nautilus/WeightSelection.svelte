@@ -66,76 +66,54 @@
   }
 </script>
 
-{#each objectives as objective, index}
-  <div class="objective">
-    <div class="short-name">{objective.name.substr(0, 6)}</div>
-    <div class="color-box" style="background-color: {objective.color};" />
-    <input
-      type="range"
-      min="0"
-      max="100"
-      bind:value={$inputWeights[index]}
-      on:input={(event) => handleInput(index, Number(event.target.value))}
-    />
-    <input
-      type="number"
-      min="0"
-      max="100"
-      class="spinner"
-      bind:value={$inputWeights[index]}
-      on:change={(event) => handleInput(index, Number(event.target.value))}
-    />
-  </div>
-{/each}
-
-<div class="percentage-bar">
-  {#each $weightPreferences as weight, index}
-    <div
-      class="percentage"
-      style="width: {weight}%; background-color: {objectives[index].color};"
-    />
+<div class={"mb-2"}>
+  {#each objectives as objective, index}
+    <div class={"mb-3 flex items-center"}>
+      <div class={"mr-2 text-xs"}>{objective.name.substr(0, 6)}</div>
+      <input
+        type="range"
+        style="--slider-color: {objective.color};"
+        min="0"
+        max="100"
+        bind:value={$inputWeights[index]}
+        on:input={(event) => handleInput(index, Number(event.target.value))}
+      />
+      <input
+        type="number"
+        min="0"
+        max="100"
+        class={"ml-3 h-10 w-20"}
+        bind:value={$inputWeights[index]}
+        on:change={(event) => handleInput(index, Number(event.target.value))}
+      />
+    </div>
   {/each}
+
+  <div
+    class="mt-2 flex h-10 w-full border-b border-l border-r border-t border-gray-400"
+  >
+    {#each $weightPreferences as weight, index}
+      <div
+        class={`h-full ${weight > 0 ? "border-l border-gray-400" : ""}`}
+        style="width: {weight}%; background-color: {objectives[index].color};"
+      />
+    {/each}
+  </div>
 </div>
 
 <style>
-  .percentage-bar {
-    display: flex;
-    height: 20px;
+  input[type="range"]::-webkit-slider-thumb {
+    margin-top: -3px;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
     width: 100%;
-    margin-top: 10px;
-    border: 1px solid #ccc; /* Optional: adds a border to the percentage bar */
+    height: 10px;
+    cursor: pointer;
+    background: var(--slider-color);
+    border-radius: 5px;
   }
-  .percentage {
-    height: 100%;
-  }
-  /* Add styles for empty space if needed */
-  .percentage:empty {
-    background-color: transparent;
-  }
-  .objective {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px; /* Adds spacing between each row of inputs */
-  }
-  .short-name {
-    margin-right: 10px;
-    font-size: small; /* Adds spacing to the right of the name */
-  }
-  .color-box {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px; /* Adds spacing to the right of the color box */
-  }
-  input[type="range"] {
-    margin: 0 10px; /* Adds spacing on both sides of the slider */
-  }
-  .spinner {
-    appearance: textfield; /* Defines the standard property 'appearance' for compatibility */
-    margin-left: 10px; /* Adds spacing to the left of the spinner */
-  }
-  /* Style to always show the spinner arrows */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
-    opacity: 1; /* Makes the spinner buttons always visible */
+    opacity: 1;
   }
 </style>

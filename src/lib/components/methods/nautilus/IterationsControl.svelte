@@ -1,5 +1,7 @@
 <script lang="ts">
   import { inputIterations } from "./stores";
+  import Button from "./Button.svelte";
+  import InfoBox from "./InfoBox.svelte";
 
   let localIterationType: string;
   let localIterations: number;
@@ -12,30 +14,34 @@
   }
 </script>
 
-<div class="mr-10 flex items-center justify-center">
-  <label class="mr-10">
-    <input type="radio" bind:group={localIterationType} value="Manual" />
-    Manual
-  </label>
-  <label>
-    <input type="radio" bind:group={localIterationType} value="Automatic" />
-    Automatic
-  </label>
-</div>
-<div class="ml-10 mt-5 flex">
-  <input
-    type="number"
-    class="mr-5 w-20"
-    bind:value={localIterations}
-    min="1"
-    disabled={localIterationType === "Automatic"}
+<div>
+  <div class="mr-10 mt-2 flex">
+    <label class="mr-10">
+      <input type="radio" bind:group={localIterationType} value="Manual" />
+      Manual
+    </label>
+    <label>
+      <input type="radio" bind:group={localIterationType} value="Automatic" />
+      Automatic
+    </label>
+  </div>
+  <div class="mb-5 mt-5 flex">
+    <input
+      type="number"
+      class={"mr-5 h-10 w-20"}
+      bind:value={localIterations}
+      min="1"
+      disabled={localIterationType === "Automatic"}
+    />
+    <Button
+      disabled={localIterationType === "Automatic"}
+      on:click={setIterations}
+      text={"Set"}
+    />
+  </div>
+  <InfoBox
+    text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation."}
   />
-  <button
-    type="button"
-    class="rounded-sm bg-blue-600 p-2"
-    disabled={localIterationType === "Automatic"}
-    on:click={setIterations}>Set</button
-  >
 </div>
 
 <style>

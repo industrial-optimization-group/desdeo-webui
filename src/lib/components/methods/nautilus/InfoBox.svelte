@@ -1,16 +1,14 @@
 <script lang="ts">
+  export let text: string;
 </script>
 
-<p class="instructions">Instructions</p>
+<p class="instructions">{text}</p>
 
 <style>
   .instructions {
-    background-color: #f8f8f8;
-    padding: 15px;
-    border-radius: 5px;
+    text-align: justify;
     box-shadow: none;
     margin-bottom: 20px;
     font-size: 14px;
-    border: 1px solid #eaeaea;
   }
 </style>

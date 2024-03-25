@@ -17,7 +17,7 @@
   }
 </script>
 
-<div class="mr-10 flex">
+<div class="mb-3 mt-3 flex">
   <label class="mr-10">
     <input
       type="radio"

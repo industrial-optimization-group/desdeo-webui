@@ -15,10 +15,8 @@
   $: progressPercentage = $distance;
 </script>
 
-<Card>
-  <svelte:fragment slot="header">
-    <h2 class="text-lg font-semibold">Reachable Values</h2>
-  </svelte:fragment>
+<div class={" bg-white p-2"}>
+  <h2 class="text-lg font-semibold">Reachable Values</h2>
 
   <div class="flex items-center justify-between">
     <p class="text-sm font-light">
@@ -41,12 +39,10 @@
       </div>
     </div>
   </div>
-</Card>
 
-<Card>
-  <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
+  <div class="grid grid-cols-1 p-1 text-sm md:grid-cols-2">
     {#each objectives as objective, j}
-      <div class="flex flex-col border p-4">
+      <div class="flex flex-col border p-1">
         <div class="mb-4 flex items-center justify-between">
           <div class="flex items-center space-x-2">
             <span class="flex-wrap font-semibold"
@@ -60,20 +56,31 @@
           <span>Worst: {$objectiveRanges.nadir[j]}</span>
         </div>
         <div class="mb-4 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-end space-x-4">
             <span>Step</span>
-            <span>Best Reachible</span>
+            <div>
+              <div>Best</div>
+              <div>Reachible</div>
+            </div>
           </div>
-          <span>Worst Reachible</span>
+          <div>
+            <div>Worst</div>
+            <div>Reachible</div>
+          </div>
         </div>
-        <div class="grid grid-cols-12 gap-2">
+
+        <div class="grid grid-cols-12">
           {#each $iterationDetails as data, index}
             <!-- Replace with your actual step data -->
-            <div class="col-span-1 text-center">{index + 1}</div>
-            <div class="col-span-1 text-center">
-              {Number.parseFloat(data.lowerBounds[j]).toFixed(2)}
+            <div class="col-span-1 flex align-middle">
+              <div class="py-4">{index + 1}</div>
             </div>
-            <div class="col-span-9">
+            <div class="col-span-1 flex align-middle">
+              <div class="py-4">
+                {Number.parseFloat(data.lowerBounds[j]).toFixed(2)}
+              </div>
+            </div>
+            <div class="col-span-9 align-middle">
               <GDMNautilusBar
                 reachableRanges={[data.lowerBounds[j], data.upperBounds[j]]}
                 higherBound={$objectiveRanges.nadir[j]}
@@ -82,14 +89,17 @@
                 objIndex={index}
                 iteration={1}
                 arrowMode={false}
+                aspect={"aspect-[7]"}
               />
             </div>
             <div class="col-span-1 text-center">
-              {Number.parseFloat(data.upperBounds[j]).toFixed(2)}
+              <div class="py-4">
+                {Number.parseFloat(data.upperBounds[j]).toFixed(2)}
+              </div>
             </div>
           {/each}
         </div>
       </div>
     {/each}
   </div>
-</Card>
+</div>
