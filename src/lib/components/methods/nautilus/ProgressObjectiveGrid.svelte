@@ -44,18 +44,23 @@
   }
 </script>
 
-<div class={"rounded-md bg-white p-2"}>
-  <div class={"flex gap-5"}>
-    <h2 class="text-lg font-semibold">Reachable Values</h2>
-    <Tooltip title="This is a helpful tooltip reachible values grid."
-      ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
-    >
-  </div>
-  <div class="flex items-center justify-between">
-    <p class="text-sm font-light">
-      Step {$stepsTaken} of {$inputIterations.iterations}
-    </p>
-    <div>
+<div class={"rounded-md bg-white p-2 "}>
+  <div class={"flex"}>
+    <div class="w-96">
+      <div class="flex items-center">
+        <h2 class="text-lg font-semibold">Reachable Values</h2>
+        <Tooltip title="This is a helpful tooltip for reachable values grid."
+          ><InfoIcon class="ml-2 h-6 w-6 text-blue-500" /></Tooltip
+        >
+      </div>
+      <div>
+        <p class="text-sm font-light">
+          Step {$stepsTaken} of {$inputIterations.iterations}
+        </p>
+      </div>
+    </div>
+
+    <div class={"w-full"}>
       <p class="mb-1 text-sm font-light">
         Closeness of current step to optimality
       </p>

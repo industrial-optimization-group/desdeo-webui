@@ -221,7 +221,7 @@
         >
       </div>
       <IterationsControl />
-      <div class="sticky bottom-0 left-0 mt-2 flex gap-4 bg-[#E8EAF0] p-4">
+      <div class="sticky bottom-0 left-0 mt-2 flex gap-2 bg-[#E8EAF0] p-2">
         <Button
           on:click={handleStepBack}
           mode="blue"
