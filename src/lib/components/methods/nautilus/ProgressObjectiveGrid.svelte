@@ -106,7 +106,6 @@
             <div>Reachible</div>
           </div>
         </div>
-
         <div class="grid grid-cols-12">
           {#each $iterationDetails.slice($visibleStartIndex, $visibleStartIndex + 3) as data, index (index)}
             <div class="col-span-1 flex align-middle">
@@ -129,10 +128,8 @@
                 aspect={"aspect-[7]"}
               />
             </div>
-            <div class="col-span-1 text-center">
-              <div class="py-4">
-                {Number.parseFloat(data.upperBounds[j]).toFixed(2)}
-              </div>
+            <div class="col-span-1 py-4 text-center">
+              {Number.parseFloat(data.upperBounds[j]).toFixed(2)}
             </div>
           {/each}
           <div class="col-span-12 flex justify-between">

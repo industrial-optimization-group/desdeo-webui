@@ -4,7 +4,7 @@
   import RankDndZone from "./RankDndZone.svelte";
   import type { ObjectiveData } from "$lib/methods/nautilus/types";
   import PreferenceSelector from "./PreferenceSelector.svelte";
-  import { PreferenceType } from "./types";
+  import { PreferenceType, AppState } from "./types";
   import WeightSelection from "./WeightSelection.svelte";
   import IterationsControl from "./IterationsControl.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
@@ -23,6 +23,7 @@
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
   import Button from "./Button.svelte";
   import InfoIcon from "~icons/heroicons/information-circle";
+  import { writable } from "svelte/store";
   export let API_URL = "http://localhost:5000/";
 
   export let AUTH_TOKEN = "";
@@ -51,6 +52,8 @@
   ranks[0].items = [...objectives];
 
   let preferenceType: PreferenceType = PreferenceType.RANK;
+
+  let appState: AppState = AppState.IDLE;
 
   handle_initialize();
 
@@ -122,6 +125,7 @@
     }*/
 
     try {
+      appState = AppState.WORKING;
       let endpoint = API_URL + "/method/control";
       const response = await fetch(endpoint, {
         method: "POST",
@@ -142,6 +146,7 @@
         }),
       });
       if (response.ok) {
+        appState = AppState.IDLE;
         const data = await response.json();
         console.log(data);
         stepsTaken.update((steps) => steps + 1);
@@ -156,6 +161,7 @@
 
         iterationDetails.update((iterations) => [...iterations, iteration]);
       } else {
+        appState = AppState.IDLE;
         throw new Error("Failed to iterate NAUTILUS method.");
       }
     } catch (err) {
@@ -184,11 +190,8 @@
     });
   }
 
-  function handleIterate() {
-    handle_iterate();
-    console.log($weightPreferences);
-
-    console.log("Step Forward");
+  async function handleIterate() {
+    await handle_iterate();
   }
 </script>
 
@@ -225,10 +228,16 @@
         <Button
           on:click={handleStepBack}
           mode="blue"
-          disabled={$iterationDetails.length < 1}
+          disabled={$iterationDetails.length < 1 ||
+            appState === AppState.WORKING}
           text={"Step Backwards"}
         />
-        <Button on:click={handleIterate} mode="blue" text={"Step Forward"} />
+        <Button
+          on:click={handleIterate}
+          disabled={appState === AppState.WORKING}
+          mode="blue"
+          text={"Step Forward"}
+        />
       </div>
     </div>
   </div>
