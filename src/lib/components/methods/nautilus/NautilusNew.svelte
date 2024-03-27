@@ -19,10 +19,10 @@
     stepsTaken,
     distance,
   } from "./stores";
-
+  import Tooltip from "$lib/components/util/Tooltip.svelte";
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
   import Button from "./Button.svelte";
-
+  import InfoIcon from "~icons/heroicons/information-circle";
   export let API_URL = "http://localhost:5000/";
 
   export let AUTH_TOKEN = "";
@@ -176,6 +176,12 @@
   function handleStepBack() {
     iterationDetails.update((iterations) => iterations.slice(0, -1));
     stepsTaken.update((steps) => steps - 1);
+    inputIterations.update((current) => {
+      return {
+        ...current,
+        iterations: current.iterations + 1,
+      };
+    });
   }
 
   function handleIterate() {
@@ -187,10 +193,15 @@
 </script>
 
 <div class={"m-2.5 flex"}>
-  <div class={"mr-3 w-72 flex-none"}>
+  <div class={"mr-3 w-80 flex-none"}>
     <div>
-      <h2 class="text-lg font-semibold">Preference information</h2>
-
+      <div class={"flex gap-5"}>
+        <h2 class="text-lg font-semibold">Preference information</h2>
+        <Tooltip
+          title="This is a helpful tooltip text for the preference information."
+          ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
+        >
+      </div>
       <PreferenceSelector on:preferenceChange={handlePreferenceTypeChange} />
       <InfoBox
         text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."}
@@ -202,9 +213,14 @@
       {/if}
     </div>
     <div>
-      <h2 class="text-lg font-semibold">Steps before Pareto optimality</h2>
+      <div class={"flex gap-5"}>
+        <h2 class="text-lg font-semibold">Steps before Pareto optimality</h2>
+        <Tooltip title="This is a helpful tooltip for setting iteration steps."
+          ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
+        >
+      </div>
       <IterationsControl />
-      <div class="mt-2 flex gap-1">
+      <div class="sticky bottom-0 left-0 mt-2 flex gap-4 bg-[#E8EAF0] p-4">
         <Button
           on:click={handleStepBack}
           mode="blue"

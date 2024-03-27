@@ -9,15 +9,48 @@
     inputIterations,
     distance,
   } from "./stores";
+  import Button from "./Button.svelte";
+  import { writable } from "svelte/store";
+  import Tooltip from "$lib/components/util/Tooltip.svelte";
+  import InfoIcon from "~icons/heroicons/information-circle";
 
   export let objectives: ObjectiveData[];
 
   $: progressPercentage = $distance;
+
+  $: if ($iterationDetails.length > 3) {
+    visibleStartIndex.set($iterationDetails.length - 3);
+  } else {
+    visibleStartIndex.set(0);
+  }
+
+  let visibleStartIndex = writable(0);
+  // Function to scroll forward
+  function scrollForward() {
+    visibleStartIndex.update((index) => {
+      const maxIndex = $iterationDetails.length - 3;
+      return index + 1 < maxIndex ? index + 1 : maxIndex;
+    });
+  }
+  // Function to scroll backward
+  function scrollBackward() {
+    visibleStartIndex.update((index) => {
+      if (index > 0) {
+        return index - 1;
+      } else {
+        return 0;
+      }
+    });
+  }
 </script>
 
-<div class={" bg-white p-2"}>
-  <h2 class="text-lg font-semibold">Reachable Values</h2>
-
+<div class={"rounded-md bg-white p-2"}>
+  <div class={"flex gap-5"}>
+    <h2 class="text-lg font-semibold">Reachable Values</h2>
+    <Tooltip title="This is a helpful tooltip reachible values grid."
+      ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
+    >
+  </div>
   <div class="flex items-center justify-between">
     <p class="text-sm font-light">
       Step {$stepsTaken} of {$inputIterations.iterations}
@@ -40,9 +73,9 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 p-1 text-sm md:grid-cols-2">
+  <div class="grid grid-cols-1 gap-1 p-1 text-sm md:grid-cols-2">
     {#each objectives as objective, j}
-      <div class="flex flex-col border p-1">
+      <div class="flex flex-col rounded-md border p-1">
         <div class="mb-4 flex items-center justify-between">
           <div class="flex items-center space-x-2">
             <span class="flex-wrap font-semibold"
@@ -70,10 +103,9 @@
         </div>
 
         <div class="grid grid-cols-12">
-          {#each $iterationDetails as data, index}
-            <!-- Replace with your actual step data -->
+          {#each $iterationDetails.slice($visibleStartIndex, $visibleStartIndex + 3) as data, index (index)}
             <div class="col-span-1 flex align-middle">
-              <div class="py-4">{index + 1}</div>
+              <div class="py-4">{index + 1 + $visibleStartIndex}</div>
             </div>
             <div class="col-span-1 flex align-middle">
               <div class="py-4">
@@ -98,6 +130,18 @@
               </div>
             </div>
           {/each}
+          <div class="col-span-12 flex justify-between">
+            <Button
+              disabled={$visibleStartIndex === 0}
+              text="<"
+              on:click={() => scrollBackward()}
+            />
+            <Button
+              disabled={$visibleStartIndex + 3 >= $iterationDetails.length}
+              text=">"
+              on:click={() => scrollForward()}
+            />
+          </div>
         </div>
       </div>
     {/each}

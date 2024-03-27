@@ -3,37 +3,28 @@
   export let disabled = false;
   export let text;
 
-  // Function to determine the button color based on the mode
-  function determineColor(mode) {
+  // Function to determine the button color classes based on the mode
+  function determineColorClasses(mode) {
     switch (mode) {
       case "delete":
       case "reset":
-        return "red";
+        return "bg-red-500 hover:bg-red-600";
       case "neutral":
       default:
-        return "blue";
+        return "bg-blue-500 hover:bg-blue-600";
     }
   }
 
-  // Compute the color based on the mode
-  $: color = determineColor(mode);
+  // Compute the color classes based on the mode
+  $: colorClasses = determineColorClasses(mode);
 </script>
 
 <button
   on:click
   {disabled}
-  style="background-color: {color}; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;"
+  class={`cursor-pointer rounded-md border-none px-5 py-2.5 text-white ${
+    disabled ? "cursor-not-allowed opacity-50" : "opacity-100"
+  } ${colorClasses}`}
 >
   {text}
 </button>
-
-<style>
-  button:hover:not(:disabled) {
-    opacity: 0.8;
-  }
-
-  .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-</style>
