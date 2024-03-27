@@ -198,7 +198,8 @@
       <div class={"flex gap-5"}>
         <h2 class="text-lg font-semibold">Preference information</h2>
         <Tooltip
-          title="This is a helpful tooltip text for the preference information."
+          title="This is a helpful tooltip text for the preference information that can be dismissed by a click."
+          dismissByClick={true}
           ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
         >
       </div>
