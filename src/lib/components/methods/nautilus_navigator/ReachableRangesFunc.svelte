@@ -156,8 +156,8 @@
           left: 0,
           top: 5,
           bottom: 5,
-          right: 0,
-          containLabel: true,
+          right: "10%",
+          containLabel: false,
         },
         xAxis: {
           type: "value",

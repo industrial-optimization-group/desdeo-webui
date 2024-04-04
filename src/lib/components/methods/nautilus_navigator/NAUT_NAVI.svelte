@@ -42,7 +42,9 @@ A user interface for the NAUTILUS Navigator method.
   }
 
   type initResponse = {
-    objective_names: string[];
+    objective_symbols: string[];
+    objective_long_names: string[];
+    units: string[];
     is_maximized: boolean[];
     ideal: number[];
     nadir: number[];
@@ -51,6 +53,8 @@ A user interface for the NAUTILUS Navigator method.
 
   type Response = {
     objective_names: string[];
+    objective_long_names: string[];
+    units: string[];
     is_maximized: boolean[];
     ideal: number[];
     nadir: number[];
@@ -66,7 +70,10 @@ A user interface for the NAUTILUS Navigator method.
   let state: State = State.InitialLoad;
 
   let objective_names: string[];
-  let preference: number[]; // Bound input values.
+  let objective_long_names: string[];
+  let units: string[];
+  let preference: number[];
+  // Bound input values.
   let bounds: number[];
   let preferenceChanged = false;
 
@@ -142,6 +149,7 @@ A user interface for the NAUTILUS Navigator method.
     if (
       colors === undefined ||
       objective_names === undefined ||
+      objective_long_names === undefined ||
       ideal === undefined ||
       nadir === undefined ||
       maximize === undefined ||
@@ -157,7 +165,7 @@ A user interface for the NAUTILUS Navigator method.
       return;
     }
     if (bounds === undefined) {
-      bounds = [...nadir];
+      bounds = nadir.map((value) => +value.toFixed(decimals));
     }
     if (preference === undefined) {
       preference = ideal.map((value, index) => (value + nadir[index]) / 2);
@@ -190,8 +198,8 @@ A user interface for the NAUTILUS Navigator method.
       chartinput.push({
         lowerBounds: lowerReachables[i].slice(0, currentStepInUI + 1),
         upperBounds: upperReachables[i].slice(0, currentStepInUI + 1),
-        idealValue: ideal[i],
-        nadirValue: nadir[i],
+        idealValue: +ideal[i].toFixed(decimals),
+        nadirValue: +nadir[i].toFixed(decimals),
         isMaximized: maximize[i],
         pastPreferences: pastPreferences[i].slice(0, currentStepInUI + 1),
         pastBound: pastBounds[i].slice(0, currentStepInUI + 1),
@@ -254,28 +262,33 @@ A user interface for the NAUTILUS Navigator method.
         maximize = body.is_maximized;
         lowerReachables = maximize.map((value, index) => {
           if (value) {
-            return [body.ideal[index]];
-          } else {
             return [body.nadir[index]];
+          } else {
+            return [body.ideal[index]];
           }
         });
         upperReachables = maximize.map((value, index) => {
           if (value) {
-            return [body.nadir[index]];
-          } else {
             return [body.ideal[index]];
+          } else {
+            return [body.nadir[index]];
           }
         });
+        console.log(lowerReachables, upperReachables);
+
         currentStep = 0;
-        objective_names = body.objective_names;
+        objective_names = body.objective_symbols;
+        objective_long_names = body.objective_long_names;
+        units = body.units;
+
         pastPreferences = ideal.map((value, index) => [
-          (value + body.nadir[index]) / 2,
+          +((value + body.nadir[index]) / 2).toFixed(decimals),
         ]);
         preference = ideal.map(
-          (value, index) => (value + body.nadir[index]) / 2
+          (value, index) => +((value + body.nadir[index]) / 2).toFixed(decimals)
         );
         pastBounds = nadir.map((value, index) => [
-          (value + body.nadir[index]) / 2,
+          +((value + body.nadir[index]) / 2).toFixed(decimals),
         ]);
         // setTimeout(() => RerenderChart(), 0);
       } else {
@@ -376,7 +389,7 @@ A user interface for the NAUTILUS Navigator method.
     } catch (err) {
       toastStore.trigger({
         // prettier-ignore
-        message: "Oops! Something went wrong. Iteration failed at the backend.",
+        message: "Oops! Something went wrong. Iteration failed at the backend. Most likely reason: bounds too restrictive",
         background: "variant-filled-error",
         timeout: 5000,
       });
@@ -449,65 +462,111 @@ A user interface for the NAUTILUS Navigator method.
 
 <NAUT_NAVI_LAYOUT>
   <div slot="preference">
-    <h2 class="font-bold">Preference Information</h2>
-    <p class="mb-2">
-      Using the input boxes/sliders below, provide objective values you want to
-      achieve (aspiration levels) and, optionally, strict bounds you want to
-      avoid (bound levels). Press the "Start" button to begin the method. You
-      can pause the progress at any time and resume it later. You can also take
-      a step back by dragging the black circle on the charts to the left. Note
-      that whenever you change your preferences, the method may take a few
-      seconds to conduct calculations. You can also adjust the speed at which
-      the steps progress by using the slider below.
-    </p>
-    <div>
-      {#if preference !== undefined && bounds !== undefined}
-        {#each objective_names as name, index}
-          <Card class="mb-2">
-            <svelte:fragment slot="header">{name} (Units)</svelte:fragment>
-            <h5>Aspiration level</h5>
-            <AspirationInput
-              objective_name={name}
-              lower_bound={inputBoundLow[index]}
-              upper_bound={inputBoundHigh[index]}
-              bind:preference={preference[index]}
-              objective_color={colors[index]}
-              onChangeFunc={() => {
-                preferenceChanged = true;
-                RerenderChart();
-              }}
-              bar_color={"blue"}
-            />
-            <h5>Bound level</h5>
-            <AspirationInput
-              objective_name={name}
-              lower_bound={inputBoundLow[index]}
-              upper_bound={inputBoundHigh[index]}
-              bind:preference={bounds[index]}
-              objective_color={colors[index]}
-              bar_color={"red"}
-              onChangeFunc={() => {
-                preferenceChanged = true;
-                RerenderChart();
-              }}
-            />
-          </Card>
-        {/each}
-      {/if}
-    </div>
+    {#if state !== State.ReachedPareto}
+      <h2 class="font-bold">Preference Information</h2>
+      <p class="mb-2">
+        Using the input boxes/sliders below, provide objective values you want
+        to achieve (aspiration levels) and, optionally, strict bounds you want
+        to avoid (bound levels). Press the "Start" button to begin the method.
+        You can pause the progress at any time and resume it later. You can also
+        take a step back by dragging the black circle on the charts to the left.
+        Note that whenever you change your preferences, the method may take a
+        few seconds to conduct calculations. You can also adjust the speed at
+        which the steps progress by using the slider below.
+      </p>
+      <div>
+        {#if preference !== undefined && bounds !== undefined}
+          {#each objective_long_names as name, index}
+            <!-- Note, this background color doesn't wonk until you remove bg-white from Card. -->
+            <div style="background-color: {colors[index]} !important">
+              <Card class="mb-2">
+                <svelte:fragment slot="header"
+                  >{name} (in {units[index]}, {maximize[index]
+                    ? "maximize"
+                    : "minimize"})</svelte:fragment
+                >
+                <h5>Aspiration level</h5>
+                <AspirationInput
+                  objective_name={name}
+                  lower_bound={inputBoundLow[index]}
+                  upper_bound={inputBoundHigh[index]}
+                  bind:preference={preference[index]}
+                  objective_color={colors[index]}
+                  onChangeFunc={() => {
+                    preferenceChanged = true;
+                    RerenderChart();
+                  }}
+                  bar_color={"blue"}
+                  {decimals}
+                />
+                <h5>Bound level</h5>
+                <AspirationInput
+                  objective_name={name}
+                  lower_bound={inputBoundLow[index]}
+                  upper_bound={inputBoundHigh[index]}
+                  bind:preference={bounds[index]}
+                  objective_color={colors[index]}
+                  bar_color={"red"}
+                  onChangeFunc={() => {
+                    preferenceChanged = true;
+                    RerenderChart();
+                  }}
+                  {decimals}
+                />
+                <table>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <th class="text-center">Reachable</th>
+                    <th class="text-center">Full range</th>
+                  </tr>
+                  <tr>
+                    <th>Best Value</th>
+                    <td class="text-center"
+                      >{maximize[index]
+                        ? chartinput[index].upperBounds[
+                            chartinput[index].upperBounds.length - 1
+                          ].toFixed(decimals)
+                        : chartinput[index].lowerBounds[
+                            chartinput[index].lowerBounds.length - 1
+                          ].toFixed(decimals)}</td
+                    >
+                    <td class="text-center">{ideal[index].toFixed(decimals)}</td
+                    >
+                  </tr>
+                  <tr>
+                    <th>Worst Value</th>
+                    <td class="text-center"
+                      >{maximize[index]
+                        ? chartinput[index].lowerBounds[
+                            chartinput[index].lowerBounds.length - 1
+                          ].toFixed(decimals)
+                        : chartinput[index].upperBounds[
+                            chartinput[index].upperBounds.length - 1
+                          ].toFixed(decimals)}</td
+                    >
+                    <td class="text-center">{nadir[index].toFixed(decimals)}</td
+                    >
+                  </tr>
+                </table>
+              </Card>
+            </div>
+          {/each}
+        {/if}
+      </div>
 
-    <!-- Speed slider -->
-    <div class="mt-4">
-      <h2 class="font-bold">Speed</h2>
-      <input
-        type="range"
-        min="0"
-        max="4"
-        step="1"
-        bind:value={speedSliderChoice}
-        class="slider"
-      />
-    </div>
+      <!-- Speed slider -->
+      <div class="mt-4">
+        <h2 class="font-bold">Speed</h2>
+        <input
+          type="range"
+          min="0"
+          max="4"
+          step="1"
+          bind:value={speedSliderChoice}
+          class="slider"
+        />
+      </div>
+    {/if}
     <!-- Buttons -->
     <div>
       {#if state === State.InitialLoad}
@@ -565,14 +624,40 @@ A user interface for the NAUTILUS Navigator method.
           <p>Conducting calculations...</p>
         </div>
       {/if}
-
       {#if state === State.ReachedPareto}
+        <h2 class="font-bold">Reached Pareto front</h2>
+        <p class="mb-2">
+          The method has reached the Pareto front. The objective values attained
+          by the method are shown below. You can save the solution and end the
+          interactive process. Alternatively, you can take a step back to adjust
+          your aspirations and bounds to find a different solution. You can do
+          this by dragging the black circle on the charts to the left.
+        </p>
+        <table class="w-full">
+          <tr>
+            <th class="border-r">Objective</th>
+            <th>Value</th>
+          </tr>
+          {#each objective_long_names as name, index}
+            <tr>
+              <td class="border-r" style="background-color: {colors[index]};"
+                >{name}</td
+              >
+              <td style="background-color: {colors[index]};"
+                >{chartinput[index].lowerBounds[
+                  chartinput[index].lowerBounds.length - 1
+                ].toFixed(decimals)}</td
+              >
+            </tr>
+          {/each}
+        </table>
+
         <button
-          class="btn-primary btn"
+          class="btn variant-filled-primary mt-4"
           on:click={handle_save_solutions}
           disabled={state !== State.ReachedPareto}
         >
-          Save Solutions
+          Save Solution and end interactive process
         </button>
       {/if}
     </div>
@@ -581,12 +666,16 @@ A user interface for the NAUTILUS Navigator method.
     <h2 class="font-bold">Visualization</h2>
 
     {#if preference !== undefined}
-      {#each objective_names as name, index}
+      {#each objective_long_names as name, index}
         {#if chartinput[index] !== undefined}
-          <Card>
-            <svelte:fragment slot="header">{name}</svelte:fragment>
+          <Card class="!p-2">
+            <svelte:fragment slot="header"
+              >{name} (in {units[index]}, {maximize[index]
+                ? "maximize"
+                : "minimize"})</svelte:fragment
+            >
             <div
-              style="height: 200px;"
+              style="height: 110px;"
               use:RangeChart={[
                 chartinput[index],
                 (newCurrentStep) => {
