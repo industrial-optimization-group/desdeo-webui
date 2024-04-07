@@ -304,7 +304,7 @@
             {
               type: "group",
               id: "dragMin",
-              y: chart.getHeight() / 2,
+              y: chart.getHeight() / 2 + 10,
 
               // scale: [10,10],
               // scale: [scaleValue, scaleValue],
@@ -577,7 +577,7 @@
             {
               type: "group",
               id: "dragMax",
-              y: chart.getHeight() / 2,
+              y: chart.getHeight() / 2 - 10,
 
               // scale: [10,10],
               // scale: [scaleValue, scaleValue],
@@ -952,15 +952,15 @@
     addTooltipListeners("prevMaxLine");
     // Add event listener which updates the aspiration line value.
     chart.getZr().on("click", function (params) {
-      if (params.target == null) {
+      // Check if the click event's target is one of the draggable elements
+      // If params.target is null or the clicked target is not a draggable component, simply return without doing anything
+      if (!params.target || !["aspirationMinGroup", "aspirationMaxGroup", "dragMinCircle", "dragMaxCircle", "dragMin", "dragMax"].includes(params.target.id.toString())) {
         return;
       }
-      const targetParentName: string = params.target.parent.name;
-      // Only update the line if click has not happened on the interactive buttons
-      if (
-        targetParentName !== "interactiveButtons" &&
-        params.target.id.toString() !== "prevMinLine"
-      ) {
+
+      // Continue with your existing logic for setting values based on the click position
+      // This part remains unchanged, as it handles updating the values when dragging
+      if (params.target.parent.name !== "interactiveButtons" && params.target.id.toString() !== "prevMinLine") {
         let newValue = chart.convertFromPixel({ seriesIndex: 0 }, [
           params.offsetX,
           params.offsetY,
@@ -969,10 +969,7 @@
       } else if (params.target.id.toString() === "prevMinLine") {
         selectedMinValue = previousMinValue;
       }
-      if (
-        targetParentName !== "interactiveButtons" &&
-        params.target.id.toString() !== "prevMaxLine"
-      ) {
+      if (params.target.parent.name !== "interactiveButtons" && params.target.id.toString() !== "prevMaxLine") {
         let newValue = chart.convertFromPixel({ seriesIndex: 0 }, [
           params.offsetX,
           params.offsetY,

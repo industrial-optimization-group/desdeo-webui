@@ -80,22 +80,6 @@
     </div> -->
   </div>
   <div class="secondPart">
-    <div id="prev">
-      <!-- TODO: Implement this so that when no prev values is given, nothing shows up. But implementation should not make a mess. Maybe reserve a blank space (how)? -->
-      <span style="color:gray; font-size: small; ">Previous preference</span>
-      {#if previousValue}
-        <span id="prevValue">{previousValue}</span>
-      {:else}
-        <span id="prevValue">--</span>
-      {/if}
-      <!-- <InputWithValidation
-        bind:value={previousValue}
-        {higherBound}
-        {lowerBound}
-        readonly={true}
-      /> -->
-    </div>
-
     <SingleHorizontalBar
       {lowerBound}
       {higherBound}

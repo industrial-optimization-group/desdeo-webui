@@ -26,11 +26,6 @@ if they are defined.
 </script>
 
 <div class="flex flex-col gap-4">
-  <div>
-    Please select an aspiration level for each of the objectives using the
-    horizontal bar or the input box. The input box can be used to enter a value
-    outside the range of the horizontal bar.
-  </div>
   {#each objective_names as objective_name, j}
     <HorizontalRangeBarWithInputs
       barName={objective_name}
@@ -40,6 +35,7 @@ if they are defined.
       previousMaxValue={previous_max_preference ? previous_max_preference[j] : undefined}
       solutionValue={reference_solution ? reference_solution[j] : undefined}
       barColor={colorPalette[j % colorPalette.length]}
+      arrowMode={true}
       bind:selectedMinValue={minPreference[j]}
       bind:selectedMaxValue={maxPreference[j]}
       decimalPrecision={4}

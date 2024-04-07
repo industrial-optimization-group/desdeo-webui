@@ -1,6 +1,6 @@
 
 {
-    "ea/setPreferenceType": {
+    "rvea/setPreferenceType": {
         "description": "UNECESSARY - POST - Sets the type of preference for the optimization algorithm. The preference type influences how the algorithm prioritizes objectives.",
         "inputs": {
             "preferenceType": "Reference point | Preferred ranges | Preferred solutions | Non-preferred solutions | No preference"
@@ -10,7 +10,7 @@
             "message": "Preference type set successfully"
         }
     },
-    "ea/iterateWithReferencePoint": {
+    "rvea/iterateWithReferencePoint": {
         "description": "POST - Iterates the optimization process using the 'Reference Point' preference type. Users provide a single value for each objective.",
         "inputs": {
             "referencePoints": {
@@ -24,7 +24,7 @@
             "results": ["solution", "solution", "..."]
         }
     },
-    "ea/iterateWithPreferredRanges": {
+    "rvea/iterateWithPreferredRanges": {
         "description": "POST - Iterates the optimization process using the 'Preferred Ranges' preference type. Users provide minimum and maximum values for each objective.",
         "inputs": {
             "preferredRanges": {
@@ -38,7 +38,7 @@
             "results": ["solution", "solution", "..."]
         }
     },
-    "ea/iterateWithPreferredSolutions": {
+    "rvea/iterateWithPreferredSolutions": {
         "description": "POST - Iterates the optimization process using the 'Preferred Solutions' preference type. Users select preferred solutions from a given set.",
         "inputs": {
             "preferredSolutions": ["solution", "solution", "..."]
@@ -48,7 +48,7 @@
             "results": ["solution", "solution", "..."]
         }
     },
-    "ea/iterateWithNonPreferredSolutions": {
+    "rvea/iterateWithNonPreferredSolutions": {
         "description": "POST - Iterates the optimization process using the 'Non-Preferred Solutions' preference type. Users select non-preferred solutions from a given set.",
         "inputs": {
             "nonPreferredSolutions": ["solution1", "solution2", "..."]
@@ -58,12 +58,38 @@
             "results": ["solution", "solution", "..."]
         }
     },
-    "ea/iterateWithNoPreference": {
+    "rvea/iterateWithNoPreference": {
         "description": "POST - Iterates the optimization process using the 'No Preference' type. No specific preference information is required from the user.",
         "inputs": {},
         "outputs": {
             "status": 200,
             "results": ["solution", "solution", "..."]
         }
-    }    
+    },
+    "rvea/getMethodName": {
+        "description": "Get - Retrieves the name of the method in use.",
+        "inputs": {},
+        "outputs": {
+            "status": 200,
+            "method": "name"
+        }
+    },
+    "rvea/getInstructions": {
+        "description": "Get - Retrieves the instructions for the method.",
+        "inputs": {},
+        "outputs": {
+            "status": 200,
+            "method": "instructions"
+        }
+    },
+    "rvea/saveSelectedSolutions": {
+        "description": "POST - Saves the currently selected solutions.",
+        "inputs": {
+            "selectedSolutions": ["solution1", "solution2", "..."]
+        },
+        "outputs": {
+            "status": 200,
+            "message": "Selected solutions saved successfully"
+        }
+    }
 }
