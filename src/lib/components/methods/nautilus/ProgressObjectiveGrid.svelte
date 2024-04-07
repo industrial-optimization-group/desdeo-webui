@@ -16,6 +16,8 @@
 
   export let objectives: ObjectiveData[];
 
+  let unit = "UNIT";
+
   $: progressPercentage = $distance;
 
   $: if ($iterationDetails.length > 3) {
@@ -83,12 +85,16 @@
       <div class="flex flex-col rounded-md border p-1">
         <div class="mb-4 flex items-center justify-between">
           <div class="flex items-center space-x-2">
-            <span class="flex-wrap font-semibold"
-              >{objective.name} {objective.minimize ? "(Min)" : "(Max)"}</span
-            >
+            <span class="font-semibold">
+              {objective.name}
+              {objective.minimize ? "(Min)" : "(Max)"}, {unit}
+            </span>
           </div>
-          <span class="text-sm">{objective.name.substr(0, 3)}</span>
+          <div>
+            <span class="text-sm">{objective.name.substr(0, 3)}</span>
+          </div>
         </div>
+
         <div class="mb-4 flex items-center justify-between">
           <span>Best: {$objectiveRanges.ideal[j]}</span>
           <span>Worst: {$objectiveRanges.nadir[j]}</span>
@@ -106,17 +112,17 @@
             <div>Reachible</div>
           </div>
         </div>
-        <div class="grid grid-cols-12">
+        <div class="grid w-[580px] grid-cols-12">
           {#each $iterationDetails.slice($visibleStartIndex, $visibleStartIndex + 3) as data, index (index)}
-            <div class="col-span-1 flex align-middle">
+            <div class="col-span-1 pl-2">
               <div class="py-4">{index + 1 + $visibleStartIndex}</div>
             </div>
-            <div class="col-span-1 flex align-middle">
+            <div class="col-span-1 pl-2">
               <div class="py-4">
                 {Number.parseFloat(data.lowerBounds[j]).toFixed(2)}
               </div>
             </div>
-            <div class="col-span-9 align-middle">
+            <div class="col-span-9">
               <GDMNautilusBar
                 reachableRanges={[data.lowerBounds[j], data.upperBounds[j]]}
                 higherBound={$objectiveRanges.nadir[j]}
@@ -128,7 +134,7 @@
                 aspect={"aspect-[7]"}
               />
             </div>
-            <div class="col-span-1 py-4 text-center">
+            <div class="col-span-1 py-4 pr-3">
               {Number.parseFloat(data.upperBounds[j]).toFixed(2)}
             </div>
           {/each}

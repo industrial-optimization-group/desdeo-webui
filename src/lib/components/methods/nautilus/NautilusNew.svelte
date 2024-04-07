@@ -19,11 +19,11 @@
     stepsTaken,
     distance,
   } from "./stores";
+  import { methodNameStore } from "$lib/components/main/stores";
   import Tooltip from "$lib/components/util/Tooltip.svelte";
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
   import Button from "./Button.svelte";
   import InfoIcon from "~icons/heroicons/information-circle";
-  import { writable } from "svelte/store";
   export let API_URL = "http://localhost:5000/";
 
   export let AUTH_TOKEN = "";
@@ -59,7 +59,7 @@
 
   async function handle_initialize() {
     console.log("Initializing NAUTILUS method.");
-
+    methodNameStore.set("NAUTILUS");
     try {
       let endpoint = API_URL + "/method/create";
 
@@ -241,7 +241,7 @@
       </div>
     </div>
   </div>
-  <div class={"flex w-[1500] min-w-[1200px] overflow-x-auto"}>
+  <div class={"flex w-[1500px] min-w-[1200px] overflow-x-auto"}>
     <ProgressObjectiveGrid {objectives} />
   </div>
 </div>
