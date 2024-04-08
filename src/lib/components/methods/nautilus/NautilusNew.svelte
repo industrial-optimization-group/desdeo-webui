@@ -1,5 +1,6 @@
 <script lang="ts">
   import { toastStore } from "@skeletonlabs/skeleton";
+  import { selectedProblem } from "$lib/api";
   import type { Problem } from "$lib/api";
   import RankDndZone from "./RankDndZone.svelte";
   import type { ObjectiveData } from "$lib/methods/nautilus/types";
@@ -28,15 +29,13 @@
 
   export let AUTH_TOKEN = "";
 
-  export let problem: Problem;
-
-  console.log(problem);
+  console.log($selectedProblem);
 
   let totalSteps;
   let optimizationProgress;
   let isPreferencesChanged: boolean | false;
 
-  export let objectives: ObjectiveData[] = problem.objectives.map(
+  export let objectives: ObjectiveData[] = $selectedProblem.objectives.map(
     (objective, index) => ({
       ...objective,
       color: colorPalette[index],
@@ -70,7 +69,7 @@
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id,
+          problem_id: $selectedProblem.id,
           method: "nautilus",
         }),
       });
@@ -98,9 +97,11 @@
       });
       if (response.ok) {
         const data = await response.json();
-        weightPreferences.set(Array(problem.objectives.length).fill(0));
-        rankPreferences.set(Array(problem.objectives.length).fill(0));
-        inputWeights.set(Array(problem.objectives.length).fill(0));
+        weightPreferences.set(
+          Array($selectedProblem.objectives.length).fill(0)
+        );
+        rankPreferences.set(Array($selectedProblem.objectives.length).fill(0));
+        inputWeights.set(Array($selectedProblem.objectives.length).fill(0));
         objectiveRanges.set({
           ideal: data.response.ideal,
           nadir: data.response.nadir,
@@ -195,8 +196,8 @@
   }
 </script>
 
-<div class={"m-2.5 flex"}>
-  <div class={"mr-3 w-80 flex-none"}>
+<div class={"flex"}>
+  <div class={"w-80 flex-none bg-[#E8EAF0] p-2"}>
     <div>
       <div class={"flex gap-5"}>
         <h2 class="text-lg font-semibold">Preference information</h2>

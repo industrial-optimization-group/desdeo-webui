@@ -8,10 +8,10 @@
     switch (mode) {
       case "delete":
       case "reset":
-        return "bg-red-500 hover:bg-red-600";
+        return "bg-red-500 hover:bg-red-600 text-sm font-medium";
       case "neutral":
       default:
-        return "bg-blue-500 hover:bg-blue-600";
+        return "bg-blue-500 hover:bg-blue-600 text-sm font-medium";
     }
   }
 
