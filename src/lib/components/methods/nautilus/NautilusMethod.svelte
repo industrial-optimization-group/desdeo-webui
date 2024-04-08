@@ -1,71 +1,60 @@
-<!--
-@component
-A user interface for the NAUTILUS method.
--->
 <script lang="ts">
-  import type { Problem } from "$lib/api";
   import { toastStore } from "@skeletonlabs/skeleton";
-  import ProblemDetails from "$lib/components/main/ProblemDetails.svelte";
-  import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
-  import type {
-    ObjectiveData,
-    IterationData,
-  } from "$lib/methods/nautilus/types";
-
-  /** The problem to be solved. */
-  export let problem: Problem;
-
-  //Flag whether the first iteration has been completed. let
-  let isFirstIterationCompleted = false;
-
-  /** Flag whether the preferences have been changed. */
-  let isPreferencesChanged = true;
-
-  /** The data for each iteration. */
-  export let iterationData: IterationData[] = [];
-  /** The objectives of the problem. */
-  export let objectives: ObjectiveData[] = problem.objectives;
+  import { selectedProblem } from "$lib/api";
+  import { PreferenceType, AppState } from "./types";
+  import RankDndZone from "./RankDndZone.svelte";
+  import PreferenceSelector from "./PreferenceSelector.svelte";
+  import WeightSelection from "./WeightSelection.svelte";
+  import IterationsControl from "./IterationsControl.svelte";
+  import { colorPalette } from "$lib/components/visual/constants";
+  import InfoBox from "./InfoBox.svelte";
+  import {
+    inputIterations,
+    objectiveRanges,
+    iterationDetails,
+    weightPreferences,
+    rankPreferences,
+    inputWeights,
+    stepsTaken,
+    distance,
+  } from "./stores";
+  import { methodNameStore } from "$lib/components/main/stores";
+  import Tooltip from "$lib/components/util/Tooltip.svelte";
+  import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
+  import Button from "./Button.svelte";
+  import InfoIcon from "~icons/heroicons/information-circle";
 
   export let API_URL = "http://localhost:5000/";
-  // The authentication token.
   export let AUTH_TOKEN = "";
 
-  // Enum to represent the state of the method.
-  enum State {
-    Uninitialized,
-    Initialized,
-    Iterated,
-  }
+  let preferenceType: PreferenceType = PreferenceType.RANK;
+  let appState: AppState = AppState.IDLE;
 
-  let state: State = State.Uninitialized;
+  let totalSteps;
+  let optimizationProgress;
+  let isPreferencesChanged: boolean | false;
+  let stepBack: boolean | false;
 
-  let current_iteration_point: number[];
-  let distance: number[];
-  let nadir_point: number[];
-  let ideal_point: number[];
-  let lower_bounds: number[];
-  let upper_bounds: number[];
+  export let objectives = $selectedProblem.objectives.map(
+    (objective, index) => ({
+      ...objective,
+      color: colorPalette[index],
+      id: objective.name.replace(/\W/g, "_"),
+    })
+  );
 
-  /** The number of iterations to be performed. */
-  let preference_info: number[];
-  /** The method to be used to rank the objectives. */
-  let preference_method: number;
-  /** The number of iterations to be performed. Initially set to 5. */
-  let n_iterations = 5;
-  /**
-   * Flag whether to perform a short step. Used if preferences are not changed
-   * after step back.
-   */
-  let short_step: boolean;
-  /** Flag whether to step back to previous iteration. */
-  let step_back: boolean;
-  /** Use the preference information from previous iteration. */
-  let use_previous_preference: boolean;
-  /** The iteration counter used to keep track of the number of iterations. */
-  let iteration_counter = 0;
+  export let ranks = Array.from({ length: objectives.length + 1 }, (_, i) => ({
+    name: i === 0 ? "Objectives" : `Rank ${i}`,
+    items: [],
+  }));
 
-  /** Initialize the method. */
+  ranks[0].items = [...objectives];
+
+  handle_initialize();
+
   async function handle_initialize() {
+    console.log("Initializing NAUTILUS method.");
+    methodNameStore.set("NAUTILUS");
     try {
       let endpoint = API_URL + "/method/create";
 
@@ -76,7 +65,7 @@ A user interface for the NAUTILUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id,
+          problem_id: $selectedProblem.id,
           method: "nautilus",
         }),
       });
@@ -104,17 +93,15 @@ A user interface for the NAUTILUS method.
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-
-        ideal_point = data.response.ideal;
-        nadir_point = data.response.nadir;
-        preference_info = Array(problem.objectives.length).fill(0);
-        current_iteration_point = [];
-        distance = [];
-        lower_bounds = [];
-        upper_bounds = [];
-        preference_method = 1;
-        state = State.Initialized;
+        weightPreferences.set(
+          Array($selectedProblem.objectives.length).fill(0)
+        );
+        rankPreferences.set(Array($selectedProblem.objectives.length).fill(0));
+        inputWeights.set(Array($selectedProblem.objectives.length).fill(0));
+        objectiveRanges.set({
+          ideal: data.response.ideal,
+          nadir: data.response.nadir,
+        });
       } else {
         throw new Error("Failed to start NAUTILUS method.");
       }
@@ -129,22 +116,16 @@ A user interface for the NAUTILUS method.
     }
   }
 
-  /** Function to perform an iteration. */
   async function handle_iterate() {
-    if (!validate_preferences()) {
+    /*if (!validate_preferences()) {
       return;
-    }
-
-    is_iterated() ? (isFirstIterationCompleted = true) : false;
-    if (isFirstIterationCompleted) {
-      isPreferencesChanged = false;
-      short_step = false;
-      use_previous_preference = false;
-      step_back = false;
-    }
+    }*/
 
     try {
+      appState = AppState.WORKING;
       let endpoint = API_URL + "/method/control";
+      console.log("stepBack", stepBack);
+
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -153,38 +134,34 @@ A user interface for the NAUTILUS method.
         },
         body: JSON.stringify({
           response: {
-            n_iterations: n_iterations,
-            preference_method: preference_method,
-            preference_info: preference_info,
-            use_previous_preference: use_previous_preference,
-            step_back: step_back,
-            short_step: short_step,
+            n_iterations: $inputIterations.iterations,
+            preference_method: preferenceType === "Rank" ? 1 : 2,
+            preference_info:
+              preferenceType === "Rank" ? $rankPreferences : $weightPreferences,
+            use_previous_preference: $stepsTaken < 1 ? undefined : false,
+            step_back: $stepsTaken < 1 ? undefined : stepBack,
+            short_step: $stepsTaken < 1 ? undefined : false,
           },
         }),
       });
+      stepBack = false;
       if (response.ok) {
+        appState = AppState.IDLE;
         const data = await response.json();
         console.log(data);
+        stepsTaken.update((steps) => steps + 1);
+        distance.set(data.response.distance);
 
-        current_iteration_point = data.response.current_iteration_point;
-        distance = data.response.distance;
-        lower_bounds = data.response.lower_bounds;
-        upper_bounds = data.response.upper_bounds;
-        iteration_counter++;
-
-        let newIteration: IterationData = {
-          currentIterationPoint: current_iteration_point,
-          distance: distance,
-          nadirPoint: nadir_point,
-          idealPoint: ideal_point,
-          lowerBounds: lower_bounds,
-          upperBounds: upper_bounds,
-          iterationCounter: iteration_counter,
+        let iteration = {
+          currentIterationPoint: data.response.current_iteration_point,
+          distance: data.response.distance,
+          lowerBounds: data.response.lower_bounds,
+          upperBounds: data.response.upper_bounds,
         };
-        iterationData = [...iterationData, newIteration];
 
-        state = State.Iterated;
+        iterationDetails.update((iterations) => [...iterations, iteration]);
       } else {
+        appState = AppState.IDLE;
         throw new Error("Failed to iterate NAUTILUS method.");
       }
     } catch (err) {
@@ -198,35 +175,8 @@ A user interface for the NAUTILUS method.
     }
   }
 
-  /**
-   * Function to go back to the previous iteration. Deletes the last iteration
-   * from iterationData and sets the flags.
-   */
-  async function handleGoBack() {
-    // Prevent going back beyond the first iteration
-    if (iterationData.length > 1) {
-      iterationData.pop(); // Remove the last iteration
-
-      short_step = isPreferencesChanged ? false : true;
-      use_previous_preference = isPreferencesChanged ? true : false;
-      step_back = true;
-    } else {
-      toastStore.trigger({
-        message: "Cannot go back further.",
-        background: "variant-filled-warning",
-        timeout: 5000,
-      });
-    }
-  }
-
-  /**
-   * Function to validate the preferences entered by the user.
-   *
-   * @returns True if the preferences are valid, false otherwise and triggers
-   *   correct error.
-   */
   function validate_preferences() {
-    if (preference_method === 1) {
+    /*if (preference_method === 1) {
       let hasPositiveRank = preference_info.some((element) => element > 0);
       if (!hasPositiveRank) {
         toastStore.trigger({
@@ -261,130 +211,80 @@ A user interface for the NAUTILUS method.
         return false;
       }
     }
-    return true;
+    return true;*/
   }
 
-  /**
-   * Function to handle the rank update event.
-   *
-   * @param event
-   */
-  function handleRankUpdate(event: {
-    detail: { index: number; value: number };
-  }) {
-    const { index, value } = event.detail;
-    preference_info[index] = value;
-    isPreferencesChanged = true;
+  function handlePreferenceTypeChange(event: CustomEvent) {
+    preferenceType = event.detail.selectedPreference;
   }
 
-  /**
-   * Function to handle the toggle rank weight switch.
-   *
-   * @param event
-   */
-  function handleToggleRankWeight(event: { detail: { useRank: boolean } }) {
-    const { useRank } = event.detail;
-    preference_method = useRank ? 1 : 2;
-    isPreferencesChanged = true;
+  function handleStepBack() {
+    stepBack = true;
+    iterationDetails.update((iterations) => iterations.slice(0, -1));
+    stepsTaken.update((steps) => steps - 1);
+    inputIterations.update((current) => {
+      return {
+        ...current,
+        iterations: current.iterations + 1,
+      };
+    });
   }
 
-  /**
-   * Function to update the number of iterations.
-   *
-   * @param event
-   */
-  function updateIterations(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    n_iterations = inputElement ? parseInt(inputElement.value, 10) : 1;
-    isPreferencesChanged = true;
-  }
-
-  /*function can_iterate(): boolean {
-    return is_initialized() || is_iterated();
-  }
-
-  function is_uninitialized(): boolean {
-    return state === State.Uninitialized;
-  }
-
-  function is_initialized(): boolean {
-    return state === State.Initialized;
-  }*/
-
-  function is_iterated(): boolean {
-    return state === State.Iterated;
+  async function handleIterate() {
+    await handle_iterate();
   }
 </script>
 
-<div class="flex flex-col gap-10">
-  <div class="flex flex-col items-start gap-4">
-    <h1 class="font-bold">Nautilus method</h1>
-
+<div class={"flex"}>
+  <div class={"w-80 flex-none bg-[#E8EAF0] p-2"}>
     <div>
-      Please click "start" to start solving the problem with the method.
-    </div>
-    <button class="btn variant-filled" on:click={handle_initialize}
-      >Start</button
-    >
-    {#if state === State.Uninitialized}
-      <ProblemDetails {problem} />
-    {/if}
-    <div>click "iterate".</div>
-    <div class="flex gap-4">
-      <div class="iteration-controls">
-        <label for="iteration-input" class="iteration-label">Iterations:</label>
-      </div>
-      <input
-        class="iteration-input"
-        type="number"
-        id="iteration-input"
-        min="1"
-        bind:value={n_iterations}
-        on:input={updateIterations}
-      />
-      <button class="btn variant-filled" on:click={handle_iterate}
-        >Iterate</button
-      >
-
-      {#if iterationData.length > 1}
-        <button
-          class="btn variant-filled"
-          on:click={handleGoBack}
-          disabled={isPreferencesChanged}>Go Back</button
+      <div class={"flex gap-5"}>
+        <h2 class="text-lg font-semibold">Preference information</h2>
+        <Tooltip
+          title="This is a helpful tooltip text for the preference information that can be dismissed by a click."
+          dismissByClick={true}
+          ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
         >
+      </div>
+      <PreferenceSelector on:preferenceChange={handlePreferenceTypeChange} />
+      <InfoBox
+        text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."}
+      />
+      {#if preferenceType === PreferenceType.RANK}
+        <RankDndZone {objectives} {ranks} />
+      {:else if preferenceType === PreferenceType.WEIGHT}
+        <WeightSelection {objectives} />
       {/if}
     </div>
-
-    <GeneralError />
+    <div>
+      <div class={"flex gap-5"}>
+        <h2 class="text-lg font-semibold">Steps before Pareto optimality</h2>
+        <Tooltip title="This is a helpful tooltip for setting iteration steps."
+          ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
+        >
+      </div>
+      <IterationsControl />
+      <div class="sticky bottom-0 left-0 mt-2 flex gap-2 bg-[#E8EAF0] p-2">
+        <Button
+          on:click={handleStepBack}
+          mode="blue"
+          disabled={$iterationDetails.length < 1 ||
+            appState === AppState.WORKING}
+          text={"Step Backwards"}
+        />
+        <Button
+          on:click={handleIterate}
+          disabled={appState === AppState.WORKING}
+          mode="blue"
+          text={"Step Forward"}
+        />
+      </div>
+    </div>
+  </div>
+  <div class={"flex w-[1500px] min-w-[1200px] overflow-x-auto"}>
+    <ProgressObjectiveGrid {objectives} />
   </div>
 </div>
-{#if state === State.Initialized || state === State.Iterated}
-  <div class="objectives-container" />
-{/if}
 
 <style>
-  .objectives-container {
-    display: flex;
-    overflow-x: auto;
-  }
-
-  .iteration-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .iteration-label {
-    font-size: 0.9em;
-    color: #333;
-  }
-
-  .iteration-input {
-    flex: 0 1 auto;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-right: 10px;
-  }
 </style>
