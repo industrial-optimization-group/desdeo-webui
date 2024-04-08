@@ -481,3 +481,6 @@ export function is_point_of_length(value: unknown, n: number): value is Point {
 export function problem_has_finite_bounds(problem: Problem) {
   return is_point(problem.ideal_point) && is_point(problem.nadir_point);
 }
+
+export const methodHeaderText = writable("No method selected yet");
+export const selectedProblem = writable({} as Problem);
