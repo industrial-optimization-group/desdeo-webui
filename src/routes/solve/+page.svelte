@@ -2,7 +2,7 @@
   import { methodHeaderText } from "$lib/api";
 
   import { baseURL, get_access_token } from "$lib/api";
-  import NautilusNew from "$lib/components/methods/nautilus/NautilusNew.svelte";
+  import NautilusMethod from "$lib/components/methods/nautilus/NautilusMethod.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
 
   if ($methodHeaderText === "No method selected yet.") {
@@ -24,7 +24,7 @@
       AUTH_TOKEN={get_access_token()}
     /> -->
 {:else if $methodHeaderText === "NAUTILUS"}
-  <NautilusNew API_URL={baseURL} AUTH_TOKEN={get_access_token()} />
+  <NautilusMethod API_URL={baseURL} AUTH_TOKEN={get_access_token()} />
 {:else}
   <GeneralError />
 {/if}

@@ -1,24 +1,19 @@
 <script lang="ts">
   import Card from "$lib/components/main/Card.svelte";
-  import type { ObjectiveData } from "$lib/methods/nautilus/types";
   import GDMNautilusBar from "$lib/components/visual/preference-interaction/GDMNautilusBar.svelte";
-  import {
-    iterationDetails,
-    objectiveRanges,
-    stepsTaken,
-    inputIterations,
-    distance,
-  } from "./stores";
+  import { iterationDetails, stepsTaken, inputIterations } from "./stores";
   import Button from "./Button.svelte";
   import { writable } from "svelte/store";
   import Tooltip from "$lib/components/util/Tooltip.svelte";
   import InfoIcon from "~icons/heroicons/information-circle";
 
-  export let objectives: ObjectiveData[];
+  export let objectives;
+  export let objectiveRanges: { ideal: number[]; nadir: number[] };
+  export let distance: number;
 
   let unit = "UNIT";
 
-  $: progressPercentage = $distance;
+  $: progressPercentage = distance;
 
   $: if ($iterationDetails.length > 3) {
     visibleStartIndex.set($iterationDetails.length - 3);
@@ -96,8 +91,8 @@
         </div>
 
         <div class="mb-4 flex items-center justify-between">
-          <span>Best: {$objectiveRanges.ideal[j]}</span>
-          <span>Worst: {$objectiveRanges.nadir[j]}</span>
+          <span>Best: {objectiveRanges.ideal[j]}</span>
+          <span>Worst: {objectiveRanges.nadir[j]}</span>
         </div>
         <div class="mb-4 flex items-center justify-between">
           <div class="flex items-end space-x-4">
@@ -125,8 +120,8 @@
             <div class="col-span-9">
               <GDMNautilusBar
                 reachableRanges={[data.lowerBounds[j], data.upperBounds[j]]}
-                higherBound={$objectiveRanges.nadir[j]}
-                lowerBound={$objectiveRanges.ideal[j]}
+                higherBound={objectiveRanges.nadir[j]}
+                lowerBound={objectiveRanges.ideal[j]}
                 currentValue={data.currentIterationPoint[j]}
                 objIndex={index}
                 iteration={1}

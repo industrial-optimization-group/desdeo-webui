@@ -1,13 +1,16 @@
-<script>
+<script lang="ts">
   import { flip } from "svelte/animate";
-  import { onMount } from "svelte";
-  import { rankPreferences, inputRanks } from "./stores";
+  import { onMount, createEventDispatcher } from "svelte";
   import Button from "./Button.svelte";
 
   export let objectives;
   export let ranks;
+  export let rankPreferences;
 
   let hoveringOverRank;
+  let inputRanks: number[] = [];
+
+  const dispatch = createEventDispatcher();
 
   onMount(() => {
     updatePreferenceInfo();
@@ -28,11 +31,11 @@
     ranks[rankIndex].items.push(item);
     ranks = [...ranks];
 
-    inputRanks.set(ranks);
+    inputRanks = ranks;
     hoveringOverRank = null;
   }
   function updatePreferenceInfo() {
-    let preferenceInfo = $rankPreferences;
+    let preferenceInfo = rankPreferences;
     ranks.forEach((rank, rankIndex) => {
       if (rankIndex === 0) return;
       rank.items.forEach((item) => {
@@ -42,8 +45,9 @@
         preferenceInfo[objectiveIndex] = rankIndex;
       });
     });
-    rankPreferences.set(preferenceInfo);
-    inputRanks.set(ranks);
+    rankPreferences = preferenceInfo;
+    dispatch("update", { rankPreferences });
+    inputRanks = ranks;
   }
 
   function resetRanks() {
@@ -61,13 +65,13 @@
     }));
 
     ranks = [...ranks];
-    inputRanks.set(ranks);
+    inputRanks = ranks;
     updatePreferenceInfo();
   }
 </script>
 
 <div class="mb-4">
-  {#each $inputRanks as rank, rankIndex (rank)}
+  {#each inputRanks as rank, rankIndex (rank)}
     <div animate:flip>
       <ul
         class="{rankIndex === 0 ? 'first-container' : ''} {hoveringOverRank ===

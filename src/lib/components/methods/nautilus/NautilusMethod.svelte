@@ -8,16 +8,7 @@
   import IterationsControl from "./IterationsControl.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
   import InfoBox from "./InfoBox.svelte";
-  import {
-    inputIterations,
-    objectiveRanges,
-    iterationDetails,
-    weightPreferences,
-    rankPreferences,
-    inputWeights,
-    stepsTaken,
-    distance,
-  } from "./stores";
+  import { inputIterations, iterationDetails, stepsTaken } from "./stores";
   import { methodNameStore } from "$lib/components/main/stores";
   import Tooltip from "$lib/components/util/Tooltip.svelte";
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
@@ -26,14 +17,24 @@
 
   export let API_URL = "http://localhost:5000/";
   export let AUTH_TOKEN = "";
+  export let weightPreferences: number[] = [];
+  export let inputWeights: number[] = [];
+  export let rankPreferences: number[] = [];
+  export let distance: number = 0;
 
   let preferenceType: PreferenceType = PreferenceType.RANK;
   let appState: AppState = AppState.IDLE;
+  let updatedPreferences: number[] = [];
 
   let totalSteps;
   let optimizationProgress;
   let isPreferencesChanged: boolean | false;
   let stepBack: boolean | false;
+
+  const objectiveRanges = {
+    ideal: [] as number[],
+    nadir: [] as number[],
+  };
 
   export let objectives = $selectedProblem.objectives.map(
     (objective, index) => ({
@@ -93,15 +94,11 @@
       });
       if (response.ok) {
         const data = await response.json();
-        weightPreferences.set(
-          Array($selectedProblem.objectives.length).fill(0)
-        );
-        rankPreferences.set(Array($selectedProblem.objectives.length).fill(0));
-        inputWeights.set(Array($selectedProblem.objectives.length).fill(0));
-        objectiveRanges.set({
-          ideal: data.response.ideal,
-          nadir: data.response.nadir,
-        });
+        weightPreferences = Array($selectedProblem.objectives.length).fill(0);
+        rankPreferences = Array($selectedProblem.objectives.length).fill(0);
+        inputWeights = Array($selectedProblem.objectives.length).fill(0);
+        objectiveRanges.ideal = data.response.ideal;
+        objectiveRanges.nadir = data.response.nadir;
       } else {
         throw new Error("Failed to start NAUTILUS method.");
       }
@@ -120,6 +117,7 @@
     /*if (!validate_preferences()) {
       return;
     }*/
+    console.log("updated", updatedPreferences);
 
     try {
       appState = AppState.WORKING;
@@ -136,8 +134,7 @@
           response: {
             n_iterations: $inputIterations.iterations,
             preference_method: preferenceType === "Rank" ? 1 : 2,
-            preference_info:
-              preferenceType === "Rank" ? $rankPreferences : $weightPreferences,
+            preference_info: updatedPreferences,
             use_previous_preference: $stepsTaken < 1 ? undefined : false,
             step_back: $stepsTaken < 1 ? undefined : stepBack,
             short_step: $stepsTaken < 1 ? undefined : false,
@@ -150,7 +147,7 @@
         const data = await response.json();
         console.log(data);
         stepsTaken.update((steps) => steps + 1);
-        distance.set(data.response.distance);
+        distance = data.response.distance;
 
         let iteration = {
           currentIterationPoint: data.response.current_iteration_point,
@@ -173,6 +170,14 @@
       });
       console.error(err);
     }
+  }
+
+  function handleRankUpdate(event) {
+    updatedPreferences = event.detail.rankPreferences;
+  }
+
+  function handleWeightUpdate(event) {
+    updatedPreferences = event.detail.weightPreferences;
   }
 
   function validate_preferences() {
@@ -251,9 +256,19 @@
         text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."}
       />
       {#if preferenceType === PreferenceType.RANK}
-        <RankDndZone {objectives} {ranks} />
+        <RankDndZone
+          {objectives}
+          {ranks}
+          {rankPreferences}
+          on:update={handleRankUpdate}
+        />
       {:else if preferenceType === PreferenceType.WEIGHT}
-        <WeightSelection {objectives} />
+        <WeightSelection
+          {objectives}
+          {weightPreferences}
+          {inputWeights}
+          on:update={handleWeightUpdate}
+        />
       {/if}
     </div>
     <div>
@@ -282,7 +297,7 @@
     </div>
   </div>
   <div class={"flex w-[1500px] min-w-[1200px] overflow-x-auto"}>
-    <ProgressObjectiveGrid {objectives} />
+    <ProgressObjectiveGrid {distance} {objectives} {objectiveRanges} />
   </div>
 </div>
 
