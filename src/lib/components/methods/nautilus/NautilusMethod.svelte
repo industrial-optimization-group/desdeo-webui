@@ -8,7 +8,7 @@
   import IterationsControl from "./IterationsControl.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
   import InfoBox from "./InfoBox.svelte";
-  import { inputIterations, iterationDetails, stepsTaken } from "./stores";
+  import { inputIterations, stepsTaken } from "./stores";
   import { methodNameStore } from "$lib/components/main/stores";
   import Tooltip from "$lib/components/util/Tooltip.svelte";
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
@@ -35,6 +35,15 @@
     ideal: [] as number[],
     nadir: [] as number[],
   };
+
+  type Iteration = {
+    currentIterationPoint: number[];
+    distance: number[];
+    lowerBounds: number[];
+    upperBounds: number[];
+  };
+
+  let iterationDetails: Iteration[] = [];
 
   export let objectives = $selectedProblem.objectives.map(
     (objective, index) => ({
@@ -149,14 +158,14 @@
         stepsTaken.update((steps) => steps + 1);
         distance = data.response.distance;
 
-        let iteration = {
+        let iteration: Iteration = {
           currentIterationPoint: data.response.current_iteration_point,
           distance: data.response.distance,
           lowerBounds: data.response.lower_bounds,
           upperBounds: data.response.upper_bounds,
         };
 
-        iterationDetails.update((iterations) => [...iterations, iteration]);
+        iterationDetails = [...iterationDetails, iteration];
       } else {
         appState = AppState.IDLE;
         throw new Error("Failed to iterate NAUTILUS method.");
@@ -225,7 +234,7 @@
 
   function handleStepBack() {
     stepBack = true;
-    iterationDetails.update((iterations) => iterations.slice(0, -1));
+    iterationDetails = iterationDetails.slice(0, -1);
     stepsTaken.update((steps) => steps - 1);
     inputIterations.update((current) => {
       return {
@@ -283,7 +292,7 @@
         <Button
           on:click={handleStepBack}
           mode="blue"
-          disabled={$iterationDetails.length < 1 ||
+          disabled={iterationDetails.length < 1 ||
             appState === AppState.WORKING}
           text={"Step Backwards"}
         />
@@ -297,7 +306,12 @@
     </div>
   </div>
   <div class={"flex w-[1500px] min-w-[1200px] overflow-x-auto"}>
-    <ProgressObjectiveGrid {distance} {objectives} {objectiveRanges} />
+    <ProgressObjectiveGrid
+      {distance}
+      {objectives}
+      {objectiveRanges}
+      {iterationDetails}
+    />
   </div>
 </div>
 

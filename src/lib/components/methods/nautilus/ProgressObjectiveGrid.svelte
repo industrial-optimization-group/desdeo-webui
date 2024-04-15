@@ -1,7 +1,7 @@
 <script lang="ts">
   import Card from "$lib/components/main/Card.svelte";
   import { NAUTILUSBarChart } from "$lib/components/visual/preference-interaction/NAUTILUSBar.svelte";
-  import { iterationDetails, stepsTaken, inputIterations } from "./stores";
+  import { stepsTaken, inputIterations } from "./stores";
   import Button from "./Button.svelte";
   import { writable } from "svelte/store";
   import Tooltip from "$lib/components/util/Tooltip.svelte";
@@ -10,13 +10,14 @@
   export let objectives;
   export let objectiveRanges: { ideal: number[]; nadir: number[] };
   export let distance: number;
+  export let iterationDetails;
 
   let unit = "UNIT";
 
   $: progressPercentage = distance;
 
-  $: if ($iterationDetails.length > 3) {
-    visibleStartIndex.set($iterationDetails.length - 3);
+  $: if (iterationDetails.length > 3) {
+    visibleStartIndex.set(iterationDetails.length - 3);
   } else {
     visibleStartIndex.set(0);
   }
@@ -25,7 +26,7 @@
   // Function to scroll forward
   function scrollForward() {
     visibleStartIndex.update((index) => {
-      const maxIndex = $iterationDetails.length - 3;
+      const maxIndex = iterationDetails.length - 3;
       return index + 1 < maxIndex ? index + 1 : maxIndex;
     });
   }
@@ -108,7 +109,7 @@
           </div>
         </div>
         <div class="grid w-[580px] grid-cols-12">
-          {#each $iterationDetails.slice($visibleStartIndex, $visibleStartIndex + 3) as data, index (index)}
+          {#each iterationDetails.slice($visibleStartIndex, $visibleStartIndex + 3) as data, index (index)}
             <div class="col-span-1 pl-2">
               <div class="py-4">{index + 1 + $visibleStartIndex}</div>
             </div>
@@ -138,7 +139,7 @@
               on:click={() => scrollBackward()}
             />
             <Button
-              disabled={$visibleStartIndex + 3 >= $iterationDetails.length}
+              disabled={$visibleStartIndex + 3 >= iterationDetails.length}
               text=">"
               on:click={() => scrollForward()}
             />
