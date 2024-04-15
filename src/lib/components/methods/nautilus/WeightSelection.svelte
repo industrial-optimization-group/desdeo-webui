@@ -1,7 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import type { NautilusObjectiveData } from "./types";
 
-  export let objectives;
+  export let objectives: NautilusObjectiveData[];
   export let weightPreferences: number[];
   export let inputWeights: number[];
 
@@ -23,7 +24,7 @@
    *
    * @param weights
    */
-  function normalizeWeights(weights) {
+  function normalizeWeights(weights: number[]) {
     let total = weights.reduce((sum, weight) => sum + weight, 0);
     let percentageWeights = weights.map((weight) => (weight / total) * 100);
     let roundedWeights = percentageWeights.map(
@@ -59,6 +60,12 @@
     inputWeights = updatedWeights;
     updateWeights();
   }
+  function handleSliderInput(index: number, event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (target) {
+      handleInput(Number(target.dataset.index), Number(target.value));
+    }
+  }
 </script>
 
 <div class={"mb-2"}>
@@ -71,7 +78,7 @@
         min="0"
         max="100"
         bind:value={inputWeights[index]}
-        on:input={(event) => handleInput(index, Number(event.target.value))}
+        on:input={(event) => handleSliderInput(index, event)}
       />
       <input
         type="number"
@@ -79,7 +86,7 @@
         max="100"
         class={"ml-3 h-10 w-20"}
         bind:value={inputWeights[index]}
-        on:change={(event) => handleInput(index, Number(event.target.value))}
+        on:change={(event) => handleSliderInput(index, event)}
       />
     </div>
   {/each}
