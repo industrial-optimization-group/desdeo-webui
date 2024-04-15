@@ -433,6 +433,14 @@ export type Objective = {
   minimize: boolean;
 };
 
+export type NautilusObjectiveData = {
+  name: string;
+  minimize: boolean;
+  value: number;
+  color: string;
+  id: string;
+}[];
+
 export type Variable = {
   name: string;
 };

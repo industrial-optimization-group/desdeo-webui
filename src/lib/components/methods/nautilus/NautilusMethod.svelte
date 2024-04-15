@@ -1,6 +1,7 @@
 <script lang="ts">
   import { toastStore } from "@skeletonlabs/skeleton";
   import { selectedProblem } from "$lib/api";
+  import type { NautilusObjectiveData } from "$lib/api";
   import { PreferenceType, AppState } from "./types";
   import RankDndZone from "./RankDndZone.svelte";
   import PreferenceSelector from "./PreferenceSelector.svelte";
@@ -14,6 +15,17 @@
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
   import Button from "./Button.svelte";
   import InfoIcon from "~icons/heroicons/information-circle";
+  import type { Problem } from "$lib/api";
+
+  type Iteration = {
+    currentIterationPoint: number[];
+    distance: number[];
+    lowerBounds: number[];
+    upperBounds: number[];
+  };
+
+  let iterationDetails: Iteration[] = [];
+  let problem: Problem = $selectedProblem;
 
   export let API_URL = "http://localhost:5000/";
   export let AUTH_TOKEN = "";
@@ -21,6 +33,15 @@
   export let inputWeights: number[] = [];
   export let rankPreferences: number[] = [];
   export let distance: number = 0;
+  export let objectives: NautilusObjectiveData = problem.objectives.map(
+    (objective, index) => ({
+      name: objective.name,
+      minimize: objective.minimize,
+      value: 0,
+      color: colorPalette[index],
+      id: objective.name.replace(/\W/g, "_"),
+    })
+  );
 
   let preferenceType: PreferenceType = PreferenceType.RANK;
   let appState: AppState = AppState.IDLE;
@@ -31,34 +52,21 @@
   let isPreferencesChanged: boolean | false;
   let stepBack: boolean | false;
 
+  let ranks: {
+    name: string;
+    items: any;
+  }[] = Array.from({ length: objectives.length + 1 }, (_, i) => ({
+    name: i === 0 ? "Objectives" : `Rank ${i}`,
+    items: [], // Initialize as an empty array for each rank
+  }));
+
+  /** Initialize the first rank with the objectives. */
+  ranks[0].items = [...objectives];
+
   const objectiveRanges = {
     ideal: [] as number[],
     nadir: [] as number[],
   };
-
-  type Iteration = {
-    currentIterationPoint: number[];
-    distance: number[];
-    lowerBounds: number[];
-    upperBounds: number[];
-  };
-
-  let iterationDetails: Iteration[] = [];
-
-  export let objectives = $selectedProblem.objectives.map(
-    (objective, index) => ({
-      ...objective,
-      color: colorPalette[index],
-      id: objective.name.replace(/\W/g, "_"),
-    })
-  );
-
-  export let ranks = Array.from({ length: objectives.length + 1 }, (_, i) => ({
-    name: i === 0 ? "Objectives" : `Rank ${i}`,
-    items: [],
-  }));
-
-  ranks[0].items = [...objectives];
 
   handle_initialize();
 
@@ -181,11 +189,11 @@
     }
   }
 
-  function handleRankUpdate(event) {
+  function handleRankUpdate(event: CustomEvent) {
     updatedPreferences = event.detail.rankPreferences;
   }
 
-  function handleWeightUpdate(event) {
+  function handleWeightUpdate(event: CustomEvent) {
     updatedPreferences = event.detail.weightPreferences;
   }
 
