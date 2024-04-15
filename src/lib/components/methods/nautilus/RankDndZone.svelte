@@ -2,8 +2,9 @@
   import { flip } from "svelte/animate";
   import { onMount, createEventDispatcher } from "svelte";
   import Button from "./Button.svelte";
+  import type { NautilusObjectiveData } from "./types";
 
-  export let objectives;
+  export let objectives: NautilusObjectiveData[];
   export let ranks;
   export let rankPreferences;
 

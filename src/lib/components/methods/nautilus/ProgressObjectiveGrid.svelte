@@ -6,11 +6,13 @@
   import { writable } from "svelte/store";
   import Tooltip from "$lib/components/util/Tooltip.svelte";
   import InfoIcon from "~icons/heroicons/information-circle";
+  import type { NautilusObjectiveData } from "./types";
+  import type { Iteration } from "./types";
 
-  export let objectives;
+  export let objectives: NautilusObjectiveData;
   export let objectiveRanges: { ideal: number[]; nadir: number[] };
   export let distance: number;
-  export let iterationDetails;
+  export let iterationDetails: Iteration[];
 
   let unit = "UNIT";
 
@@ -115,7 +117,7 @@
             </div>
             <div class="col-span-1 pl-2">
               <div class="py-4">
-                {Number.parseFloat(data.lowerBounds[j]).toFixed(2)}
+                {data.lowerBounds[j].toFixed(2)}
               </div>
             </div>
             <div
@@ -129,7 +131,7 @@
             />
 
             <div class="col-span-1 py-4 pr-3">
-              {Number.parseFloat(data.upperBounds[j]).toFixed(2)}
+              {data.upperBounds[j].toFixed(2)}
             </div>
           {/each}
           <div class="col-span-12 flex justify-between">

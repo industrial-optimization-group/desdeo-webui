@@ -1,8 +1,12 @@
 <script lang="ts">
   import { toastStore } from "@skeletonlabs/skeleton";
   import { selectedProblem } from "$lib/api";
-  import type { NautilusObjectiveData } from "$lib/api";
   import { PreferenceType, AppState } from "./types";
+  import type {
+    Iteration,
+    NautilusObjectiveData,
+    NautilusRanks,
+  } from "./types";
   import RankDndZone from "./RankDndZone.svelte";
   import PreferenceSelector from "./PreferenceSelector.svelte";
   import WeightSelection from "./WeightSelection.svelte";
@@ -16,13 +20,6 @@
   import Button from "./Button.svelte";
   import InfoIcon from "~icons/heroicons/information-circle";
   import type { Problem } from "$lib/api";
-
-  type Iteration = {
-    currentIterationPoint: number[];
-    distance: number[];
-    lowerBounds: number[];
-    upperBounds: number[];
-  };
 
   let iterationDetails: Iteration[] = [];
   let problem: Problem = $selectedProblem;
@@ -43,15 +40,6 @@
     })
   );
 
-  let preferenceType: PreferenceType = PreferenceType.RANK;
-  let appState: AppState = AppState.IDLE;
-  let updatedPreferences: number[] = [];
-
-  let totalSteps;
-  let optimizationProgress;
-  let isPreferencesChanged: boolean | false;
-  let stepBack: boolean | false;
-
   let ranks: {
     name: string;
     items: any;
@@ -62,6 +50,15 @@
 
   /** Initialize the first rank with the objectives. */
   ranks[0].items = [...objectives];
+
+  let preferenceType: PreferenceType = PreferenceType.RANK;
+  let appState: AppState = AppState.IDLE;
+  let updatedPreferences: number[] = [];
+
+  let totalSteps;
+  let optimizationProgress;
+  let isPreferencesChanged: boolean | false;
+  let stepBack: boolean | false;
 
   const objectiveRanges = {
     ideal: [] as number[],
