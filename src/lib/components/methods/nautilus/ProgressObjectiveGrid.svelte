@@ -1,6 +1,6 @@
 <script lang="ts">
   import Card from "$lib/components/main/Card.svelte";
-  import GDMNautilusBar from "$lib/components/visual/preference-interaction/GDMNautilusBar.svelte";
+  import { NAUTILUSBarChart } from "$lib/components/visual/preference-interaction/NAUTILUSBar.svelte";
   import { iterationDetails, stepsTaken, inputIterations } from "./stores";
   import Button from "./Button.svelte";
   import { writable } from "svelte/store";
@@ -117,18 +117,16 @@
                 {Number.parseFloat(data.lowerBounds[j]).toFixed(2)}
               </div>
             </div>
-            <div class="col-span-9">
-              <GDMNautilusBar
-                reachableRanges={[data.lowerBounds[j], data.upperBounds[j]]}
-                higherBound={objectiveRanges.nadir[j]}
-                lowerBound={objectiveRanges.ideal[j]}
-                currentValue={data.currentIterationPoint[j]}
-                objIndex={index}
-                iteration={1}
-                arrowMode={false}
-                aspect={"aspect-[7]"}
-              />
-            </div>
+            <div
+              class="col-span-9 align-middle"
+              use:NAUTILUSBarChart={{
+                ideal: objectiveRanges.ideal[j],
+                nadir: objectiveRanges.nadir[j],
+                reachableRanges: [data.lowerBounds[j], data.upperBounds[j]],
+                objIndex: j,
+              }}
+            />
+
             <div class="col-span-1 py-4 pr-3">
               {Number.parseFloat(data.upperBounds[j]).toFixed(2)}
             </div>
