@@ -19,7 +19,7 @@ export type NautilusObjectiveData = {
   value: number;
   color: string;
   id: string;
-}[];
+};
 
 export type Iteration = {
   currentIterationPoint: number[];

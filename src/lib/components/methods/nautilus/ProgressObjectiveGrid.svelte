@@ -9,7 +9,7 @@
   import type { NautilusObjectiveData } from "./types";
   import type { Iteration } from "./types";
 
-  export let objectives: NautilusObjectiveData;
+  export let objectives: NautilusObjectiveData[];
   export let objectiveRanges: { ideal: number[]; nadir: number[] };
   export let distance: number;
   export let iterationDetails: Iteration[];

@@ -30,7 +30,7 @@
   export let inputWeights: number[] = [];
   export let rankPreferences: number[] = [];
   export let distance: number = 0;
-  export let objectives: NautilusObjectiveData = problem.objectives.map(
+  export let objectives: NautilusObjectiveData[] = problem.objectives.map(
     (objective, index) => ({
       name: objective.name,
       minimize: objective.minimize,
@@ -40,13 +40,13 @@
     })
   );
 
-  let ranks: {
-    name: string;
-    items: any;
-  }[] = Array.from({ length: objectives.length + 1 }, (_, i) => ({
-    name: i === 0 ? "Objectives" : `Rank ${i}`,
-    items: [], // Initialize as an empty array for each rank
-  }));
+  let ranks: NautilusRanks = Array.from(
+    { length: objectives.length + 1 },
+    (_, i) => ({
+      name: i === 0 ? "Objectives" : `Rank ${i}`,
+      items: [], // Initialize as an empty array for each rank
+    })
+  );
 
   /** Initialize the first rank with the objectives. */
   ranks[0].items = [...objectives];

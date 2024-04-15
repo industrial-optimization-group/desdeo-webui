@@ -2,14 +2,14 @@
   import { flip } from "svelte/animate";
   import { onMount, createEventDispatcher } from "svelte";
   import Button from "./Button.svelte";
-  import type { NautilusObjectiveData } from "./types";
+  import type { NautilusObjectiveData, NautilusRanks } from "./types";
 
   export let objectives: NautilusObjectiveData[];
-  export let ranks;
-  export let rankPreferences;
+  export let ranks: NautilusRanks;
+  export let rankPreferences: number[];
 
-  let hoveringOverRank;
-  let inputRanks: number[] = [];
+  let hoveringOverRank: string;
+  let inputRanks: NautilusRanks = [];
 
   const dispatch = createEventDispatcher();
 
@@ -17,24 +17,33 @@
     updatePreferenceInfo();
   });
 
-  function dragStart(event, rankIndex, objectiveIndex) {
+  function dragStart(
+    event: DragEvent,
+    rankIndex: number,
+    objectiveIndex: number
+  ) {
     const data = { rankIndex, objectiveIndex };
-    event.dataTransfer.setData("text/plain", JSON.stringify(data));
+    if (event.dataTransfer) {
+      event.dataTransfer.setData("text/plain", JSON.stringify(data));
+    }
   }
 
-  function drop(event, rankIndex) {
+  function drop(event: DragEvent, rankIndex: number) {
     event.preventDefault();
-    const json = event.dataTransfer.getData("text/plain");
-    const data = JSON.parse(json);
-    const item = ranks[data.rankIndex].items[data.objectiveIndex];
+    if (event.dataTransfer) {
+      const json = event.dataTransfer.getData("text/plain");
+      const data = JSON.parse(json);
+      const item = ranks[data.rankIndex].items[data.objectiveIndex];
 
-    ranks[data.rankIndex].items.splice(data.objectiveIndex, 1);
-    ranks[rankIndex].items.push(item);
-    ranks = [...ranks];
+      ranks[data.rankIndex].items.splice(data.objectiveIndex, 1);
+      ranks[rankIndex].items.push(item);
+      ranks = [...ranks];
 
-    inputRanks = ranks;
-    hoveringOverRank = null;
+      inputRanks = ranks;
+      hoveringOverRank = "";
+    }
   }
+
   function updatePreferenceInfo() {
     let preferenceInfo = rankPreferences;
     ranks.forEach((rank, rankIndex) => {
@@ -59,6 +68,7 @@
     });
 
     ranks[0].items = objectives.map((obj) => ({
+      value: obj.value,
       name: obj.name,
       minimize: obj.minimize,
       color: obj.color,
@@ -68,6 +78,10 @@
     ranks = [...ranks];
     inputRanks = ranks;
     updatePreferenceInfo();
+  }
+
+  function handleDragOver() {
+    return false;
   }
 </script>
 
@@ -80,12 +94,12 @@
           ? 'hovering'
           : ''}"
         on:dragenter={() => (hoveringOverRank = rank.name)}
-        on:dragleave={() => (hoveringOverRank = null)}
+        on:dragleave={() => (hoveringOverRank = "")}
         on:drop={(event) => {
           drop(event, rankIndex);
           updatePreferenceInfo();
         }}
-        ondragover="return false"
+        on:dragover|preventDefault={handleDragOver}
       >
         {#if rank.items.length === 0}
           <div class="rank-placeholder">{rank.name}</div>
