@@ -29,7 +29,7 @@
   export let weightPreferences: number[] = [];
   export let inputWeights: number[] = [];
   export let rankPreferences: number[] = [];
-  export let distance: number = 0;
+  export let distance = 0;
   export let objectives: NautilusObjectiveData[] = problem.objectives.map(
     (objective, index) => ({
       name: objective.name,
@@ -48,16 +48,13 @@
     })
   );
 
-  /** Initialize the first rank with the objectives. */
+  /** Initialize the first "rank" as objectives. */
   ranks[0].items = [...objectives];
 
   let preferenceType: PreferenceType = PreferenceType.RANK;
   let appState: AppState = AppState.IDLE;
   let updatedPreferences: number[] = [];
 
-  let totalSteps;
-  let optimizationProgress;
-  let isPreferencesChanged: boolean | false;
   let stepBack: boolean | false;
 
   const objectiveRanges = {
@@ -128,11 +125,6 @@
   }
 
   async function handle_iterate() {
-    /*if (!validate_preferences()) {
-      return;
-    }*/
-    console.log("updated", updatedPreferences);
-
     try {
       appState = AppState.WORKING;
       let endpoint = API_URL + "/method/control";
@@ -194,8 +186,8 @@
     updatedPreferences = event.detail.weightPreferences;
   }
 
-  function validate_preferences() {
-    /*if (preference_method === 1) {
+  //function validate_preferences() {
+  /*if (preference_method === 1) {
       let hasPositiveRank = preference_info.some((element) => element > 0);
       if (!hasPositiveRank) {
         toastStore.trigger({
@@ -231,7 +223,7 @@
       }
     }
     return true;*/
-  }
+  //}
 
   function handlePreferenceTypeChange(event: CustomEvent) {
     preferenceType = event.detail.selectedPreference;

@@ -1,18 +1,18 @@
-<script>
+<script lang="ts">
   import { onDestroy } from "svelte";
   export let title = "";
   export let dismissByClick = false; // New prop
   let isHovered = false;
-  let x;
-  let y;
-  let tooltipElement; // To reference the tooltip element
+  let x: number;
+  let y: number;
+  let tooltipElement: HTMLElement | null = null;
 
-  function mouseOver(event) {
+  function mouseOver(event: MouseEvent) {
     isHovered = true;
     updatePosition(event);
   }
 
-  function mouseMove(event) {
+  function mouseMove(event: MouseEvent) {
     if (!dismissByClick) {
       updatePosition(event);
     }
@@ -24,14 +24,18 @@
     }
   }
 
-  function updatePosition(event) {
+  function updatePosition(event: MouseEvent) {
     x = event.pageX + 5;
     y = event.pageY + 5;
   }
 
   // Handle clicks outside the tooltip
-  function handleClickOutside(event) {
-    if (tooltipElement && !tooltipElement.contains(event.target) && isHovered) {
+  function handleClickOutside(event: MouseEvent) {
+    if (
+      tooltipElement &&
+      !tooltipElement.contains(event.target as Node) &&
+      isHovered
+    ) {
       isHovered = false;
     }
   }
@@ -50,8 +54,12 @@
 </script>
 
 <div
+  role="button"
+  tabindex="0"
   on:mouseover={mouseOver}
+  on:focus={() => (isHovered = true)}
   on:mouseleave={mouseLeave}
+  on:blur={mouseLeave}
   on:mousemove={mouseMove}
 >
   <slot />

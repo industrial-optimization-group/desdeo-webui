@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   export let mode = "neutral"; // Default mode is neutral
   export let disabled = false;
-  export let text;
+  export let text: string;
 
   // Function to determine the button color classes based on the mode
-  function determineColorClasses(mode) {
+  function determineColorClasses(mode: string) {
     switch (mode) {
       case "delete":
       case "reset":
