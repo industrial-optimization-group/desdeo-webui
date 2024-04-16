@@ -26,21 +26,19 @@
 
   let visibleStartIndex = writable(0);
   // Function to scroll forward
-  function scrollForward() {
-    visibleStartIndex.update((index) => {
-      const maxIndex = iterationDetails.length - 3;
-      return index + 1 < maxIndex ? index + 1 : maxIndex;
-    });
-  }
-  // Function to scroll backward
+  let scrollIndex = 0;
+  const itemsToShow = 3;
+
   function scrollBackward() {
-    visibleStartIndex.update((index) => {
-      if (index > 0) {
-        return index - 1;
-      } else {
-        return 0;
-      }
-    });
+    if (scrollIndex > 0) {
+      scrollIndex--;
+    }
+  }
+
+  function scrollForward() {
+    if (scrollIndex < iterationDetails.length - itemsToShow) {
+      scrollIndex++;
+    }
   }
 </script>
 
@@ -78,11 +76,11 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 gap-1 p-1 text-sm md:grid-cols-2">
+  <div class="grid grid-cols-1 gap-1 p-0.5 text-sm md:grid-cols-2">
     {#each objectives as objective, j}
-      <div class="flex flex-col rounded-md border p-1">
-        <div class="mb-4 flex items-center justify-between">
-          <div class="flex items-center space-x-2">
+      <div class="flex flex-col rounded-md border p-0.5">
+        <div class="mb-2 flex items-center justify-between">
+          <div class="flex items-center space-x-1">
             <span class="font-semibold">
               {objective.name}
               {objective.minimize ? "(Min)" : "(Max)"}, {unit}
@@ -93,12 +91,12 @@
           </div>
         </div>
 
-        <div class="mb-4 flex items-center justify-between">
+        <div class="mb-2 flex items-center justify-between">
           <span>Best: {objectiveRanges.ideal[j]}</span>
           <span>Worst: {objectiveRanges.nadir[j]}</span>
         </div>
-        <div class="mb-4 flex items-center justify-between">
-          <div class="flex items-end space-x-4">
+        <div class="mb-2 flex items-center justify-between">
+          <div class="flex items-end space-x-2">
             <span>Step</span>
             <div>
               <div>Best</div>
@@ -110,13 +108,13 @@
             <div>Reachible</div>
           </div>
         </div>
-        <div class="grid w-[580px] grid-cols-12">
-          {#each iterationDetails.slice($visibleStartIndex, $visibleStartIndex + 3) as data, index (index)}
-            <div class="col-span-1 pl-2">
-              <div class="py-4">{index + 1 + $visibleStartIndex}</div>
+        <div class="grid w-[580px] grid-cols-12 gap-0.5">
+          {#each iterationDetails.slice(scrollIndex, scrollIndex + itemsToShow) as data, index (index)}
+            <div class="col-span-1 pl-1">
+              <div class="py-2">{index + 1 + scrollIndex}</div>
             </div>
-            <div class="col-span-1 pl-2">
-              <div class="py-4">
+            <div class="col-span-1 pl-1">
+              <div class="py-2">
                 {data.lowerBounds[j].toFixed(2)}
               </div>
             </div>
@@ -130,20 +128,20 @@
               }}
             />
 
-            <div class="col-span-1 py-4 pr-3">
+            <div class="col-span-1 py-2 pr-1.5">
               {data.upperBounds[j].toFixed(2)}
             </div>
           {/each}
-          <div class="col-span-12 flex justify-between">
+          <div class="col-span-12 m-0.5 flex justify-between">
             <Button
-              disabled={$visibleStartIndex === 0}
+              disabled={scrollIndex === 0}
               text="<"
-              on:click={() => scrollBackward()}
+              on:click={scrollBackward}
             />
             <Button
-              disabled={$visibleStartIndex + 3 >= iterationDetails.length}
+              disabled={scrollIndex + itemsToShow >= iterationDetails.length}
               text=">"
-              on:click={() => scrollForward()}
+              on:click={scrollForward}
             />
           </div>
         </div>
