@@ -1,3 +1,5 @@
+import { writable } from "svelte/store";
+
 export enum PreferenceType {
   WEIGHT = "Weight",
   RANK = "Rank",
@@ -32,3 +34,17 @@ export type NautilusRanks = {
   name: string;
   items: NautilusObjectiveData[];
 }[];
+
+type FinalSolutionData = {
+  currentIterationPoint: number[];
+  lowerBounds: number[];
+  upperBounds: number[];
+  distance: number[];
+};
+
+export const finalSolution = writable<FinalSolutionData>({
+  currentIterationPoint: [],
+  lowerBounds: [],
+  upperBounds: [],
+  distance: [],
+});

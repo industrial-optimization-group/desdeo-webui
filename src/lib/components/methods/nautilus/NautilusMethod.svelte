@@ -1,7 +1,7 @@
 <script lang="ts">
   import { toastStore } from "@skeletonlabs/skeleton";
   import { selectedProblem } from "$lib/api";
-  import { PreferenceType, AppState } from "./types";
+  import { PreferenceType, AppState, finalSolution } from "./types";
   import type {
     Iteration,
     NautilusObjectiveData,
@@ -19,7 +19,10 @@
   import ProgressObjectiveGrid from "./ProgressObjectiveGrid.svelte";
   import Button from "./Button.svelte";
   import InfoIcon from "~icons/heroicons/information-circle";
+  import { goto } from "$app/navigation";
   import type { Problem } from "$lib/api";
+  import { onDestroy, onMount } from "svelte";
+  import { inputWeights } from "./stores";
 
   let iterationDetails: Iteration[] = [];
   let problem: Problem = $selectedProblem;
@@ -27,7 +30,7 @@
   export let API_URL = "http://localhost:5000/";
   export let AUTH_TOKEN = "";
   export let weightPreferences: number[] = [];
-  export let inputWeights: number[] = [];
+  //export let inputWeights: number[] = [];
   export let rankPreferences: number[] = [];
   export let distance = 0;
   export let objectives: NautilusObjectiveData[] = problem.objectives.map(
@@ -53,7 +56,7 @@
 
   let preferenceType: PreferenceType = PreferenceType.RANK;
   let appState: AppState = AppState.IDLE;
-  let updatedPreferences: number[] = [];
+  let buttonDisabled: boolean | true;
 
   let stepBack: boolean | false;
 
@@ -62,7 +65,30 @@
     nadir: [] as number[],
   };
 
-  handle_initialize();
+  onMount(async () => {
+    await handle_initialize();
+  });
+
+  onDestroy(() => {
+    reset();
+  });
+
+  function reset() {
+    ranks[0].items = [...objectives];
+    preferenceType = PreferenceType.RANK;
+    appState = AppState.IDLE;
+    stepBack = false;
+    objectiveRanges.ideal = [];
+    objectiveRanges.nadir = [];
+    inputIterations.update((current) => {
+      return {
+        ...current,
+        iterations: 5,
+      };
+    });
+    stepsTaken.set(0);
+    iterationDetails = [];
+  }
 
   async function handle_initialize() {
     console.log("Initializing NAUTILUS method.");
@@ -107,7 +133,8 @@
         const data = await response.json();
         weightPreferences = Array($selectedProblem.objectives.length).fill(0);
         rankPreferences = Array($selectedProblem.objectives.length).fill(0);
-        inputWeights = Array($selectedProblem.objectives.length).fill(0);
+        inputWeights.set(Array($selectedProblem.objectives.length).fill(0));
+        //inputWeights = Array($selectedProblem.objectives.length).fill(0);
         objectiveRanges.ideal = data.response.ideal;
         objectiveRanges.nadir = data.response.nadir;
       } else {
@@ -140,7 +167,10 @@
           response: {
             n_iterations: $inputIterations.iterations,
             preference_method: preferenceType === "Rank" ? 1 : 2,
-            preference_info: updatedPreferences,
+            preference_info:
+              preferenceType === PreferenceType.RANK
+                ? rankPreferences
+                : weightPreferences,
             use_previous_preference: $stepsTaken < 1 ? undefined : false,
             step_back: $stepsTaken < 1 ? undefined : stepBack,
             short_step: $stepsTaken < 1 ? undefined : false,
@@ -179,51 +209,29 @@
   }
 
   function handleRankUpdate(event: CustomEvent) {
-    updatedPreferences = event.detail.rankPreferences;
+    validatePreferences();
+    rankPreferences = event.detail.rankPreferences;
   }
 
   function handleWeightUpdate(event: CustomEvent) {
-    updatedPreferences = event.detail.weightPreferences;
+    validatePreferences();
+    weightPreferences = event.detail.weightPreferences;
+    console.log(weightPreferences);
   }
 
-  //function validate_preferences() {
-  /*if (preference_method === 1) {
-      let hasPositiveRank = preference_info.some((element) => element > 0);
-      if (!hasPositiveRank) {
-        toastStore.trigger({
-          message:
-            "Please enter at least one objective with a rank above zero.",
-          background: "variant-filled-error",
-          timeout: 5000,
-        });
-        return false;
-      }
-
-      let hasNegativeRank = preference_info.some((element) => element < 0);
-      if (hasNegativeRank) {
-        toastStore.trigger({
-          message: "Please enter a non-negative rank for each objective.",
-          background: "variant-filled-error",
-          timeout: 5000,
-        });
-        return false;
-      }
-    } else if (preference_method === 2) {
-      let sum = 0;
-      preference_info.forEach((element) => {
-        sum += element;
-      });
-      if (sum !== 100) {
-        toastStore.trigger({
-          message: "Please enter weights that sum up to 100.",
-          background: "variant-filled-error",
-          timeout: 5000,
-        });
-        return false;
-      }
-    }
-    return true;*/
-  //}
+  function validatePreferences() {
+    if (
+      preferenceType === PreferenceType.RANK &&
+      rankPreferences.some((pref) => pref > 0)
+    ) {
+      buttonDisabled = false;
+    } else if (
+      preferenceType === PreferenceType.WEIGHT &&
+      weightPreferences.some((pref) => pref > 0)
+    ) {
+      buttonDisabled = false;
+    } else buttonDisabled = true;
+  }
 
   function handlePreferenceTypeChange(event: CustomEvent) {
     preferenceType = event.detail.selectedPreference;
@@ -244,10 +252,16 @@
   async function handleIterate() {
     await handle_iterate();
   }
+
+  async function handleFinnish() {
+    finalSolution.set(iterationDetails[iterationDetails.length - 1]);
+    console.log($finalSolution);
+    goto("/final_solution_page");
+  }
 </script>
 
 <div class={"flex"}>
-  <div class={"w-80 flex-none bg-[#E8EAF0] p-2"}>
+  <div class={"w-96 flex-none bg-[#E8EAF0] p-2"}>
     <div>
       <div class={"flex gap-5"}>
         <h2 class="text-lg font-semibold">Preference information</h2>
@@ -272,7 +286,6 @@
         <WeightSelection
           {objectives}
           {weightPreferences}
-          {inputWeights}
           on:update={handleWeightUpdate}
         />
       {/if}
@@ -298,6 +311,12 @@
           disabled={appState === AppState.WORKING}
           mode="blue"
           text={"Step Forward"}
+        />
+        <Button
+          on:click={handleFinnish}
+          disabled={appState === AppState.WORKING || buttonDisabled}
+          mode="blue"
+          text={"Show results"}
         />
       </div>
     </div>

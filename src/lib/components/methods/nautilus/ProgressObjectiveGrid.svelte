@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Card from "$lib/components/main/Card.svelte";
   import { NAUTILUSBarChart } from "$lib/components/visual/preference-interaction/NAUTILUSBar.svelte";
   import { stepsTaken, inputIterations } from "./stores";
   import Button from "./Button.svelte";
@@ -27,7 +26,7 @@
   let visibleStartIndex = writable(0);
   // Function to scroll forward
   let scrollIndex = 0;
-  const itemsToShow = 3;
+  const itemsToShow = 5;
 
   function scrollBackward() {
     if (scrollIndex > 0) {
@@ -135,12 +134,12 @@
           <div class="col-span-12 m-0.5 flex justify-between">
             <Button
               disabled={scrollIndex === 0}
-              text="<"
+              text="▲"
               on:click={scrollBackward}
             />
             <Button
               disabled={scrollIndex + itemsToShow >= iterationDetails.length}
-              text=">"
+              text="▼"
               on:click={scrollForward}
             />
           </div>

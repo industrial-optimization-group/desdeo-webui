@@ -8,3 +8,6 @@ export const inputIterations = writable({
 });
 
 export const stepsTaken = writable(0);
+
+type InputWeight = number;
+export const inputWeights = writable<InputWeight[]>([]);

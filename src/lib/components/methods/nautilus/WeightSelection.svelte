@@ -1,17 +1,18 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import type { NautilusObjectiveData } from "./types";
+  import { inputWeights } from "./stores";
 
   export let objectives: NautilusObjectiveData[];
   export let weightPreferences: number[];
-  export let inputWeights: number[];
+  //export let inputWeights: number[];
 
   const dispatch = createEventDispatcher();
 
   /** Update the weights based on the input values */
   function updateWeights() {
-    const totalWeight = inputWeights.reduce((sum, weight) => sum + weight, 0);
-    let unroundedPreferenceInfo = inputWeights.map((weight) =>
+    const totalWeight = $inputWeights.reduce((sum, weight) => sum + weight, 0);
+    let unroundedPreferenceInfo = $inputWeights.map((weight) =>
       totalWeight > 0 ? (weight / totalWeight) * 100 : 0
     );
     let roundedPreferenceInfo = unroundedPreferenceInfo.map(
@@ -44,7 +45,6 @@
     roundedWeights[roundedWeights.length - 1] += finalError;
 
     weightPreferences = roundedWeights;
-
     dispatch("update", { weightPreferences });
   }
 
@@ -55,9 +55,9 @@
    * @param value Value of the input
    */
   function handleInput(index: number, value: number) {
-    let updatedWeights = [...inputWeights];
+    let updatedWeights = [...$inputWeights];
     updatedWeights[index] = value;
-    inputWeights = updatedWeights;
+    inputWeights.set(updatedWeights);
     updateWeights();
   }
   function handleSliderInput(index: number, event: Event) {
@@ -77,7 +77,7 @@
         style="--slider-color: {objective.color};"
         min="0"
         max="100"
-        bind:value={inputWeights[index]}
+        bind:value={$inputWeights[index]}
         on:input={(event) => handleSliderInput(index, event)}
       />
       <input
@@ -85,7 +85,7 @@
         min="0"
         max="100"
         class={"ml-3 h-10 w-20"}
-        bind:value={inputWeights[index]}
+        bind:value={$inputWeights[index]}
         on:change={(event) => handleSliderInput(index, event)}
       />
     </div>
