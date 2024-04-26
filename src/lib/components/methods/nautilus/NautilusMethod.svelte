@@ -12,7 +12,6 @@
   import WeightSelection from "./WeightSelection.svelte";
   import IterationsControl from "./IterationsControl.svelte";
   import { colorPalette } from "$lib/components/visual/constants";
-  import InfoBox from "./InfoBox.svelte";
   import { inputIterations, stepsTaken } from "./stores";
   import { methodNameStore } from "$lib/components/main/stores";
   import Tooltip from "$lib/components/util/Tooltip.svelte";
@@ -265,16 +264,8 @@
     <div>
       <div class={"flex gap-5"}>
         <h2 class="text-lg font-semibold">Preference information</h2>
-        <Tooltip
-          title="This is a helpful tooltip text for the preference information that can be dismissed by a click."
-          dismissByClick={true}
-          ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
-        >
       </div>
       <PreferenceSelector on:preferenceChange={handlePreferenceTypeChange} />
-      <InfoBox
-        text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."}
-      />
       {#if preferenceType === PreferenceType.RANK}
         <RankDndZone
           {objectives}
@@ -293,7 +284,8 @@
     <div>
       <div class={"flex gap-5"}>
         <h2 class="text-lg font-semibold">Steps before Pareto optimality</h2>
-        <Tooltip title="This is a helpful tooltip for setting iteration steps."
+        <Tooltip
+          title="Ranges of objective functions that are reachable without trade-offs are visualized on the right. When approaching Pareto optimal solutions, the ranges shrink. Determine how many steps to take before reaching a Pareto optimal solution. This number can be changed any time."
           ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
         >
       </div>
@@ -308,7 +300,7 @@
         />
         <Button
           on:click={handleIterate}
-          disabled={appState === AppState.WORKING}
+          disabled={appState === AppState.WORKING || buttonDisabled}
           mode="blue"
           text={"Step Forward"}
         />

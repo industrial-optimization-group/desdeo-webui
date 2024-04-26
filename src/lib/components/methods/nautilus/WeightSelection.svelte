@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import type { NautilusObjectiveData } from "./types";
   import { inputWeights } from "./stores";
+  import InfoBox from "./InfoBox.svelte";
 
   export let objectives: NautilusObjectiveData[];
   export let weightPreferences: number[];
@@ -69,6 +70,9 @@
 </script>
 
 <div class={"mb-2"}>
+  <InfoBox
+    text={"Provide points by dragging the sliders below or by using the input boxes to indicate the relative importance of improving objective functions at the current step. The more points you allocate, the more improvement on the corresponding objective is desired at the current step. The points will be internally scaled to sum up to 100 and the colour bar below reflects this."}
+  />
   {#each objectives as objective, index}
     <div class={"mb-3 flex items-center"}>
       <div class={"mr-2 text-xs"}>{objective.name.substr(0, 6)}</div>

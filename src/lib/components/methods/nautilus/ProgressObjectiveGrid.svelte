@@ -46,7 +46,8 @@
     <div class="w-96">
       <div class="flex items-center">
         <h2 class="text-lg font-semibold">Reachable Values</h2>
-        <Tooltip title="This is a helpful tooltip for reachable values grid."
+        <Tooltip
+          title="At each step, the ranges of objective function values that are still reachable without trade-offs are indicated by bars. By default, the current step is shown at the bottom and the steps that are visible can be changed by clicking the arrows. The objective functions are represented by the same colours as on the left side."
           ><InfoIcon class="ml-2 h-6 w-6 text-blue-500" /></Tooltip
         >
       </div>
@@ -59,7 +60,8 @@
 
     <div class={"w-full"}>
       <p class="mb-1 text-sm font-light">
-        Closeness of current step to optimality
+        Closeness of current step to optimality: at 100%, a Pareto optimal
+        solution is reached
       </p>
       <div class="relative pt-1">
         <div class="flex h-2 overflow-hidden rounded bg-gray-200 text-xs">
