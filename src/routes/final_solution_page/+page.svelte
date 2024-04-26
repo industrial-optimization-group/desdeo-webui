@@ -8,16 +8,14 @@
   let problem: Problem = $selectedProblem;
 
   $: objectives = {
-    head: ["Name", "Goal", "Current", "Lower Bound", "Upper Bound"],
+    head: ["Name", "Goal", "Current"],
     body: tableMapperValues(
       problem.objectives.map(({ name, minimize }, index) => ({
         name,
         goal: minimize ? "minimize" : "maximize",
         current: $finalSolution.currentIterationPoint[index].toFixed(2),
-        lowerBound: $finalSolution.lowerBounds[index].toFixed(2),
-        upperBound: $finalSolution.upperBounds[index].toFixed(2),
       })),
-      ["name", "goal", "current", "lowerBound", "upperBound"]
+      ["name", "goal", "current"]
     ),
   };
 

@@ -29,12 +29,23 @@
     console.log("selected_problem", selected_problem);
 
     if (selected_method === "nimbus") {
-      methodHeaderText.set("NIMBUS");
+      methodHeaderText.set({
+        boldPart: "NIMBUS",
+        italicPart: "",
+      });
     } else if (selected_method === "nautilus") {
-      methodHeaderText.set("NAUTILUS");
+      methodHeaderText.set({
+        boldPart: "NAUTILUS:",
+        italicPart:
+          "Trade-off-free method to approach Pareto optimal solutions using ranks or weights",
+      });
+
       selectedProblem.set(selected_problem);
     } else if (selected_method === "nautnavi") {
-      methodHeaderText.set("NAUTILUS Navigator");
+      methodHeaderText.set({
+        boldPart: "NAUTILUS Navigator",
+        italicPart: "",
+      });
     } else {
       throw new Error("No method selected yet.");
     }

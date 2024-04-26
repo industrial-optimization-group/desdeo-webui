@@ -14,8 +14,9 @@
   <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
   <svelte:fragment slot="pageHeader">
     <div class="flex justify-between">
-      <div class="flex justify-start p-2 font-bold">
-        {$methodHeaderText}
+      <div class="flex justify-start p-2">
+        <strong>{$methodHeaderText.boldPart}</strong>
+        <em>{$methodHeaderText.italicPart}</em>
       </div>
       <div class="flex justify-end p-2"><User /></div>
     </div>
