@@ -482,5 +482,8 @@ export function problem_has_finite_bounds(problem: Problem) {
   return is_point(problem.ideal_point) && is_point(problem.nadir_point);
 }
 
-export const methodHeaderText = writable("No method selected yet");
+export const methodHeaderText = writable({
+  boldPart: "No method selected yet.",
+  italicPart: "",
+});
 export const selectedProblem = writable({} as Problem);
