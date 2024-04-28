@@ -13,8 +13,6 @@
   export let distance: number;
   export let iterationDetails: Iteration[];
 
-  let unit = "UNIT";
-
   $: progressPercentage = distance;
 
   $: if (iterationDetails.length > 3) {
@@ -22,6 +20,11 @@
   } else {
     visibleStartIndex.set(0);
   }
+  objectives[0].unit = "mg/L";
+  objectives[1].unit = "mg/L";
+  objectives[2].unit = "%";
+  objectives[3].unit = "%";
+  objectives[4].unit = "%";
 
   let visibleStartIndex = writable(0);
   // Function to scroll forward
@@ -84,11 +87,13 @@
           <div class="flex items-center space-x-1">
             <span class="font-semibold">
               {objective.name}
-              {objective.minimize ? "(Min)" : "(Max)"}, {unit}
+              ({objective.unit})
             </span>
           </div>
           <div>
-            <span class="text-sm">{objective.name.substr(0, 3)}</span>
+            <span class="text-sm">
+              {objective.minimize ? "(Min)" : "(Max)"}</span
+            >
           </div>
         </div>
 

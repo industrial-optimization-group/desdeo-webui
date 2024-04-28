@@ -74,6 +74,7 @@
       minimize: obj.minimize,
       color: obj.color,
       id: obj.id,
+      unit: obj.unit,
     }));
 
     ranks = [...ranks];

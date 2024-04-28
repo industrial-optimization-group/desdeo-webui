@@ -21,6 +21,7 @@ export type NautilusObjectiveData = {
   value: number;
   color: string;
   id: string;
+  unit: string;
 };
 
 export type Iteration = {

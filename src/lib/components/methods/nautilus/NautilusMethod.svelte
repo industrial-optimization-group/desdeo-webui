@@ -39,6 +39,7 @@
       value: 0,
       color: colorPalette[index],
       id: objective.name.replace(/\W/g, "_"),
+      unit: "",
     })
   );
 
@@ -259,7 +260,7 @@
   }
 </script>
 
-<div class={"flex"}>
+<div class={"flex h-auto"}>
   <div class={"w-96 flex-none bg-[#E8EAF0] p-2"}>
     <div>
       <div class={"flex gap-5"}>
