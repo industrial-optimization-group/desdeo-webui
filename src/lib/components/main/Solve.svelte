@@ -32,12 +32,16 @@
       methodHeaderText.set({
         boldPart: "NIMBUS",
         italicPart: "",
+        moreInfo: "",
+        moreInfoText: "",
       });
     } else if (selected_method === "nautilus") {
       methodHeaderText.set({
         boldPart: "NAUTILUS:",
         italicPart:
           "Trade-off-free method to approach Pareto optimal solutions using ranks or weights",
+        moreInfo: "https://desdeo.misitano.xyz",
+        moreInfoText: "More about NAUTILUS",
       });
 
       selectedProblem.set(selected_problem);
@@ -45,9 +49,16 @@
       methodHeaderText.set({
         boldPart: "NAUTILUS Navigator",
         italicPart: "",
+        moreInfo: "",
+        moreInfoText: "",
       });
     } else {
-      throw new Error("No method selected yet.");
+      methodHeaderText.set({
+        boldPart: "No method selected yet",
+        italicPart: "",
+        moreInfo: "",
+        moreInfoText: "",
+      });
     }
     console.log("selected_method", selected_method);
 

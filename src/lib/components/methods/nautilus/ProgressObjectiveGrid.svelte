@@ -45,7 +45,7 @@
   <div class={"flex"}>
     <div class="w-96">
       <div class="flex items-center">
-        <h2 class="text-lg font-semibold">Reachable Values</h2>
+        <h2 class="text-lg font-semibold">Reachable values</h2>
         <Tooltip
           title="At each step, the ranges of objective function values that are still reachable without trade-offs are indicated by bars. By default, the current step is shown at the bottom and the steps that are visible can be changed by clicking the arrows. The objective functions are represented by the same colours as on the left side."
           ><InfoIcon class="ml-2 h-6 w-6 text-blue-500" /></Tooltip
@@ -101,12 +101,12 @@
             <span>Step</span>
             <div>
               <div>Best</div>
-              <div>Reachible</div>
+              <div>reachible</div>
             </div>
           </div>
           <div>
             <div>Worst</div>
-            <div>Reachible</div>
+            <div>reachible</div>
           </div>
         </div>
         <div class="grid w-[580px] grid-cols-12 gap-0.5">

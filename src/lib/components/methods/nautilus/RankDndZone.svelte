@@ -120,7 +120,7 @@
               on:dragstart={(event) => dragStart(event, rankIndex, itemIndex)}
               style="background-color: {item.color};"
             >
-              {item.name.substr(0, 6)}
+              Obj {itemIndex + 1}
             </li>
           </div>
         {/each}

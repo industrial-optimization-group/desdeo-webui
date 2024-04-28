@@ -84,5 +84,7 @@
     padding: 4px;
     position: absolute;
     z-index: 100;
+    max-width: 30em;
+    white-space: pre-wrap;
   }
 </style>

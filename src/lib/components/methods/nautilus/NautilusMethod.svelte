@@ -296,13 +296,13 @@
           mode="blue"
           disabled={iterationDetails.length < 1 ||
             appState === AppState.WORKING}
-          text={"Step Backwards"}
+          text={"Step backwards"}
         />
         <Button
           on:click={handleIterate}
           disabled={appState === AppState.WORKING || buttonDisabled}
           mode="blue"
-          text={"Step Forward"}
+          text={"Step forward"}
         />
         <Button
           on:click={handleFinnish}

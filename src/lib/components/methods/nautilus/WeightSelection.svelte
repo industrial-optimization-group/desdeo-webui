@@ -75,7 +75,7 @@
   />
   {#each objectives as objective, index}
     <div class={"mb-3 flex items-center"}>
-      <div class={"mr-2 text-xs"}>{objective.name.substr(0, 6)}</div>
+      <div class={"mr-2 whitespace-nowrap text-sm"}>Obj {index + 1}</div>
       <input
         type="range"
         style="--slider-color: {objective.color};"
@@ -88,7 +88,7 @@
         type="number"
         min="0"
         max="100"
-        class={"ml-3 h-10 w-20"}
+        class={"w-15 ml-3 h-10"}
         bind:value={$inputWeights[index]}
         on:change={(event) => handleSliderInput(index, event)}
       />
