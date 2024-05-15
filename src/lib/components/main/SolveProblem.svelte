@@ -7,7 +7,8 @@
 
   // import NautilusNavigator from "$lib/components/methods/nautilus_navigator/NautilusNavigator.svelte";
   // import NIMBUS from "$lib/components/methods/nimbus/NIMBUS.svelte";
-  import IRVEAMethod from "$lib/components/methods/irvea_method/IRVEAMethod.svelte";
+  import ReferencePointMethod from "$lib/components/methods/reference_point_method/ReferencePointMethod.svelte";
+  import IRVEAMethod from "$lib/components/methods/interactive_rvea/InteractiveRVEA.svelte";
   import GeneralError from "../util/undecorated/GeneralError.svelte";
 
   selectedMethodName.set('Interactive RVEA');
@@ -24,7 +25,7 @@
 <!--   <NIMBUS {problem} /> -->
 <!-- {:else if method === "reference_point_method"} -->
 {#if method === "reference_point_method"}
-  <IRVEAMethod {problem} />
+  <IRVEAMethod />
 {:else}
   <GeneralError />
 {/if}

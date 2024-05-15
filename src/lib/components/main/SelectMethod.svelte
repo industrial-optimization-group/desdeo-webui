@@ -14,7 +14,7 @@
     // },
     {
       id: "reference_point_method",
-      display: "Reference Point Method (iRVEA Method temp)",
+      display: "Interactive RVEA",
     },
   ];
 

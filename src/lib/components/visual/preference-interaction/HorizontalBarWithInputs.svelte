@@ -105,9 +105,6 @@
     height: 100%;
     width: 100%;
     column-gap: 2em;
-    border-style: solid;
-    border-width: 2px;
-    border-color: "c000";
     padding: 0.5em;
   }
 

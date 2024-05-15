@@ -40,6 +40,7 @@
     handleSelectionChange,
   } from "$lib/components/visual/helperFunctions";
   import EchartsComponent from "../../general/EchartsComponent.svelte";
+  import { brushIntervalsStore, type BrushInterval } from '../../../../store';
 
   // Props for this component:
   /** The values to display on the plot. */
@@ -345,9 +346,9 @@
       };
       // TODO: How to get the parallel axis index where the brush has happened? params doesn't have the index.
       // Workaround for above TODO: Go through all the axes and get the min and max values of the brush interval if it exists
-      let axesLenght = (chart.getOption().parallelAxis as object[]).length;
+      let axesLength = (chart.getOption().parallelAxis as object[]).length;
       let helpArray: Ranges[] = brushIntervalPerAxis.slice();
-      for (let i = 0; i < axesLenght; i++) {
+      for (let i = 0; i < axesLength; i++) {
         const axisComponent = getChartModel(chart).getComponent(
           "parallelAxis",
           i
@@ -357,13 +358,29 @@
           min: activeIntervals.length ? activeIntervals[0][0] : undefined,
           max: activeIntervals.length ? activeIntervals[0][1] : undefined,
         };
-        if (helpArray.length != axesLenght) {
+        if (helpArray.length != axesLength) {
           helpArray.push(interval);
         } else {
           helpArray[i] = interval;
         }
       }
       brushIntervalPerAxis = helpArray;
+
+      let brushIntervals: BrushInterval[] = new Array(axesLength).fill({min: undefined, max: undefined});
+
+      for (let i = 0; i < axesLength; i++) {
+          const axisComponent = getChartModel(chart).getComponent("parallelAxis", i);
+          let activeIntervals = axisComponent.activeIntervals;
+          if (activeIntervals.length > 0) {
+              brushIntervals[i] = {
+                  min: activeIntervals[0][0],
+                  max: activeIntervals[0][1]
+              };
+          }
+      }
+
+      // Update the Svelte store with the new intervals
+      brushIntervalsStore.set(brushIntervals);
     },
   };
 </script>

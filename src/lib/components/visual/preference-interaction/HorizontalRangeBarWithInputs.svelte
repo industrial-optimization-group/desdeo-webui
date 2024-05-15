@@ -13,7 +13,10 @@
   export let higherBound: number;
 
   /** The name to be shown on top of the component. */
-  export let barName: string | undefined = undefined;
+  export let barName: string | undefined = "[obj_name]";
+
+  /** The unit to be shown on top of the component. */
+  export let unitName: string | undefined = "([unit])";
 
   /** The solution value to display on the chart. */
   export let solutionValue: number | undefined = undefined;
@@ -119,8 +122,12 @@
   </div>
   <div
     class="thirdPart"
-    style="--justify: {barName ? 'space-between' : 'flex-end'}"
+    style="--justify: {unitName ? 'space-between' : 'flex-end'}"
   >
+    {#if unitName}
+      <span>{unitName}</span>
+    {/if}
+
     <Input
       bind:value={selectedMaxValue}
       labelName="Upper bound"

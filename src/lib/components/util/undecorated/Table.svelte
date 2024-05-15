@@ -39,11 +39,13 @@ A simple table.
   function toggle<T>(arr: T[], e: T): T[] {
     return is_in(arr, e) ? remove(arr, e) : add(arr, e);
   }
+
+  $: displayedHead = ['Id', ...head]; // Prepends "Id" to the array of headers.
 </script>
 
 <table class="table-comfortable">
   <thead class="bg-surface-200">
-    {#each head as item}
+    {#each displayedHead as item}
       <th class="p-4">{item}</th>
     {/each}
   </thead>
@@ -52,18 +54,25 @@ A simple table.
       {@const background = is_in(selected_rows, row_id)
         ? "bg-surface-400"
         : "bg-surface-100"}
-      <tr
-        class="border-b-2 border-surface-200 {background} last:border-none hover:cursor-pointer"
-      >
+      <tr class="border-b-2 border-surface-200 {background} last:border-none hover:cursor-pointer">
+        <!-- Render the Solution Id -->
+        <td class="table-cell text-center">{`Solution ${row_id + 1}`}</td>
+        
         {#each row as item}
-          <td
-            class="table-cell text-center"
-            on:click={() => {
-              selected_rows = toggle(selected_rows, row_id);
-            }}>{item}</td
-          >
+          <td class="table-cell text-center" on:click={() => { selected_rows = toggle(selected_rows, row_id); }}>
+            {item}
+          </td>
         {/each}
       </tr>
     {/each}
   </tbody>
 </table>
+
+<style>
+  .first-cell {
+    padding-left: 20px; /* Adjust the padding value as needed */
+  }
+  .table-cell {
+    padding: 4px 10px; /* Adjust padding for other cells */
+  }
+</style>
