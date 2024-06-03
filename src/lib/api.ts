@@ -34,7 +34,7 @@ export const backend: Backend = {
 //
 // TODO: Move this to a configuration file.
 //
-export const baseURL = "http://localhost:5000";
+export const baseURL = process.env.WEBAPI_URL;
 
 /** A missing token is represented by `undefined`. */
 type Token = string | undefined;
