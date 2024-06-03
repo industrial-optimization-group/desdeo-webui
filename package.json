@@ -29,6 +29,7 @@
     "mathlive": "^0.95.4",
     "ts-pattern": "^5.0.5",
     "vite": "^4.3.0",
+    "vitest": "^0.34.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
@@ -75,7 +76,6 @@
     "tslib": "^2.4.1",
     "typescript": "^5.0.0",
     "typescript-svelte-plugin": "^0.3.26",
-    "unplugin-icons": "^0.16.5",
-    "vitest": "^0.34.1"
+    "unplugin-icons": "^0.16.5"
   }
 }
