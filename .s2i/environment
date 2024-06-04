@@ -1,1 +1,1 @@
-NPM_RUN = start
+NPM_RUN = start:production
