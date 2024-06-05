@@ -34,7 +34,7 @@ export const backend: Backend = {
 //
 // TODO: Move this to a configuration file.
 //
-export const baseURL = process.env.WEBAPI_URL;
+export const baseURL = "https://rahti-deployment-utopia-test.2.rahtiapp.fi";
 
 /** A missing token is represented by `undefined`. */
 type Token = string | undefined;
