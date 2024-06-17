@@ -183,6 +183,32 @@ export function login(
     });
 }
 
+/** Attempts to log in with the given invitation code. */
+
+export async function loginWithInvite(
+    code: string
+): Promise<{ message: string }> {
+  try {
+    return await without_token()
+        .post("/login-with-invite", {
+          code,
+        })
+        .then((response) => {
+          set_access_token(response.data.access_token);
+          set_refresh_token(response.data.refresh_token);
+          set_username(response.data.username);
+          return {
+            message: <string>response.data.message,
+          };
+        });
+  } catch (e) {
+    console.log(e);
+    return {
+      message: "Failed to log in",
+    };
+  }
+}
+
 export async function loginOAuth2(
   username: string,
   password: string
