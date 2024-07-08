@@ -20,12 +20,13 @@ A user interface for the NAUTILUS Navigator method.
   import type { ChartInput } from "./ReachableRangesFunc.svelte";
   import { RangeChart } from "./ReachableRangesFunc.svelte";
 
-  import { socket } from "$lib/stores.js";
+  import { socket } from "$lib/stores";
+  import type { Socket } from "socket.io-client";
 
-  let socketVal;
+  let socketVal: Socket;
 
   socket.subscribe((value) => {
-    socketVal = value;
+    socketVal = value as Socket;
   });
 
   /** The problem to solve. */
@@ -160,7 +161,8 @@ A user interface for the NAUTILUS Navigator method.
   const decimals = 3;
   let rerender = false;
 
-  const handle_functions: { [K: string]: (...args: unknown) => unknown } = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handle_functions: { [K: string]: (...args: any[]) => Promise<void> } = {
     iterate: handle_iterate,
   };
 
@@ -212,15 +214,15 @@ A user interface for the NAUTILUS Navigator method.
     }
   }
 
-  async function handle_caller(action) {
+  async function handle_caller(action: string) {
     let requestId = await save_request();
     socketVal.emit("add-action", action, requestId);
     state = State.WaitingForOtherSubmissions;
 
-    socketVal.once("execute-" + action, (requestIds) => {
+    socketVal.once("execute-" + action, (requestIds: number[]) => {
       socketVal.off("executing-" + action);
       handle_functions[action](requestIds).then(() => {
-        socketVal.emit("finish-execute-" + action);
+        socketVal.emit("finish-action", action);
         state = State.Playing;
         run_steps();
       });
@@ -351,12 +353,12 @@ A user interface for the NAUTILUS Navigator method.
         console.log("Initialized NAUTILUS method.");
         let body: initResponse | Response = await response.json();
 
-        if (body?.reachable_solution) {
+        if ((body as Response)?.reachable_solution) {
           currentStep = 0;
           objective_names = body.objective_symbols;
           objective_long_names = body.objective_long_names;
           units = body.units;
-          response_handler(body);
+          response_handler(body as Response);
           run_steps();
         } else {
           ideal = body.ideal;
@@ -439,7 +441,7 @@ A user interface for the NAUTILUS Navigator method.
     state = State.ReachedPareto;
   }
 
-  async function handle_iterate(requestIds, cached = false) {
+  async function handle_iterate(requestIds: number[], cached = false) {
     try {
       rerender = false;
       let endpoint = API_URL + "/nautnavigroup/navigate";
@@ -486,7 +488,7 @@ A user interface for the NAUTILUS Navigator method.
     }
   }
 
-  function response_handler(body) {
+  function response_handler(body: Response) {
     ideal = body.ideal;
     nadir = body.nadir;
     totalSteps = body.total_steps;

@@ -3,15 +3,16 @@
   import { onDestroy } from "svelte";
 
   import { baseURL, selectedProblem } from "$lib/api";
-  import { baseURL } from "$lib/api";
   import NautilusNavigator from "$lib/components/methods/nautilus_navigator/NAUT_NAVI.svelte";
   import NautilusNavigatorGroup from "$lib/components/methods/nautilus_navigator/NAUT_NAVI_group.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
 
-  import { socket } from "$lib/stores.js";
-  let socketVal;
+  import { socket } from "$lib/stores";
+  import type { Socket } from "socket.io-client";
+
+  let socketVal: Socket = $socket as Socket;
   socket.subscribe((value) => {
-    socketVal = value;
+    socketVal = value as Socket;
   });
 
   if ($methodHeaderText === "No method selected yet.") {

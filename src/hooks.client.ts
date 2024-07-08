@@ -1,4 +1,6 @@
 import skio from "$lib/socket.js";
+import type { Server as SocketIOServer } from "socket.io";
+import type { Socket } from "socket.io-client";
 
 if (!skio.started()) {
   skio
@@ -10,16 +12,11 @@ if (!skio.started()) {
         "force new connection": true,
       },
     })
-    .then((io) => {
-      io.on("connect", (socket) => {
+    .then((socket: Socket | SocketIOServer) => {
+      (socket as Socket).on("connect", () => {
         if (socket) {
           socket.on("message", (message) => {
             console.log(message);
-          });
-
-          socket.on("disconnect", () => {
-            console.log("client:", socket.id, "disconnected.");
-            skio.close();
           });
         }
       });

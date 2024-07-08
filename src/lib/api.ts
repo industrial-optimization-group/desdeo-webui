@@ -526,4 +526,4 @@ export function problem_has_finite_bounds(problem: Problem) {
 
 export const methodHeaderText = writable("No method selected yet");
 export const selectedProblem = writable(-1);
-export const selectedMethod: Writable<string> = writable();
+export const selectedMethod = writable("");

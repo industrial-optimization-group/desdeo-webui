@@ -56,7 +56,9 @@
     <svelte:fragment slot="panel">
       {#if tab === 0}
         <Card>
-          <svelte:fragment slot="header">Available methods</svelte:fragment>
+          <svelte:fragment slot="header"
+            >Available methods for single DM</svelte:fragment
+          >
           <select
             class="select"
             bind:value={selected_method}
@@ -69,7 +71,9 @@
         </Card>
       {:else if tab === 1}
         <Card>
-          <svelte:fragment slot="header">Available methods</svelte:fragment>
+          <svelte:fragment slot="header"
+            >Available methods for group of DMs</svelte:fragment
+          >
           <select
             class="select"
             bind:value={selected_method}
