@@ -2,9 +2,10 @@
   import { methodHeaderText, username, selectedMethod } from "$lib/api";
   import { onDestroy } from "svelte";
 
-  import { baseURL, selectedProblem } from "$lib/api";
+  import { baseURL, get_access_token, selectedProblem } from "$lib/api";
   import NautilusNavigator from "$lib/components/methods/nautilus_navigator/NAUT_NAVI.svelte";
   import NautilusNavigatorGroup from "$lib/components/methods/nautilus_navigator/NAUT_NAVI_group.svelte";
+  import GNIMBUS from "$lib/components/methods/nimbus/NIMBUS_group.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
 
   import { socket } from "$lib/stores";
@@ -46,6 +47,12 @@
   <NautilusNavigator API_URL={baseURL} />
 {:else if $selectedMethod === "nautnavi_group"}
   <NautilusNavigatorGroup API_URL={baseURL} />
+{:else if $selectedMethod === "nimbus_group"}
+  <GNIMBUS
+      problem={{"id": $selectedProblem}}
+      API_URL={baseURL}
+      AUTH_TOKEN={get_access_token()}
+  />
 {:else}
   <GeneralError />
 {/if}

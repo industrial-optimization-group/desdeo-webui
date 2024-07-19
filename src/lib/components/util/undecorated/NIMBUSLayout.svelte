@@ -1,9 +1,11 @@
 <script lang="ts">
   export let classify = true;
   export let finalChoice = false;
+
+  export let voteChoice = false;
 </script>
 
-{#if classify && !finalChoice}
+{#if classify && !finalChoice && !voteChoice}
   <div class="grid grid-cols-2 items-start gap-10">
     <div class="flex flex-col gap-10">
       <slot name="preferences" />
@@ -15,7 +17,7 @@
       <slot name="Map" />
     </div>
   </div>
-{:else if !finalChoice}
+{:else if !finalChoice && !voteChoice}
   <div class="grid grid-cols-2 items-start gap-10">
     <div class="flex flex-col gap-10">
       <slot name="preferences" />
