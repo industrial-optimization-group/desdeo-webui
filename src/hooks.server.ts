@@ -37,6 +37,10 @@ skio
       });
 
       socket.on("add-action", (action: string, requestId: number) => {
+        if (!requestId || !action) {
+          return;
+        }
+
         const [roomID] =
           (io as Server).of("/").adapter.sids?.get(socket.id) || new Set();
 
@@ -76,6 +80,15 @@ skio
             .to(roomID)
             .emit(`executing-${action}`, { message: `Conducting ${action}` });
         }
+      });
+
+      socket.on("failed-action", (action: string) => {
+        const [roomID] =
+          (io as Server).of("/").adapter.sids?.get(socket.id) || new Set();
+
+        socket.to(roomID).emit("message", {
+          message: `Server: Action ${action} failed!`,
+        });
       });
 
       socket.on("finish-action", (action: string) => {
