@@ -49,9 +49,9 @@
   <NautilusNavigatorGroup API_URL={baseURL} />
 {:else if $selectedMethod === "nimbus_group"}
   <GNIMBUS
-      problem={{"id": $selectedProblem}}
-      API_URL={baseURL}
-      AUTH_TOKEN={get_access_token()}
+    problem={{ id: $selectedProblem }}
+    API_URL={baseURL}
+    AUTH_TOKEN={get_access_token()}
   />
 {:else}
   <GeneralError />

@@ -12,7 +12,7 @@ A user interface for the NIMBUS method.
 
   import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
 
-  import type { Problem } from "$lib/api";
+  import type { Objective, Problem, Variable, Token } from "$lib/api";
   import { toastStore } from "@skeletonlabs/skeleton";
 
   import Visualizations from "$lib/components/util/undecorated/Visualizations.svelte";
@@ -38,12 +38,15 @@ A user interface for the NIMBUS method.
     socketVal = value as Socket;
   });
 
+  type SimplifiedProblem = {
+    id: number;
+  };
   /** The problem to solve. */
-  export let problem: Problem;
+  export let problem: SimplifiedProblem;
   // Link to the backend.
   export let API_URL: string;
   // The authentication token.
-  export let AUTH_TOKEN: string;
+  export let AUTH_TOKEN: Token;
   // Flag to visualize the decision space. Useful for UTOPIA maybe? Unused for now.
   //export let visualize_decision_space: boolean = false;
 
@@ -58,24 +61,24 @@ A user interface for the NIMBUS method.
   // Enum to represent which solutions the DM wants to visualize.
   enum VisualizationChoiceState {
     CurrentSolutions,
+    NewSolutions,
     SavedSolutions,
     AllSolutions,
   }
 
   type voteType = {
-    type?: string;
     current_solutions: { [id: number]: number[] };
   };
 
   // The type of the problem info object returned by the backend.
   type problemInfoType = {
-    type?: string;
     objective_long_names: string[];
     is_maximized: boolean[];
     lower_bounds: number[];
     upper_bounds: number[];
     previous_preference: number[];
     current_solutions: { [id: number]: number[] };
+    new_solutions: { [id: number]: number[] };
     saved_solutions: { [id: number]: number[] };
     all_solutions: { [id: number]: number[] };
     chosen_solutions: { [id: number]: number[] };
@@ -96,6 +99,7 @@ A user interface for the NIMBUS method.
 
   type iterateRequestResponse = {
     previous_preference: number[];
+    new_solutions: { [id: number]: number[] };
     current_solutions: { [id: number]: number[] };
     all_solutions: { [id: number]: number[] };
   };
@@ -296,6 +300,13 @@ A user interface for the NIMBUS method.
           problemInfo.current_solutions
         ).map(Number);
       } else if (
+        visualizationChoiceState === VisualizationChoiceState.NewSolutions
+      ) {
+        solutions_to_visualize = Object.values(problemInfo.new_solutions);
+        solution_ids_to_visualize = Object.keys(problemInfo.new_solutions).map(
+          Number
+        );
+      } else if (
         visualizationChoiceState === VisualizationChoiceState.SavedSolutions
       ) {
         solutions_to_visualize = Object.values(problemInfo.saved_solutions);
@@ -347,11 +358,12 @@ A user interface for the NIMBUS method.
   const decimals = 3;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handle_functions: { [K: string]: (...args: any[]) => Promise<number> } = {
-    iterate: handle_iterate,
-    vote: handle_vote,
-    choose: handle_final_choice,
-  };
+  const handle_functions: { [K: string]: (...args: any[]) => Promise<number> } =
+    {
+      iterate: handle_iterate,
+      vote: handle_vote,
+      choose: handle_final_choice,
+    };
 
   function form_request_params(request: string) {
     if (request == "iterate") {
@@ -472,6 +484,26 @@ A user interface for the NIMBUS method.
     modalStore.trigger(modal);
   }
 
+  function determineState() {
+    finalChoiceState = !!(
+      Object.keys(problemInfo.chosen_solutions).length ||
+      Object.keys(problemInfo.current_solutions).length > 1
+    );
+
+    voteChoiceState =
+      Object.keys(problemInfo.chosen_solutions).length > 1 ||
+      Object.keys(problemInfo.current_solutions).length != 1;
+
+    visualizationChoiceState =
+      Object.keys(problemInfo.current_solutions).length >= 1
+        ? VisualizationChoiceState.CurrentSolutions
+        : VisualizationChoiceState.NewSolutions;
+
+    if (Object.keys(problemInfo.current_solutions).length == 1) {
+      state = State.ClassifySelected;
+    }
+  }
+
   //
   // The handlers
   //
@@ -499,19 +531,11 @@ A user interface for the NIMBUS method.
         const data: problemInfoType = await response.json();
         problemInfo = data;
 
-        if (Object.keys(problemInfo.chosen_solutions).length) {
-          finalChoiceState = true;
-        }
-
         preference = problemInfo.previous_preference;
-        reference_solution = Object.values(problemInfo.current_solutions)[0];
         selected_solutions = [0];
         state = State.ClassifySelected;
 
-        if (data.type) {
-          visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
-          voteChoiceState = true;
-        }
+        determineState();
       } else {
         throw new Error("Failed to initialize GNIMBUS method.");
       }
@@ -553,7 +577,8 @@ A user interface for the NIMBUS method.
           [0.8, 4, 12],
           [0.9, 5, 11],
         ],
-          chosen_solutions: []
+        chosen_solutions: [],
+        new_solutions: [],
       };
 
       preference = problemInfo.previous_preference;
@@ -600,14 +625,7 @@ A user interface for the NIMBUS method.
         visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
         selected_solutions = [0];
 
-        if (!data.type) {
-          state = State.ClassifySelected;
-          reference_solution = Object.values(problemInfo.current_solutions)[0];
-          voteChoiceState = false;
-        } else {
-          voteChoiceState = true;
-        }
-
+        determineState();
         return 1;
       } else {
         throw new Error("Failed to vote GNIMBUS method.");
@@ -659,19 +677,12 @@ A user interface for the NIMBUS method.
       });
 
       if (response.ok) {
-        const data: iterateRequestResponse | voteType = await response.json();
+        const data: iterateRequestResponse = await response.json();
         problemInfo = { ...problemInfo, ...data };
-        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
+        visualizationChoiceState = VisualizationChoiceState.NewSolutions;
         selected_solutions = [0];
-
-        if (!(data as voteType).type) {
-          preference = problemInfo.previous_preference;
-          state = State.ClassifySelected;
-          reference_solution = Object.values(problemInfo.current_solutions)[0];
-        } else {
-          console.log("reference_solution", reference_solution);
-          voteChoiceState = true;
-        }
+        preference = problemInfo.previous_preference;
+        determineState();
 
         return 1;
       } else {
@@ -816,16 +827,10 @@ A user interface for the NIMBUS method.
         }),
       });
       if (response.ok) {
-        const data: chooseRequestResponse | voteType = await response.json();
+        const data: chooseRequestResponse = await response.json();
         problemInfo = { ...problemInfo, ...data };
-
-        reference_solution = Object.values(problemInfo.current_solutions)[0];
         selected_solutions = [0];
-        finalChoiceState = true;
-
-        if ((data as voteType).type) {
-          voteChoiceState = true;
-        }
+        determineState();
 
         return 1;
       } else {
@@ -1034,13 +1039,15 @@ A user interface for the NIMBUS method.
             {/if}
             {#if state === State.ClassifySelected}
               <div class="flex gap-4">
-                <button
-                  class="btn variant-filled inline"
-                  on:click={() => {
-                    handle_caller("iterate");
-                  }}
-                  disabled={!is_classification_valid}>Iterate</button
-                >
+                {#if visualizationChoiceState === VisualizationChoiceState.CurrentSolutions}
+                  <button
+                    class="btn variant-filled inline"
+                    on:click={() => {
+                      handle_caller("iterate");
+                    }}
+                    disabled={!is_classification_valid}>Iterate</button
+                  >
+                {/if}
                 <button
                   class="btn variant-filled inline"
                   on:click={press_final_button}
@@ -1094,6 +1101,12 @@ A user interface for the NIMBUS method.
               name="justify"
               value={VisualizationChoiceState.CurrentSolutions}
               >Current solutions</RadioItem
+            >
+            <RadioItem
+              bind:group={visualizationChoiceState}
+              name="justify"
+              value={VisualizationChoiceState.NewSolutions}
+              >New solutions</RadioItem
             >
             <RadioItem
               bind:group={visualizationChoiceState}
