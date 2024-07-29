@@ -1,7 +1,6 @@
 <script lang="ts">
   import { inputIterations } from "./stores";
   import Button from "./Button.svelte";
-  import InfoBox from "./InfoBox.svelte";
 
   let localIterationType: string;
   let localIterations: number;
@@ -39,9 +38,6 @@
       text={"Set"}
     />
   </div>
-  <InfoBox
-    text={"Set the number of steps to be taken before reaching a Pareto optimal solution"}
-  />
 </div>
 
 <style>

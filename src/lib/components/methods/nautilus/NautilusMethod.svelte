@@ -22,6 +22,7 @@
   import type { Problem } from "$lib/api";
   import { onDestroy, onMount } from "svelte";
   import { inputWeights } from "./stores";
+  import InfoBox from "./InfoBox.svelte";
 
   let iterationDetails: Iteration[] = [];
   let problem: Problem = $selectedProblem;
@@ -38,7 +39,7 @@
       minimize: objective.minimize,
       value: 0,
       color: colorPalette[index],
-      id: objective.name.replace(/\W/g, "_"),
+      id: "Obj " + (index + 1),
       unit: "",
     })
   );
@@ -56,7 +57,7 @@
 
   let preferenceType: PreferenceType = PreferenceType.RANK;
   let appState: AppState = AppState.IDLE;
-  let buttonDisabled: boolean | true;
+  let buttonDisabled: boolean;
 
   let stepBack: boolean | false;
 
@@ -88,11 +89,13 @@
     });
     stepsTaken.set(0);
     iterationDetails = [];
+    buttonDisabled = true;
   }
 
   async function handle_initialize() {
     console.log("Initializing NAUTILUS method.");
     methodNameStore.set("NAUTILUS");
+    buttonDisabled = true;
     try {
       let endpoint = API_URL + "/method/create";
 
@@ -134,9 +137,18 @@
         weightPreferences = Array($selectedProblem.objectives.length).fill(0);
         rankPreferences = Array($selectedProblem.objectives.length).fill(0);
         inputWeights.set(Array($selectedProblem.objectives.length).fill(0));
-        //inputWeights = Array($selectedProblem.objectives.length).fill(0);
         objectiveRanges.ideal = data.response.ideal;
         objectiveRanges.nadir = data.response.nadir;
+
+        //TODO: Here is the manual conversion #1 to be removed
+        objectiveRanges.ideal = data.response.ideal.map(
+          (value: number, index: number, array: number[]) =>
+            index !== array.length - 1 ? value * -1 : value
+        );
+        objectiveRanges.nadir = data.response.nadir.map(
+          (value: number, index: number, array: number[]) =>
+            index !== array.length - 1 ? value * -1 : value
+        );
       } else {
         throw new Error("Failed to start NAUTILUS method.");
       }
@@ -156,6 +168,11 @@
       appState = AppState.WORKING;
       let endpoint = API_URL + "/method/control";
       console.log("stepBack", stepBack);
+      console.log(
+        preferenceType === PreferenceType.RANK
+          ? rankPreferences
+          : weightPreferences
+      );
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -185,11 +202,24 @@
         stepsTaken.update((steps) => steps + 1);
         distance = data.response.distance;
 
+        console.log("iteration point", data.response.current_iteration_point);
+        console.log("upper", data.response.upper_bounds);
+
+        //TODO: Here is the manual conversion #2 to be removed
         let iteration: Iteration = {
-          currentIterationPoint: data.response.current_iteration_point,
+          currentIterationPoint: data.response.current_iteration_point.map(
+            (value: number, index: number, array: number[]) =>
+              index !== array.length - 1 ? value * -1 : value
+          ),
           distance: data.response.distance,
-          lowerBounds: data.response.lower_bounds,
-          upperBounds: data.response.upper_bounds,
+          lowerBounds: data.response.lower_bounds.map(
+            (value: number, index: number, array: number[]) =>
+              index !== array.length - 1 ? value * -1 : value
+          ),
+          upperBounds: data.response.upper_bounds.map(
+            (value: number, index: number, array: number[]) =>
+              index !== array.length - 1 ? value * -1 : value
+          ),
         };
 
         iterationDetails = [...iterationDetails, iteration];
@@ -209,20 +239,21 @@
   }
 
   function handleRankUpdate(event: CustomEvent) {
-    validatePreferences();
     rankPreferences = event.detail.rankPreferences;
+    validatePreferences();
   }
 
   function handleWeightUpdate(event: CustomEvent) {
-    validatePreferences();
     weightPreferences = event.detail.weightPreferences;
-    console.log(weightPreferences);
+    validatePreferences();
   }
 
   function validatePreferences() {
+    console.log(buttonDisabled);
+
     if (
       preferenceType === PreferenceType.RANK &&
-      rankPreferences.some((pref) => pref > 0)
+      rankPreferences.every((pref) => pref > 0)
     ) {
       buttonDisabled = false;
     } else if (
@@ -235,6 +266,7 @@
 
   function handlePreferenceTypeChange(event: CustomEvent) {
     preferenceType = event.detail.selectedPreference;
+    validatePreferences();
   }
 
   function handleStepBack() {
@@ -260,12 +292,22 @@
   }
 </script>
 
-<div class={"flex h-auto"}>
+<div class={"flex "}>
   <div class={"w-96 flex-none bg-[#E8EAF0] p-2"}>
     <div>
       <div class={"flex gap-5"}>
         <h2 class="text-lg font-semibold">Preference information</h2>
       </div>
+      {#if preferenceType === PreferenceType.RANK}
+        <InfoBox
+          text={"Provide a ranking by dragging the icons below to indicate the relative importance of improving objective functions at the current step. Each function must be ranked and several functions can have the same rank. Give the highest rank to the most important objective function. Not all ranks need to be used. The ranks can be modified at each step."}
+        />
+      {:else if preferenceType === PreferenceType.WEIGHT}
+        <InfoBox
+          text={"Provide points by dragging the sliders below or by using the input boxes to indicate the relative importance of improving objective functions at the current step. The more points you allocate, the more improvement on the corresponding objective is desired at the current step. The points will be internally scaled to sum up to 100 and the colour bar below reflects this."}
+        />
+      {/if}
+
       <PreferenceSelector on:preferenceChange={handlePreferenceTypeChange} />
       {#if preferenceType === PreferenceType.RANK}
         <RankDndZone
@@ -290,8 +332,11 @@
           ><InfoIcon class={"h-6 w-6  text-blue-500"} /></Tooltip
         >
       </div>
+      <InfoBox
+        text={"Set the number of steps to be taken before reaching a Pareto optimal solution"}
+      />
       <IterationsControl />
-      <div class="sticky bottom-0 left-0 mt-2 flex gap-2 bg-[#E8EAF0] p-2">
+      <div class="bottom sticky left-0 mt-2 flex gap-2 bg-[#E8EAF0] p-2">
         <Button
           on:click={handleStepBack}
           mode="blue"

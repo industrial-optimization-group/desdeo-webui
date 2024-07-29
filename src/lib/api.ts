@@ -34,7 +34,7 @@ export const backend: Backend = {
 //
 // TODO: Move this to a configuration file.
 //
-export const baseURL = "http://localhost:5000";
+export const baseURL = "http://127.0.0.1:5000";
 
 /** A missing token is represented by `undefined`. */
 type Token = string | undefined;
@@ -483,7 +483,9 @@ export function problem_has_finite_bounds(problem: Problem) {
 }
 
 export const methodHeaderText = writable({
-  boldPart: "No method selected yet.",
+  boldPart: "",
   italicPart: "",
+  moreInfo: "",
+  moreInfoText: "",
 });
 export const selectedProblem = writable({} as Problem);

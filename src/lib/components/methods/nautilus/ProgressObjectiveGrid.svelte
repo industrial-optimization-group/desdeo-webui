@@ -20,6 +20,7 @@
   } else {
     visibleStartIndex.set(0);
   }
+
   objectives[0].unit = "mg/L";
   objectives[1].unit = "mg/L";
   objectives[2].unit = "%";
@@ -27,7 +28,7 @@
   objectives[4].unit = "%";
 
   let visibleStartIndex = writable(0);
-  // Function to scroll forward
+
   let scrollIndex = 0;
   const itemsToShow = 5;
 
@@ -98,19 +99,27 @@
         </div>
 
         <div class="mb-2 flex items-center justify-between">
-          <span>Best: {objectiveRanges.ideal[j]}</span>
-          <span>Worst: {objectiveRanges.nadir[j]}</span>
+          <span>
+            {j === objectives.length - 1
+              ? "Best: " + objectiveRanges.ideal[j]
+              : "Worst: " + objectiveRanges.nadir[j]}</span
+          >
+          <span
+            >{j === objectives.length - 1
+              ? "Worst: " + objectiveRanges.nadir[j]
+              : "Best: " + objectiveRanges.ideal[j]}</span
+          >
         </div>
         <div class="mb-2 flex items-center justify-between">
           <div class="flex items-end space-x-2">
             <span>Step</span>
             <div>
-              <div>Best</div>
+              <div>{j === objectives.length - 1 ? "Best" : "Worst"}</div>
               <div>reachible</div>
             </div>
           </div>
           <div>
-            <div>Worst</div>
+            <div>{j === objectives.length - 1 ? "Worst" : "Best"}</div>
             <div>reachible</div>
           </div>
         </div>
@@ -121,7 +130,9 @@
             </div>
             <div class="col-span-1 pl-1">
               <div class="py-2">
-                {data.lowerBounds[j].toFixed(2)}
+                {j === objectives.length - 1
+                  ? data.lowerBounds[j].toFixed(2)
+                  : data.upperBounds[j].toFixed(2)}
               </div>
             </div>
             <div
@@ -135,7 +146,9 @@
             />
 
             <div class="col-span-1 py-2 pr-1.5">
-              {data.upperBounds[j].toFixed(2)}
+              {j === objectives.length - 1
+                ? data.upperBounds[j].toFixed(2)
+                : data.lowerBounds[j].toFixed(2)}
             </div>
           {/each}
           <div class="col-span-12 m-0.5 flex justify-between">

@@ -3,7 +3,6 @@
   import { onMount, createEventDispatcher } from "svelte";
   import Button from "./Button.svelte";
   import type { NautilusObjectiveData, NautilusRanks } from "./types";
-  import InfoBox from "./InfoBox.svelte";
 
   export let objectives: NautilusObjectiveData[];
   export let ranks: NautilusRanks;
@@ -88,9 +87,6 @@
 </script>
 
 <div class="mb-4">
-  <InfoBox
-    text={"Provide a ranking by dragging the icons below to indicate the relative importance of improving objective functions at the current step. Each function must be ranked and several functions can have the same rank. Give the highest rank to the most important objective function. Not all ranks need to be used. The ranks can be modified at each step."}
-  />
   {#each inputRanks as rank, rankIndex (rank)}
     <div animate:flip>
       <ul
@@ -121,7 +117,7 @@
               on:dragstart={(event) => dragStart(event, rankIndex, itemIndex)}
               style="background-color: {item.color};"
             >
-              Obj {itemIndex + 1}
+              {item.id}
             </li>
           </div>
         {/each}

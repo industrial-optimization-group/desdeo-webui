@@ -25,13 +25,15 @@
   };
 </script>
 
-<Card>
-  <svelte:fragment slot="header">Results</svelte:fragment>
-  <div class="flex flex-col gap-2">
-    <div><span class="underline">Problem name:</span> {problem.name}</div>
-    <div class="underline">Objectives:</div>
-    <Table source={objectives} />
-    <div class="underline">Variables:</div>
-    <Table source={variables} />
-  </div>
-</Card>
+<div class="w-[700px]">
+  <Card>
+    <svelte:fragment slot="header">Results</svelte:fragment>
+    <div class="flex flex-col gap-2">
+      <div><span class="underline">Problem name:</span> {problem.name}</div>
+      <div class="underline">Objectives:</div>
+      <Table source={objectives} />
+      <div class="underline">Variables:</div>
+      <Table source={variables} />
+    </div>
+  </Card>
+</div>
