@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { login, login_as_guest } from "$lib/api.js";
   import { goto } from "$app/navigation";
+  import { loginOAuth2, login_as_guest } from "$lib/api.js";
   import { toastStore } from "@skeletonlabs/skeleton";
 
   export let username = "";
   export let password = "";
 
   function handleLogin() {
-    login(username, password)
+    loginOAuth2(username, password)
       .then(() => {
         goto("/");
       })

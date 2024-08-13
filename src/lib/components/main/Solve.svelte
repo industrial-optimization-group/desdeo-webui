@@ -5,20 +5,45 @@
   // Context API?
   //
 
-  import { login_status, LoginStatus } from "$lib/api";
-  import type { Problem } from "$lib/api";
+  import {
+    login_status,
+    LoginStatus,
+    methodHeaderText,
+    selectedProblem,
+    type Problem,
+  } from "$lib/api";
 
   export let problems: Problem[];
 
-  import { TabGroup, Tab } from "@skeletonlabs/skeleton";
-  import SelectProblem from "./SelectProblem.svelte";
-  import SelectMethod from "./SelectMethod.svelte";
-  import SolveProblem from "./SolveProblem.svelte";
+  import { goto } from "$app/navigation";
+  import { Tab, TabGroup } from "@skeletonlabs/skeleton";
   import GeneralError from "../util/undecorated/GeneralError.svelte";
+  import SelectMethod from "./SelectMethod.svelte";
+  import SelectProblem from "./SelectProblem.svelte";
 
   let tab = 0;
   let selected_problem: Problem | undefined = undefined;
   let selected_method = "";
+
+  function goto_solve() {
+    console.log("selected_problem", selected_problem);
+
+    if (selected_method === "nimbus") {
+      methodHeaderText.set("NIMBUS");
+    } else if (selected_method === "nautnavi") {
+      methodHeaderText.set("NAUTILUS Navigator");
+    } else {
+      throw new Error("No method selected yet.");
+    }
+    console.log("selected_method", selected_method);
+
+    if (selected_problem?.id !== undefined) {
+      selectedProblem.set(selected_problem.id);
+    } else {
+      throw new Error("No problem selected yet.");
+    }
+    goto("/solve");
+  }
 </script>
 
 <TabGroup>
@@ -29,7 +54,7 @@
     >
   {/if}
   {#if selected_problem && selected_method}
-    <Tab bind:group={tab} name="solve_problem" value={2}
+    <Tab bind:group={tab} name="solve_problem" value={2} on:click={goto_solve}
       >3. Solve the problem</Tab
     >
   {/if}
@@ -49,8 +74,6 @@
         Please select a solution method. Then continue to solving the problem.
       </div>
       <SelectMethod problem={selected_problem} bind:selected_method />
-    {:else if tab === 2 && selected_problem && selected_method}
-      <SolveProblem problem={selected_problem} method={selected_method} />
     {:else}
       <GeneralError />
     {/if}

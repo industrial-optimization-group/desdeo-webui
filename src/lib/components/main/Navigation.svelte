@@ -1,9 +1,10 @@
 <script>
-  import { setContext } from "svelte";
   import { page } from "$app/stores";
-  import NavigationTile from "$lib/components/main/NavigationTile.svelte";
   import logo from "$lib/assets/logo.png";
+  import NavigationTile from "$lib/components/main/NavigationTile.svelte";
+  import { setContext } from "svelte";
   import PlayIcon from "~icons/heroicons/play";
+  import PuzzlePiece from "~icons/heroicons/puzzle-piece";
 
   //
   // Navigation tiles get the `active` and `hover` styles from the context,
@@ -18,13 +19,25 @@
 -->
 <div class="h-full bg-[#141313] text-[#f0efef]">
   <div class="flex flex-col items-center">
-    <NavigationTile href="/" selected={$page.url.pathname === "/"}>
+    <NavigationTile
+      href="/"
+      selected={$page.url.pathname === "/"}
+      text={["DESDEO"]}
+    >
       <img src={logo} alt="" />
     </NavigationTile>
     <NavigationTile
       href="/saved_problems"
       selected={$page.url.pathname === "/saved_problems"}
-      text={["Continue"]}
+      text={["Problem"]}
+    >
+      <PuzzlePiece />
+    </NavigationTile>
+
+    <NavigationTile
+      href="/solve"
+      selected={$page.url.pathname === "/solve"}
+      text={["Solve"]}
     >
       <PlayIcon />
     </NavigationTile>

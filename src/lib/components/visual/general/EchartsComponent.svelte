@@ -3,8 +3,8 @@
   A Svelte component that renders an ECharts chart.
  -->
 <script lang="ts">
-  import * as echarts from "echarts";
   import type { EChartOption, EChartsType } from "echarts";
+  import * as echarts from "echarts";
   import { onMount } from "svelte";
   import { highlightedStyle } from "../constants";
 
