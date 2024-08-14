@@ -190,7 +190,7 @@ export async function loginOAuth2(
 ): Promise<{ message: string }> {
   // Note that the backend does not send a refresh token. The access token currently expires after 2 hours.
   try {
-    const response = await fetch("http://localhost:8000/token", {
+    const response = await fetch("https://api-desdeo-test.2.rahtiapp.fi/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
