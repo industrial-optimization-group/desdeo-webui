@@ -10,6 +10,7 @@
     LoginStatus,
     methodHeaderText,
     selectedProblem,
+    selectedMethod,
     type Problem,
   } from "$lib/api";
 
@@ -26,12 +27,17 @@
   let selected_method = "";
 
   function goto_solve() {
+    selectedMethod.set(selected_method);
     console.log("selected_problem", selected_problem);
 
     if (selected_method === "nimbus") {
       methodHeaderText.set("NIMBUS");
     } else if (selected_method === "nautnavi") {
       methodHeaderText.set("NAUTILUS Navigator");
+    } else if (selected_method === "nimbus_group") {
+      methodHeaderText.set("NIMBUS Group");
+    } else if (selected_method === "nautnavi_group") {
+      methodHeaderText.set("NAUTILUS Navigator Group");
     } else {
       throw new Error("No method selected yet.");
     }
