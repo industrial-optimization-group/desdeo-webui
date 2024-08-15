@@ -8,7 +8,7 @@
   import { colorPalette } from "$lib/components/visual/constants";
 
   /** The names of the objectives. */
-  export let objective_names: string[];
+  export let objective_long_names: string[];
 
   /**
    * Boolean to check if the objective is maximized or minimized. Must be the
@@ -46,11 +46,11 @@
   export let decimalPrecision = 3;
 
   // Extract the right number of colors from the color palette.
-  let colors = colorPalette.slice(0, objective_names.length);
+  let colors = colorPalette.slice(0, objective_long_names.length);
 </script>
 
 <div class="flex flex-col gap-4">
-  {#each objective_names as objective_name, j}
+  {#each objective_long_names as objective_name, j}
     <NimbusBar
       barName={objective_name + " (" + (is_maximized[j] ? "max" : "min") + ")"}
       lowerBound={lower_bounds[j]}

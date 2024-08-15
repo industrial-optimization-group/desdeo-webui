@@ -55,7 +55,7 @@ A user interface for the NIMBUS method.
 
   // The type of the problem info object returned by the backend.
   type problemInfoType = {
-    objective_names: string[];
+    objective_long_names: string[];
     is_maximized: boolean[];
     lower_bounds: number[];
     upper_bounds: number[];
@@ -324,8 +324,8 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem.id, // TODO: This should be the id in the database.
-          initialSolution: null, // Backend technically supports this, but we need to add support for it in the UI.
+          problem_id: problem.id, // TODO: This should be the id in the database.
+          method_id: 1, // Backend technically supports this, but we need to add support for it in the UI.
         }),
       });
 
@@ -358,7 +358,7 @@ A user interface for the NIMBUS method.
       visualizations_maximized = false;
 
       problemInfo = {
-        objective_names: ["Objective 1", "Objective 2", "Objective 3"],
+        objective_long_names: ["Objective 1", "Objective 2", "Objective 3"],
         is_maximized: [false, false, true],
         lower_bounds: [-0, -5, 10],
         upper_bounds: [1, 5, 20],
@@ -424,10 +424,11 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          method_id: 1,
           preference: preference, // Technically sent as a reference point, the classification is generated in the backend.
-          referenceSolution: reference_solution, // The reference solution is needed to generate the classification.
-          numSolutions: numSolutions,
+          reference_solution: reference_solution, // The reference solution is needed to generate the classification.
+          num_solutions: numSolutions,
         }),
       });
 
@@ -579,9 +580,10 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          method_id: 1,
           previousPreference: problemInfo.previous_preference,
-          objectiveValues: selected_solutions.map(
+          solutions: selected_solutions.map(
             (index) => solutions_to_visualize[index]
           ),
         }),
@@ -634,8 +636,9 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
-          solution: reference_solution, // The reference solution is needed to generate the classification.
+          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          method_id: 1,
+          solution: reference_solution,
         }),
       });
       if (response.ok) {
@@ -709,7 +712,7 @@ A user interface for the NIMBUS method.
                 }}
               />
               <ClassificationPreference
-                objective_names={problemInfo.objective_names}
+                objective_long_names={problemInfo.objective_long_names}
                 is_maximized={problemInfo.is_maximized}
                 lower_bounds={problemInfo.lower_bounds}
                 upper_bounds={problemInfo.upper_bounds}
@@ -737,7 +740,7 @@ A user interface for the NIMBUS method.
               />
               {#if solutions_to_visualize !== undefined}
                 <ParallelCoordinatePlotBase
-                  names={problemInfo.objective_names}
+                  names={problemInfo.objective_long_names}
                   values={solutions_to_visualize}
                   ranges={transform_bounds(
                     problemInfo.lower_bounds,
@@ -759,7 +762,7 @@ A user interface for the NIMBUS method.
               </div>
               {#if solutions_to_visualize !== undefined}
                 <ParallelCoordinatePlotBase
-                  names={problemInfo.objective_names}
+                  names={problemInfo.objective_long_names}
                   values={solutions_to_visualize}
                   ranges={transform_bounds(
                     problemInfo.lower_bounds,
@@ -868,7 +871,7 @@ A user interface for the NIMBUS method.
 
             {#if problemInfo !== undefined && solutions_to_visualize !== undefined}
               <Visualizations
-                names={problemInfo.objective_names}
+                names={problemInfo.objective_long_names}
                 values={solutions_to_visualize}
                 lower_bounds={problemInfo.lower_bounds}
                 upper_bounds={problemInfo.upper_bounds}
@@ -890,7 +893,7 @@ A user interface for the NIMBUS method.
 
             {#if problemInfo !== undefined && reference_solution !== undefined}
               <ParallelCoordinatePlotBase
-                names={problemInfo.objective_names}
+                names={problemInfo.objective_long_names}
                 values={[reference_solution]}
                 ranges={transform_bounds(
                   problemInfo.lower_bounds,
@@ -918,7 +921,7 @@ A user interface for the NIMBUS method.
               {#if problemInfo !== undefined && solutions_to_visualize !== undefined}
                 {#if !finalChoiceState}
                   <Table
-                    head={problemInfo.objective_names}
+                    head={problemInfo.objective_long_names}
                     body={solutions_to_visualize.map((solution) => {
                       return solution.map((value) => value.toFixed(decimals));
                     })}
@@ -926,7 +929,7 @@ A user interface for the NIMBUS method.
                   />
                 {:else if reference_solution !== undefined}
                   <Table
-                    head={problemInfo.objective_names}
+                    head={problemInfo.objective_long_names}
                     body={[reference_solution].map((solution) => {
                       return solution.map((value) => value.toFixed(decimals));
                     })}
