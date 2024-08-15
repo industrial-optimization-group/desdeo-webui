@@ -41,7 +41,7 @@ type OAuth2Response = {
 export const baseURL = "http://localhost:8000";
 
 /** A missing token is represented by `undefined`. */
-type Token = string | undefined;
+export type Token = string | undefined;
 
 //
 // The state is stored in Svelte stores because these are readily
