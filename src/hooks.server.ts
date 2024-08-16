@@ -56,14 +56,12 @@ skio
 
       socket.on("add-action", (action: string, requestId: number) => {
         const executeAction = (requestIds: number[]) => {
-          console.log("executeAction", requestIds);
           socket.emit(`execute-${action}`, requestIds);
           socket
             .to(roomID)
             .emit(`executing-${action}`, { message: `Conducting ${action}` });
         };
 
-        console.log("add-action", action, requestId);
         if (requestId < 0 || !action) {
           return;
         }
@@ -95,8 +93,6 @@ skio
 
           return;
         }
-
-        console.log("out of initialize");
 
         actions?.get(roomID)?.get(action)?.set(socket.id, requestId);
 
@@ -130,6 +126,15 @@ skio
             setTimeout(executeAction, 10000, requestIds)
           );
         }
+      });
+
+      socket.on("failed-action", (action: string) => {
+        const [roomID] =
+          (io as Server).of("/").adapter.sids?.get(socket.id) || new Set();
+
+        socket.to(roomID).emit("message", {
+          message: `Server: Action ${action} failed!`,
+        });
       });
 
       socket.on("finish-action", (action: string) => {
