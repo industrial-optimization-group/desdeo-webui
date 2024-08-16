@@ -39,7 +39,7 @@ type OAuth2Response = {
 // TODO: Move this to a configuration file.
 //
 
-export const baseURL = "https://api-desdeo-test.2.rahtiapp.fi/";
+export const baseURL = process.env.DESDEO_API_SERVER || "http://localhost:8000";
 
 /** A missing token is represented by `undefined`. */
 export type Token = string | undefined;
@@ -216,20 +216,17 @@ export async function loginOAuth2(
 ): Promise<{ message: string }> {
   // Note that the backend does not send a refresh token. The access token currently expires after 2 hours.
   try {
-    const response = await fetch(
-      "https://api-desdeo-test.2.rahtiapp.fi/token",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          username: username,
-          password: password,
-          grant_type: "password",
-        }),
-      }
-    );
+    const response = await fetch(baseURL + "/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        username: username,
+        password: password,
+        grant_type: "password",
+      }),
+    });
     if (response.ok) {
       const data: OAuth2Response = await response.json();
       set_access_token(data.access_token);
