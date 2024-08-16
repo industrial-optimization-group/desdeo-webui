@@ -17,7 +17,7 @@
       <slot name="Map" />
     </div>
   </div>
-{:else if !finalChoice && !voteChoice}
+{:else if !finalChoice}
   <div class="grid grid-cols-2 items-start gap-10">
     <div class="flex flex-col gap-10">
       <slot name="preferences" />

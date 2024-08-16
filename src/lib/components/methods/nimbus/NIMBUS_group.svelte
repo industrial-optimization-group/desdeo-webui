@@ -106,6 +106,11 @@ A user interface for the NIMBUS method.
     all_solutions: { [id: number]: number[] };
   };
 
+  type inttermediateRequestResponse = {
+    current_solutions: { [id: number]: number[] };
+    all_solutions: { [id: number]: number[] };
+  };
+
   let API_ROUTER = "gnimbus";
 
   // The current state of the method.
@@ -372,7 +377,7 @@ A user interface for the NIMBUS method.
       initialize: handle_initialize,
     };
 
-  function form_request_params(request: string, args: object = {}) {
+  function form_request_params(request: string, args: object) {
     if (request == "iterate") {
       if (!is_classification_valid) {
         const err = Error("`handle_iterate` called in wrong state.");
@@ -966,13 +971,12 @@ A user interface for the NIMBUS method.
       });
 
       if (response.ok) {
-        const data: problemInfoType = await response.json();
-        problemInfo = data;
-        preference = problemInfo.previous_preference;
-        state = State.ClassifySelected; // TODO: Should this be IntermediateSelected? Or should we always return to ClassifySelected?
-        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
-        reference_solution = Object.values(problemInfo.current_solutions)[0];
+        const data: inttermediateRequestResponse = await response.json();
+        problemInfo = { ...problemInfo, ...data };
         selected_solutions = [0];
+
+        determineState();
+        return 1;
       } else {
         // Iteration failed somehow.
         throw new Error("Failed to generate intermediate solutions.");
@@ -986,9 +990,9 @@ A user interface for the NIMBUS method.
         timeout: 5000,
       });
       console.error(err);
-
-      //
     }
+
+    return 0;
   }
 </script>
 
