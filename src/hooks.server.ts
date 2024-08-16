@@ -3,7 +3,7 @@ import type { Server, Socket } from "socket.io";
 import type { Socket as SocketClient } from "socket.io-client";
 
 skio
-  .setup("http://localhost:3001", {
+  .setup(3001, {
     cors: {
       origin: "http://localhost:5173",
       credentials: true,
