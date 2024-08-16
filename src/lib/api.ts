@@ -38,7 +38,8 @@ type OAuth2Response = {
 //
 // TODO: Move this to a configuration file.
 //
-export const baseURL = "http://localhost:8000";
+
+export const baseURL = "https://api-desdeo-test.2.rahtiapp.fi/";
 
 /** A missing token is represented by `undefined`. */
 export type Token = string | undefined;
@@ -186,21 +187,21 @@ export function login(
 /** Attempts to log in with the given invitation code. */
 
 export async function loginWithInvite(
-    code: string
+  code: string
 ): Promise<{ message: string }> {
   try {
     return await without_token()
-        .post("/login-with-invite", {
-          code,
-        })
-        .then((response) => {
-          set_access_token(response.data.access_token);
-          set_refresh_token(response.data.refresh_token);
-          set_username(response.data.username);
-          return {
-            message: <string>response.data.message,
-          };
-        });
+      .post("/login-with-invite", {
+        code,
+      })
+      .then((response) => {
+        set_access_token(response.data.access_token);
+        set_refresh_token(response.data.refresh_token);
+        set_username(response.data.username);
+        return {
+          message: <string>response.data.message,
+        };
+      });
   } catch (e) {
     console.log(e);
     return {
@@ -215,17 +216,20 @@ export async function loginOAuth2(
 ): Promise<{ message: string }> {
   // Note that the backend does not send a refresh token. The access token currently expires after 2 hours.
   try {
-    const response = await fetch("http://localhost:8000/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        username: username,
-        password: password,
-        grant_type: "password",
-      }),
-    });
+    const response = await fetch(
+      "https://api-desdeo-test.2.rahtiapp.fi/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username: username,
+          password: password,
+          grant_type: "password",
+        }),
+      }
+    );
     if (response.ok) {
       const data: OAuth2Response = await response.json();
       set_access_token(data.access_token);
