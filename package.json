@@ -55,7 +55,9 @@
     "unplugin-icons": "^0.16.5",
     "vite": "^4.3.0",
     "vitest": "^0.34.1",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.28.1",
