@@ -1,8 +1,11 @@
 import preprocess from "svelte-preprocess";
+// import adapter from "@sveltejs/adapter-static";
+import adapter_node from "@sveltejs/adapter-node";
 import { vitePreprocess } from "@sveltejs/kit/vite";
 
 /** @type {import("@sveltejs/kit").Config} */
 const config = {
+  // See https://kit.svelte.dev/docs/integrations#preprocessors
   preprocess: [
     vitePreprocess(),
     preprocess({
@@ -10,20 +13,9 @@ const config = {
     }),
   ],
   kit: {
-    // We'll dynamically set the adapter below
+    // See https://kit.svelte.dev/docs/adapters
+    adapter: adapter_node(),
   },
 };
-
-async function setAdapter() {
-  if (process.env.NPM_RUN == "start:production") {
-    const { default: adapterNode } = await import("@sveltejs/adapter-node");
-    config.kit.adapter = adapterNode();
-  } else {
-    const { default: adapterStatic } = await import("@sveltejs/adapter-static");
-    config.kit.adapter = adapterStatic();
-  }
-}
-
-await setAdapter();
 
 export default config;
