@@ -44,6 +44,7 @@ let apiURL;
 if (typeof window !== 'undefined') {
   // Client-side
   apiURL = import.meta.env.PUBLIC_DESDEO_API_SERVER || "http://localhost:8000";
+  console.log(import.meta.env)
 } else {
   // Server-side
   apiURL = process.env.PUBLIC_DESDEO_API_SERVER || "http://localhost:8000";
