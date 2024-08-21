@@ -14,7 +14,7 @@ import { z } from "zod";
 //
 import { derived, get, readonly, writable } from "svelte/store";
 
-import { DESDEO_API_SERVER } from '$env/static/private';
+import { PUBLIC_DESDEO_API_SERVER } from '$env/static/public';
 
 /** An interface for accessing a backend server. */
 export interface Backend {
