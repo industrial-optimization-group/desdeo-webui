@@ -16,7 +16,3 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{js,ts}"],
   },
 });
-
-export default {
-  envPrefix: ['VITE_', 'PUBLIC_'] // This ensures both VITE_ and PUBLIC_ prefixed variables are exposed
-};
