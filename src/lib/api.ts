@@ -39,7 +39,17 @@ type OAuth2Response = {
 // TODO: Move this to a configuration file.
 //
 
-export const baseURL = process.env.PUBLIC_DESDEO_API_SERVER || import.meta.env.PUBLIC_DESDEO_API_SERVER || "http://localhost:8000";
+let apiURL;
+
+if (typeof window !== 'undefined') {
+  // Client-side
+  apiURL = import.meta.env.PUBLIC_DESDEO_API_SERVER || "http://localhost:8000";
+} else {
+  // Server-side
+  apiURL = process.env.PUBLIC_DESDEO_API_SERVER || "http://localhost:8000";
+}
+
+export const baseURL = apiURL;
 console.log('API Server:', baseURL); 
 
 /** A missing token is represented by `undefined`. */
