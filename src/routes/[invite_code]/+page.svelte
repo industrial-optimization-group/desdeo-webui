@@ -10,6 +10,11 @@
   });
 
   async function login() {
+    if (data.invite_code === "fake-invite_code") {
+      goto("/");
+
+      return;
+    }
     loginWithInvite(data.invite_code)
       .then(() => {
         goto("/saved_problems");

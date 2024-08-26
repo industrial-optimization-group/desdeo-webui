@@ -3,14 +3,16 @@ import type { Server, Socket } from "socket.io";
 import type { Socket as SocketClient } from "socket.io-client";
 
 skio
-  .setup("http://localhost:3001", {
+  .setup(3001, {
     cors: {
-      origin: "http://localhost:5173",
+      //origin: "http://localhost:5173",
+      origin: "http://0.0.0.0:8080",
       credentials: true,
     },
   })
   .then((io: Server | SocketClient) => {
     const actions: Map<string, Map<string, Map<string, number>>> = new Map();
+    const actionTimeouts: Map<string, NodeJS.Timeout | undefined> = new Map();
 
     (io as Server).on("connect", (socket: Socket) => {
       socket.on("message", (message: string) => {
@@ -26,6 +28,16 @@ skio
         });
 
         console.log("rooms", (io as Server).of("/").adapter.rooms);
+
+        const dmIds =
+          (io as Server).of("/").adapter.rooms.get(roomID) || new Set();
+
+        if (dmIds.size === 0) {
+          if (!actions.has(roomID)) {
+            actions.set(roomID, new Map());
+            actionTimeouts.set(roomID, undefined);
+          }
+        }
       });
 
       socket.on("leave-room", (username: string, roomID: string) => {
@@ -34,15 +46,32 @@ skio
           message: `Server: ${username} LEFT room ${roomID}`,
         });
         console.log("rooms", (io as Server).of("/").adapter.rooms);
+
+
+        const dmIds =
+          (io as Server).of("/").adapter.rooms.get(roomID) || new Set();
+
+        if (dmIds.size === 0) {
+          actions.set(roomID, new Map());
+        }
       });
 
       socket.on("add-action", (action: string, requestId: number) => {
-        if (!requestId || !action) {
+        const executeAction = (requestIds: number[]) => {
+          socket.emit(`execute-${action}`, requestIds);
+          socket
+            .to(roomID)
+            .emit(`executing-${action}`, { message: `Conducting ${action}` });
+        };
+
+        if (requestId < 0 || !action) {
           return;
         }
 
         const [roomID] =
           (io as Server).of("/").adapter.sids?.get(socket.id) || new Set();
+
+        clearTimeout(actionTimeouts.get(roomID));
 
         if (!actions.has(roomID)) {
           actions.set(roomID, new Map());
@@ -50,6 +79,21 @@ skio
 
         if (!actions.get(roomID)?.has(action)) {
           actions.get(roomID)?.set(action, new Map());
+        }
+
+        if (action === "initialize") {
+          const requestIds = new Set([
+            ...(actions.get(roomID)?.get(action) || new Map()).values(),
+          ]);
+
+          if (requestIds.size == 0) {
+            actions?.get(roomID)?.get(action)?.set(socket.id, requestId);
+            socket.emit(`execute-${action}`, requestIds);
+          } else if (!requestIds.has(0)) {
+            socket.emit(`executed-action`, action, requestIds);
+          }
+
+          return;
         }
 
         actions?.get(roomID)?.get(action)?.set(socket.id, requestId);
@@ -63,7 +107,7 @@ skio
         const submittedIds = [
           ...(actions.get(roomID)?.get(action) || new Map()).keys(),
         ];
-        const requestIds = [
+        const requestIds: number[] = [
           ...(actions.get(roomID)?.get(action) || new Map()).values(),
         ];
 
@@ -75,10 +119,14 @@ skio
         );
 
         if ([...dmIds].every((value) => submittedIds.includes(value))) {
-          socket.emit(`execute-${action}`, requestIds);
-          socket
-            .to(roomID)
-            .emit(`executing-${action}`, { message: `Conducting ${action}` });
+          clearTimeout(actionTimeouts.get(roomID));
+
+          executeAction(requestIds);
+        } else {
+          actionTimeouts.set(
+            roomID,
+            setTimeout(executeAction, 10000, requestIds)
+          );
         }
       });
 
@@ -101,10 +149,14 @@ skio
           (io as Server).of("/").adapter.rooms.get(roomID) || new Set();
 
         if (dmIds.size > 1) {
-          socket.to(roomID).emit(`executed-${action}`, requestIds);
+          socket.to(roomID).emit(`executed-action`, action, requestIds);
         }
 
-        actions.get(roomID)?.set(action, new Map());
+        if (action === "initialize") {
+          actions.get(roomID)?.get(action)?.set(socket.id, 1);
+        } else {
+          actions.get(roomID)?.set(action, new Map());
+        }
       });
 
       socket.on("disconnect", () => {
