@@ -12,7 +12,7 @@ A user interface for the NIMBUS method.
 
   import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
 
-  import type { Problem } from "$lib/api";
+  import type { Token } from "$lib/api";
   import { toastStore } from "@skeletonlabs/skeleton";
 
   import Visualizations from "$lib/components/util/undecorated/Visualizations.svelte";
@@ -30,11 +30,11 @@ A user interface for the NIMBUS method.
   import NimbusLayout from "$lib/components/util/undecorated/NIMBUSLayout.svelte";
 
   /** The problem to solve. */
-  export let problem: Problem;
+  export let problem_id: number;
   // Link to the backend.
   export let API_URL: string;
   // The authentication token.
-  export let AUTH_TOKEN: string;
+  export let AUTH_TOKEN: Token;
   // Flag to visualize the decision space. Useful for UTOPIA maybe? Unused for now.
   //export let visualize_decision_space: boolean = false;
 
@@ -324,7 +324,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id, // TODO: This should be the id in the database.
+          problem_id: problem_id, // TODO: This should be the id in the database.
           method_id: 1, // Backend technically supports this, but we need to add support for it in the UI.
         }),
       });
@@ -424,7 +424,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           method_id: 1,
           preference: preference, // Technically sent as a reference point, the classification is generated in the backend.
           reference_solution: reference_solution, // The reference solution is needed to generate the classification.
@@ -476,7 +476,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problemID: problem_id, // The problem is reconstructed from the database each time we iterate.
           solution: mapped_solution,
           Year: year,
         }),
@@ -532,7 +532,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problemID: problem_id, // The problem is reconstructed from the database each time we iterate.
           solution1: solutions_to_visualize[selected_solutions[0]],
           solution2: solutions_to_visualize[selected_solutions[1]],
           numIntermediates: numIntermediates,
@@ -580,7 +580,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           method_id: 1,
           previousPreference: problemInfo.previous_preference,
           solutions: selected_solutions.map(
@@ -636,7 +636,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           method_id: 1,
           solution: reference_solution,
         }),

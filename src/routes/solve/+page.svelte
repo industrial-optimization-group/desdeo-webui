@@ -5,6 +5,7 @@
   import { baseURL, get_access_token, selectedProblem } from "$lib/api";
   import NautilusNavigator from "$lib/components/methods/nautilus_navigator/NAUT_NAVI.svelte";
   import NautilusNavigatorGroup from "$lib/components/methods/nautilus_navigator/NAUT_NAVI_group.svelte";
+  import NIMBUS from "$lib/components/methods/nimbus/NIMBUS.svelte";
   import GNIMBUS from "$lib/components/methods/nimbus/NIMBUS_group.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
 
@@ -38,11 +39,11 @@
 {#if $selectedMethod === "reference_point_method"}
   <!-- <ReferencePointMethod {problem} /> -->
 {:else if $selectedMethod === "nimbus"}
-  <!-- <NIMBUS
-    {$selectedProblem}
+  <NIMBUS
+    problem_id={$selectedProblem}
     API_URL={baseURL}
     AUTH_TOKEN={get_access_token()}
-  /> -->
+  />
 {:else if $selectedMethod === "nautnavi"}
   <NautilusNavigator API_URL={baseURL} />
 {:else if $selectedMethod === "nautnavi_group"}
