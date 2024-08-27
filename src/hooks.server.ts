@@ -47,7 +47,6 @@ skio
         });
         console.log("rooms", (io as Server).of("/").adapter.rooms);
 
-
         const dmIds =
           (io as Server).of("/").adapter.rooms.get(roomID) || new Set();
 

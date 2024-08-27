@@ -282,7 +282,8 @@ A user interface for the NIMBUS method.
   }
 
   $: if (reference_solution !== undefined && state === State.ClassifySelected) {
-    get_maps(reference_solution);
+    // we don't need maps for the base version of NIMBUS
+    //get_maps(reference_solution);
   }
 
   /** The number of decimals to show for numeric values. */
@@ -347,10 +348,6 @@ A user interface for the NIMBUS method.
       // This is just a temporary solution to make it easier to test the UI
       // without having to run the backend. It should be removed later.
 
-      // TODO: REMOVE THIS WHEN THE BACKEND IS READY!!!
-      selected_solutions = [];
-      reference_solution = undefined;
-
       //
       // This handler can be used to restart the solution process. It is probably
       // best to also reset the visualization mode to non-maximized.
@@ -386,13 +383,13 @@ A user interface for the NIMBUS method.
 
       // TODO: Uncomment this when the backend is ready.
       //
-      /* toastStore.trigger({
+      toastStore.trigger({
         // prettier-ignore
         message: "Oops! Something went wrong.",
         background: "variant-filled-error",
         timeout: 5000,
       });
-      console.error(err); */
+      console.error(err);
     }
   }
 
@@ -460,7 +457,7 @@ A user interface for the NIMBUS method.
       // for the failure.
     }
   }
-
+  /*
   async function actually_get_maps(mapped_solution: number[], year: string) {
     if (!(state === State.ClassifySelected)) {
       throw new Error("`get_maps` called in wrong state.");
@@ -509,6 +506,8 @@ A user interface for the NIMBUS method.
     const data3 = await actually_get_maps(mapped_solution, "2035");
     mapOptions["three"] = data3.option;
   }
+*/
+
   async function handle_intermediate() {
     if (
       !is_intermediate_selection_valid ||
