@@ -590,8 +590,8 @@ A user interface for the NIMBUS method.
 
       if (response.ok) {
         const data: problemInfoType = await response.json();
-        problemInfo = data;
-        preference = problemInfo.previous_preference;
+        problemInfo.saved_solutions = data.saved_solutions;
+        //preference = problemInfo.previous_preference;
         state = State.ClassifySelected; // TODO: Should this be SaveSolutionsSelected? Or should we always return to ClassifySelected?
         visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
         reference_solution = problemInfo.current_solutions[0];
