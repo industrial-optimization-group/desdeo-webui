@@ -28,7 +28,8 @@
 
   onDestroy(() => {
     console.log("Solve is being destroyed");
-    socketVal.emit("leave-room", $username, "problem-" + $selectedProblem);
+    socketVal &&
+      socketVal.emit("leave-room", $username, "problem-" + $selectedProblem);
   });
 </script>
 

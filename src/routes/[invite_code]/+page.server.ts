@@ -1,7 +1,7 @@
-import type { EntryGenerator } from './$types';
+import type { EntryGenerator } from "./$types";
 
 export const entries: EntryGenerator = () => {
-  return [{ invite_code: 'fake-invite_code' }];
+  return [{ invite_code: "fake-invite_code" }];
 };
 
 export function load({ params }) {
