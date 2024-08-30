@@ -186,21 +186,21 @@ export function login(
 /** Attempts to log in with the given invitation code. */
 
 export async function loginWithInvite(
-  code: string
+    code: string
 ): Promise<{ message: string }> {
   try {
     return await without_token()
-      .post("/login-with-invite", {
-        code,
-      })
-      .then((response) => {
-        set_access_token(response.data.access_token);
-        set_refresh_token(response.data.refresh_token);
-        set_username(response.data.username);
-        return {
-          message: <string>response.data.message,
-        };
-      });
+        .post("/login-with-invite", {
+            code,
+        })
+        .then((response) => {
+            set_access_token(response.data.access_token);
+            set_refresh_token(response.data.refresh_token);
+            set_username(response.data.username);
+            return {
+                message: <string>response.data.message,
+            };
+        });
   } catch (e) {
     console.log(e);
     return {
