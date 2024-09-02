@@ -61,14 +61,13 @@ A user interface for the NIMBUS method.
   // Enum to represent which solutions the DM wants to visualize.
   enum VisualizationChoiceState {
     CurrentSolutions,
-    NewSolutions,
     SavedSolutions,
     AllSolutions,
   }
 
   type voteType = {
     current_solutions: { [id: number]: number[] };
-    new_solutions?: { [id: number]: number[] };
+    to_vote?: boolean;
     all_solutions?: { [id: number]: number[] };
   };
 
@@ -80,7 +79,7 @@ A user interface for the NIMBUS method.
     upper_bounds: number[];
     previous_preference: number[];
     current_solutions: { [id: number]: number[] };
-    new_solutions: { [id: number]: number[] };
+    to_vote: boolean;
     saved_solutions: { [id: number]: number[] };
     all_solutions: { [id: number]: number[] };
     chosen_solutions: { [id: number]: number[] };
@@ -101,12 +100,11 @@ A user interface for the NIMBUS method.
 
   type iterateRequestResponse = {
     previous_preference: number[];
-    new_solutions: { [id: number]: number[] };
     current_solutions: { [id: number]: number[] };
     all_solutions: { [id: number]: number[] };
   };
 
-  type inttermediateRequestResponse = {
+  type intermediateRequestResponse = {
     current_solutions: { [id: number]: number[] };
     all_solutions: { [id: number]: number[] };
   };
@@ -318,13 +316,6 @@ A user interface for the NIMBUS method.
         solution_ids_to_visualize = Object.keys(
           problemInfo.current_solutions
         ).map(Number);
-      } else if (
-        visualizationChoiceState === VisualizationChoiceState.NewSolutions
-      ) {
-        solutions_to_visualize = Object.values(problemInfo.new_solutions);
-        solution_ids_to_visualize = Object.keys(problemInfo.new_solutions).map(
-          Number
-        );
       } else if (
         visualizationChoiceState === VisualizationChoiceState.SavedSolutions
       ) {
@@ -545,12 +536,13 @@ A user interface for the NIMBUS method.
 
     voteChoiceState =
       Object.keys(problemInfo.chosen_solutions).length > 1 ||
+      problemInfo.to_vote ||
       Object.keys(problemInfo.current_solutions).length != 1;
 
     visualizationChoiceState =
       Object.keys(problemInfo.current_solutions).length >= 1
         ? VisualizationChoiceState.CurrentSolutions
-        : VisualizationChoiceState.NewSolutions;
+        : VisualizationChoiceState.AllSolutions;
 
     if (Object.keys(problemInfo.current_solutions).length == 1) {
       state = State.ClassifySelected;
@@ -634,7 +626,7 @@ A user interface for the NIMBUS method.
           [0.9, 5, 11],
         ],
         chosen_solutions: [],
-        new_solutions: [],
+        to_vote: false,
       };
 
       preference = problemInfo.previous_preference;
@@ -680,7 +672,6 @@ A user interface for the NIMBUS method.
       if (response.ok) {
         const data: voteType = await response.json();
         problemInfo = { ...problemInfo, ...data };
-        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
         selected_solutions = [0];
 
         determineState();
@@ -727,7 +718,6 @@ A user interface for the NIMBUS method.
       if (response.ok) {
         const data: voteType = await response.json();
         problemInfo = { ...problemInfo, ...data };
-        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
         selected_solutions = [0];
 
         determineState();
@@ -774,7 +764,6 @@ A user interface for the NIMBUS method.
       if (response.ok) {
         const data: iterateRequestResponse = await response.json();
         problemInfo = { ...problemInfo, ...data };
-        visualizationChoiceState = VisualizationChoiceState.NewSolutions;
         selected_solutions = [0];
         preference = problemInfo.previous_preference;
         determineState();
@@ -981,7 +970,7 @@ A user interface for the NIMBUS method.
       });
 
       if (response.ok) {
-        const data: inttermediateRequestResponse = await response.json();
+        const data: intermediateRequestResponse = await response.json();
         problemInfo = { ...problemInfo, ...data };
         selected_solutions = [0];
 
@@ -1195,12 +1184,6 @@ A user interface for the NIMBUS method.
             <RadioItem
               bind:group={visualizationChoiceState}
               name="justify"
-              value={VisualizationChoiceState.NewSolutions}
-              >New solutions</RadioItem
-            >
-            <RadioItem
-              bind:group={visualizationChoiceState}
-              name="justify"
               value={VisualizationChoiceState.SavedSolutions}
               >Best candidate solutions</RadioItem
             >
@@ -1301,7 +1284,7 @@ A user interface for the NIMBUS method.
               {/if}
             </div>
           </div>
-          {#if voteChoiceState && (visualizationChoiceState === VisualizationChoiceState.NewSolutions || finalChoiceState)}
+          {#if voteChoiceState && (visualizationChoiceState === VisualizationChoiceState.CurrentSolutions || finalChoiceState)}
             {#if solutions_to_visualize.length > 1}
               <button
                 class="btn variant-filled inline"
