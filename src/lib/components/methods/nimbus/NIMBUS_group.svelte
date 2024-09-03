@@ -473,7 +473,7 @@ A user interface for the NIMBUS method.
     return -1;
   }
 
-  socketVal.off("executing-action").once("executing-action", (action) => {
+  socketVal.off("executing-action").on("executing-action", (action) => {
     socketVal.off("execute-" + action);
     console.log(`Socket: Executing ${action}`);
   });
