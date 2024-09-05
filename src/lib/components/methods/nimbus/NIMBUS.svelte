@@ -282,8 +282,8 @@ A user interface for the NIMBUS method.
   }
 
   $: if (reference_solution !== undefined && state === State.ClassifySelected) {
-    // we don't need maps for the base version of NIMBUS
-    //get_maps(reference_solution);
+    // we don't need maps for the base version of NIMBUS, but in Utopia we do
+    get_maps(reference_solution);
   }
 
   /** The number of decimals to show for numeric values. */
@@ -457,8 +457,8 @@ A user interface for the NIMBUS method.
       // for the failure.
     }
   }
-  /*
-  async function actually_get_maps(mapped_solution: number[], year: string) {
+
+  async function actually_get_maps(mapped_solution: number[], years: string[]) {
     if (!(state === State.ClassifySelected)) {
       throw new Error("`get_maps` called in wrong state.");
     }
@@ -473,9 +473,9 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem_id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           solution: mapped_solution,
-          Year: year,
+          years: years,
         }),
       });
       if (response.ok) {
@@ -497,16 +497,21 @@ A user interface for the NIMBUS method.
   }
 
   async function get_maps(mapped_solution: number[]) {
-    const data = await actually_get_maps(mapped_solution, "2025");
-    mapOptions["one"] = data.option;
-    geoJSON = data.forestMap;
-    mapName = data.mapName;
-    const data2 = await actually_get_maps(mapped_solution, "2030");
+    const data = await actually_get_maps(mapped_solution, [
+      "2025",
+      "2030",
+      "2035",
+    ]);
+    mapOptions["one"] = data.options["2025"];
+    mapOptions["two"] = data.options["2030"];
+    mapOptions["three"] = data.options["2035"];
+    geoJSON = data.map_json;
+    mapName = data.map_name;
+    /*const data2 = await actually_get_maps(mapped_solution, "2030");
     mapOptions["two"] = data2.option;
     const data3 = await actually_get_maps(mapped_solution, "2035");
-    mapOptions["three"] = data3.option;
+    mapOptions["three"] = data3.option;*/
   }
-*/
 
   async function handle_intermediate() {
     if (
