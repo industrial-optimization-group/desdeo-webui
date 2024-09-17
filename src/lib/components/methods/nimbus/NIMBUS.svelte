@@ -146,7 +146,7 @@ A user interface for the NIMBUS method.
     } else {
       const pref_less_ref = preference.some(
         (value, index) =>
-          value! * max_multiplier![index] * 1.00001 ** max_multiplier![index] <
+          value! * max_multiplier![index] * 1.001 ** max_multiplier![index] <
           reference_solution![index] * max_multiplier![index]
       );
 
@@ -155,7 +155,7 @@ A user interface for the NIMBUS method.
           value! * max_multiplier![index] >
           reference_solution![index] *
             max_multiplier![index] *
-            1.00001 ** max_multiplier![index]
+            1.001 ** max_multiplier![index]
       );
 
       if (pref_less_ref && pref_greater_ref) {
