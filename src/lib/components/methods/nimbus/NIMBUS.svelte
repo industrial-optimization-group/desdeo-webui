@@ -254,6 +254,9 @@ A user interface for the NIMBUS method.
         visualizationChoiceState === VisualizationChoiceState.SavedSolutions
       ) {
         solutions_to_visualize = problemInfo.saved_solutions;
+        if (solutions_to_visualize.length === 0) {
+          solutions_to_visualize = problemInfo.current_solutions;
+        }
       } else if (
         visualizationChoiceState === VisualizationChoiceState.AllSolutions
       ) {
@@ -859,8 +862,14 @@ A user interface for the NIMBUS method.
             <div>
               Näytä NIMBUS-menetelmän ratkaisut viimeisimmältä laskentakerralta.
             </div>
-          {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions}
+          {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions && problemInfo.saved_solutions.length}
             <div>Näytä tallentamasi ratkaisut.</div>
+          {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions}
+            <div>
+              Ei tallennettuja ratkaisuita. Näytetään tämänhetkiset ratkaisut.
+              Voit tallentaa ratkaisuita vasemmalta löytyvästä Tallenna
+              ratkaisuita -osiosta.
+            </div>
           {:else if visualizationChoiceState === VisualizationChoiceState.AllSolutions}
             <div>Näytä kaikki NIMBUS-menetelmän tuottamat ratkaisut.</div>
           {/if}
