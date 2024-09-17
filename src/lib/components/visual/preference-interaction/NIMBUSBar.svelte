@@ -7,11 +7,11 @@
   import SingleHorizontalBar from "$lib/components/visual/preference-interaction/HorizontalBarAlt.svelte";
 
   enum classification {
-    ChangeFreely = "Change freely",
-    WorsenUntil = "Worsen until",
-    KeepContant = "Keep constant at",
-    ImproveUntil = "Improve until",
-    ImproveFreely = "Improve freely",
+    ChangeFreely = "Saa muuttua vapaasti",
+    WorsenUntil = "Saa huonontua tasoon",
+    KeepContant = "Pidä vakiona tasossa",
+    ImproveUntil = "Paranna kunnes tasossa",
+    ImproveFreely = "Saa parantua vapaasti",
   }
   /** The lower bound of the chart. */
   export let lowerBound: number;
@@ -51,7 +51,7 @@
 
   let classificationValue: classification = classification.ChangeFreely;
 
-  const precision = 1e-3;
+  const precision = 1;
 
   $: {
     // Todo: This only works if lowerIsBetter is false, I think.
@@ -116,7 +116,7 @@
   <div class="secondPart">
     <div id="prev">
       <!-- TODO: Implement this so that when no prev values is given, nothing shows up. But implementation should not make a mess. Maybe reserve a blank space (how)? -->
-      <span style="color:gray; font-size: small; ">Previous preference</span>
+      <span style="color:gray; font-size: small; ">Edellinen tavoitetaso</span>
       {#if previousValue}
         <span id="prevValue">{previousValue}</span>
       {:else}
