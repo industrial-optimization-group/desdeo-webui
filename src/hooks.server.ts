@@ -1,4 +1,4 @@
-import skio from "$lib/socket.js";
+/*import skio from "$lib/socket.js";
 import type { Server, Socket } from "socket.io";
 import type { Socket as SocketClient } from "socket.io-client";
 
@@ -169,3 +169,4 @@ skio
         console.log(`socket ${id} has joined room ${room}`);
       });
   });
+*/

@@ -32,10 +32,10 @@
       id: "nautnavi_group",
       display: "NAUTILUS Navigator",
     },
-    {
+    /*{
       id: "nimbus_group",
       display: "NIMBUS",
-    },
+    },*/
     /* {
       id: "reference_point_method",
       display: "Reference Point Method",
