@@ -509,9 +509,9 @@ A user interface for the NIMBUS method.
     mapOptions["three"] = data.options["2035"];
     geoJSON = data.map_json;
     mapName = data.map_name;
-    console.log(mapOptions);
-    console.log(geoJSON);
-    console.log(mapName);
+    //console.log(mapOptions);
+    //console.log(geoJSON);
+    //console.log(mapName);
   }
 
   async function handle_intermediate() {
