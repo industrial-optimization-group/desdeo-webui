@@ -1,17 +1,27 @@
 <script lang="ts">
-  import { get_all_problems } from "$lib/api";
+  import { get_all_problems, allProblems } from "$lib/api";
+  import type { Problem } from "$lib/api";
+  import { onMount } from "svelte";
 
   import Solve from "$lib/components/main/Solve.svelte";
   import Waiting from "$lib/components/util/undecorated/Waiting.svelte";
-  import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
+
+  onMount(async () => {
+    await get_all_problems();
+  });
+
+  let problems = $allProblems;
+
+  allProblems.subscribe((value: Problem[]) => {
+    problems = value;
+    console.log("problems", problems);
+  });
 </script>
 
-{#await get_all_problems()}
+{#if problems}
+  <Solve {problems} />
+{:else}
   <Waiting>
     <span slot="label">Loading problems...</span>
   </Waiting>
-{:then problems}
-  <Solve {problems} />
-{:catch err}
-  <GeneralError {err} />
-{/await}
+{/if}

@@ -4,15 +4,16 @@
 // TODO: Some response data isn't currently validated.
 //
 
-import axios, { type AxiosInstance } from "axios";
+import axios, { type AxiosInstance, type AxiosError } from "axios";
 import { z } from "zod";
+import { goto } from "$app/navigation";
 
 //
 // TODO: Replace anything that depends on Svelte with something else to make
 // the module reusable elsewhere. Currently only the state uses Svelte stores.
 // These stores could be replaced with RxJS observables.
 //
-import { derived, get, readonly, writable } from "svelte/store";
+import { derived, get, readonly, type Writable, writable } from "svelte/store";
 
 /** An interface for accessing a backend server. */
 export interface Backend {
@@ -29,10 +30,6 @@ export const backend: Backend = {
   with_instance: with_access_token,
 };
 
-type OAuth2Response = {
-  access_token: string;
-  token_type: string;
-};
 //
 // The backend URL
 //
@@ -113,22 +110,56 @@ export const login_status = derived(
 /** The logged in user's username. */
 export const username = readonly(state.username);
 
+let refresh = false;
+export async function refreshToken(error: AxiosError | Response) {
+  try {
+    if (!refresh) {
+      refresh = true;
+      const response = await axios.post(
+        "/api/refresh",
+        {},
+        { withCredentials: true, baseURL: "" }
+      );
+
+      if (response.status === 200) {
+        set_access_token(response.data.access_token);
+
+        setTimeout(function () {
+          refresh = false;
+          // }, 120000);
+        }, 100);
+
+        return;
+      }
+
+      set_access_token(undefined);
+      refresh = false;
+      goto("/login");
+      return error;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return error;
+  }
+}
+
 //
 // End of state-related section
 //
 
 function without_token() {
-  return axios.create({ baseURL });
+  axios.defaults.baseURL = baseURL;
+  return axios;
 }
 
 // TODO: Add middleware for token renewal on authorization error.
 function with_access_token() {
-  return axios.create({
-    baseURL,
-    headers: {
-      Authorization: `Bearer ${get_access_token()}`,
-    },
-  });
+  axios.defaults.baseURL = baseURL;
+  axios.defaults.headers.common[
+    "Authorization"
+  ] = `Bearer ${get_access_token()}`;
+
+  return axios;
 }
 
 //
@@ -186,21 +217,21 @@ export function login(
 /** Attempts to log in with the given invitation code. */
 
 export async function loginWithInvite(
-    code: string
+  code: string
 ): Promise<{ message: string }> {
   try {
     return await without_token()
-        .post("/login-with-invite", {
-          code,
-        })
-        .then((response) => {
-          set_access_token(response.data.access_token);
-          set_refresh_token(response.data.refresh_token);
-          set_username(response.data.username);
-          return {
-            message: <string>response.data.message,
-          };
-        });
+      .post("/login-with-invite", {
+        code,
+      })
+      .then((response) => {
+        set_access_token(response.data.access_token);
+        set_refresh_token(response.data.refresh_token);
+        set_username(response.data.username);
+        return {
+          message: <string>response.data.message,
+        };
+      });
   } catch (e) {
     console.log(e);
     return {
@@ -209,33 +240,52 @@ export async function loginWithInvite(
   }
 }
 
+export async function fetchUserDetails() {
+  try {
+    const responsea = await with_access_token()({
+      url: "test/userdetails",
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (responsea.status === 200) {
+      const data = responsea.data;
+      set_username(data.username);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 export async function loginOAuth2(
   username: string,
   password: string
-): Promise<{ message: string }> {
+): Promise<{ message: string } | undefined> {
   // Note that the backend does not send a refresh token. The access token currently expires after 2 hours.
   try {
-    const response = await fetch("http://localhost:8000/token", {
-      method: "POST",
+    const response = await axios({
+      baseURL: "",
+      url: "/api/signIn",
+      method: "post",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({
+      data: {
         username: username,
         password: password,
         grant_type: "password",
-      }),
+      },
+      withCredentials: true,
     });
-    if (response.ok) {
-      const data: OAuth2Response = await response.json();
+
+    if (response.status === 200) {
+      const data = response.data;
       set_access_token(data.access_token);
       set_username(username);
       return {
         message: "Logged in successfully",
-      };
-    } else {
-      return {
-        message: "Failed to log in",
       };
     }
   } catch (e) {
@@ -288,7 +338,7 @@ export async function logout(ignore_errors = true): Promise<void> {
   // access token.
   //
   await invalidate_refresh_token(ignore_errors);
-  await invalidate_access_token(ignore_errors);
+  await invalidate_access_token();
   set_username(undefined);
 }
 
@@ -305,18 +355,11 @@ export async function logout(ignore_errors = true): Promise<void> {
  *
  * TODO: Validate response data.
  */
-async function invalidate_access_token(ignore_errors = true): Promise<void> {
+async function invalidate_access_token(): Promise<void> {
   if (get_access_token() === undefined) {
     return;
   }
-  try {
-    await with_access_token().post("/logout/access");
-    //
-  } catch (err) {
-    if (!ignore_errors) {
-      throw err;
-    }
-  }
+
   set_access_token(undefined);
 }
 
@@ -334,18 +377,13 @@ async function invalidate_access_token(ignore_errors = true): Promise<void> {
  * TODO: Validate response data.
  */
 async function invalidate_refresh_token(ignore_errors = true): Promise<void> {
-  if (get_refresh_token() === undefined) {
-    return;
-  }
   try {
-    await with_refresh_token().post("/logout/refresh");
-    //
+    await axios.post("/api/logout", {}, { baseURL: "" });
   } catch (err) {
     if (!ignore_errors) {
       throw err;
     }
   }
-  set_refresh_token(undefined);
 }
 
 /**
@@ -407,10 +445,20 @@ export function register_account(
 // rather than a record. This format is easier to handle and more useful in
 // general.
 //
-export async function get_all_problems(): Promise<Problem[]> {
+export async function get_all_problems(): Promise<Problem[] | undefined> {
   const response = await with_access_token().get("/problem/access/all");
-  const problems = z.array(BackendProblemS).parse(response.data);
-  return problems.map(transform_problem);
+  try {
+    const problems = z.array(BackendProblemS).parse(response.data);
+    let transformedProblems: Problem[] = [];
+    if (problems) {
+      transformedProblems = problems.map(transform_problem);
+    }
+
+    allProblems.set(transformedProblems);
+    return transformedProblems;
+  } catch (error) {
+    console.log("Error");
+  }
 }
 
 export async function get_problem(problem_id: number): Promise<Problem> {
@@ -553,3 +601,4 @@ export function problem_has_finite_bounds(problem: Problem) {
 export const methodHeaderText = writable("No method selected yet");
 export const selectedProblem = writable(-1);
 export const selectedMethod = writable("");
+export const allProblems: Writable<Problem[]> = writable([]);

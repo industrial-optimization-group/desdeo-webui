@@ -1,21 +1,5 @@
 <script lang="ts">
-  import { baseURL, get_access_token } from "$lib/api";
-
-  async function fetchUserDetails() {
-    try {
-      const res = await fetch(`${baseURL}/test/userdetails`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + get_access_token(),
-        },
-      });
-      const data = await res.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
+  import { fetchUserDetails } from "$lib/api";
 
   fetchUserDetails();
 </script>
