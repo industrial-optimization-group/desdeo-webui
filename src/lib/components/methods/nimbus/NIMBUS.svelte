@@ -122,6 +122,7 @@ A user interface for the NIMBUS method.
   let periodChoice: PeriodChoice = PeriodChoice.one;
   let geoJSON: object | undefined = undefined;
   let mapName: string | undefined = undefined;
+  let mapDescription: string | undefined = undefined;
 
   let finalChoiceState = false;
 
@@ -512,6 +513,7 @@ A user interface for the NIMBUS method.
     mapOptions["three"] = data.options["2035"];
     geoJSON = data.map_json;
     mapName = data.map_name;
+    mapDescription = data.description;
     //console.log(mapOptions);
     //console.log(geoJSON);
     //console.log(mapName);
@@ -961,6 +963,7 @@ A user interface for the NIMBUS method.
             >Metsänhoitosuunnitelma kartalla</svelte:fragment
           >
           {#if mapOptions[periodChoice] !== undefined && geoJSON !== undefined}
+            <div>{mapDescription}</div>
             <EchartsComponent
               option={mapOptions[periodChoice]}
               {geoJSON}
