@@ -933,6 +933,11 @@ A user interface for the NIMBUS method.
               Tavoitteiden arvot taulukossa. Klikkaa riviä valitaksesi
               tarkasteltava suunnitelma.
             </p>
+            <p>
+              Nettonykyarvon ja hakkuiden tuoton laskennassa on käytetty 3%
+              diskonntauskerrointa. Puuston tilavuus kuvaa tilannetta
+              suunnittelujakson lopussa.
+            </p>
             <div class="overflow-x-auto">
               {#if problemInfo !== undefined && solutions_to_visualize !== undefined}
                 {#if !finalChoiceState}
@@ -964,7 +969,7 @@ A user interface for the NIMBUS method.
             >Metsänhoitosuunnitelma kartalla</svelte:fragment
           >
           {#if mapOptions[periodChoice] !== undefined && geoJSON !== undefined}
-            <div>{mapDescription}</div>
+            <div style="white-space: pre-wrap;">{mapDescription}</div>
             <EchartsComponent
               option={mapOptions[periodChoice]}
               {geoJSON}
