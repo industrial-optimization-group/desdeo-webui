@@ -34,9 +34,9 @@ length.
 </script>
 
 <TabGroup>
-  <Tab bind:group={tab} name="tab1" value={0}>Parallel Coordinate Plot</Tab>
-  <Tab bind:group={tab} name="tab2" value={1}>Bar Chart</Tab>
-  <Tab bind:group={tab} name="tab3" value={2}>All</Tab>
+  <Tab bind:group={tab} name="tab1" value={0}>Arvopolku</Tab>
+  <Tab bind:group={tab} name="tab2" value={1}>Pylväsdiagrammi</Tab>
+  <Tab bind:group={tab} name="tab3" value={2}>Kaikki</Tab>
 
   <svelte:fragment slot="panel">
     {#if tab === 0}
