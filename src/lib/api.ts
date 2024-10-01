@@ -191,15 +191,15 @@ export async function loginWithInvite(
   try {
     return await without_token()
         .post("/login-with-invite", {
-          code,
+            code,
         })
         .then((response) => {
-          set_access_token(response.data.access_token);
-          set_refresh_token(response.data.refresh_token);
-          set_username(response.data.username);
-          return {
-            message: <string>response.data.message,
-          };
+            set_access_token(response.data.access_token);
+            set_refresh_token(response.data.refresh_token);
+            set_username(response.data.username);
+            return {
+                message: <string>response.data.message,
+            };
         });
   } catch (e) {
     console.log(e);

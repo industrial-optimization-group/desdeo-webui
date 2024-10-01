@@ -32,7 +32,7 @@ A user interface for the NIMBUS method.
   import { socket } from "$lib/stores";
   import type { Socket } from "socket.io-client";
 
-  let socketVal: Socket;
+  let socketVal: Socket = $socket as Socket;
 
   socket.subscribe((value) => {
     socketVal = value as Socket;
@@ -61,13 +61,14 @@ A user interface for the NIMBUS method.
   // Enum to represent which solutions the DM wants to visualize.
   enum VisualizationChoiceState {
     CurrentSolutions,
-    NewSolutions,
     SavedSolutions,
     AllSolutions,
   }
 
   type voteType = {
     current_solutions: { [id: number]: number[] };
+    to_vote?: boolean;
+    all_solutions?: { [id: number]: number[] };
   };
 
   // The type of the problem info object returned by the backend.
@@ -78,7 +79,7 @@ A user interface for the NIMBUS method.
     upper_bounds: number[];
     previous_preference: number[];
     current_solutions: { [id: number]: number[] };
-    new_solutions: { [id: number]: number[] };
+    to_vote: boolean;
     saved_solutions: { [id: number]: number[] };
     all_solutions: { [id: number]: number[] };
     chosen_solutions: { [id: number]: number[] };
@@ -99,7 +100,11 @@ A user interface for the NIMBUS method.
 
   type iterateRequestResponse = {
     previous_preference: number[];
-    new_solutions: { [id: number]: number[] };
+    current_solutions: { [id: number]: number[] };
+    all_solutions: { [id: number]: number[] };
+  };
+
+  type intermediateRequestResponse = {
     current_solutions: { [id: number]: number[] };
     all_solutions: { [id: number]: number[] };
   };
@@ -204,7 +209,16 @@ A user interface for the NIMBUS method.
           reference_solution![index] * max_multiplier![index]
       );
 
-      if (pref_less_ref && pref_greater_ref) {
+      const pref_equal_nadir_ref = preference.some((value, index) => {
+        return (
+          value ===
+          (max_multiplier![index] > 0
+            ? problemInfo["upper_bounds"][index]
+            : problemInfo["lower_bounds"][index])
+        );
+      });
+
+      if (pref_less_ref && pref_greater_ref && !pref_equal_nadir_ref) {
         classification_checker = true;
       } else {
         classification_checker = false;
@@ -253,6 +267,7 @@ A user interface for the NIMBUS method.
   $: {
     if (
       solutions_to_visualize !== undefined &&
+      solutions_to_visualize?.length > 0 &&
       selected_solutions?.length >= 1
     ) {
       // if any selected solution index is larger than the number of solutions, set reference_solution to the last solution
@@ -270,6 +285,8 @@ A user interface for the NIMBUS method.
             selected_solutions[selected_solutions.length - 1]
           ];
       }
+    } else {
+      selected_solutions = [];
     }
   }
 
@@ -299,13 +316,6 @@ A user interface for the NIMBUS method.
         solution_ids_to_visualize = Object.keys(
           problemInfo.current_solutions
         ).map(Number);
-      } else if (
-        visualizationChoiceState === VisualizationChoiceState.NewSolutions
-      ) {
-        solutions_to_visualize = Object.values(problemInfo.new_solutions);
-        solution_ids_to_visualize = Object.keys(problemInfo.new_solutions).map(
-          Number
-        );
       } else if (
         visualizationChoiceState === VisualizationChoiceState.SavedSolutions
       ) {
@@ -363,21 +373,35 @@ A user interface for the NIMBUS method.
       iterate: handle_iterate,
       vote: handle_vote,
       choose: handle_final_choice,
+      vote_as_final: handle_final_vote,
+      initialize: handle_initialize,
     };
 
-  function form_request_params(request: string) {
+  function form_request_params(request: string, args: object) {
     if (request == "iterate") {
-      return {
-        problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
-        method_id: 1,
-        preference: preference, // Technically sent as a reference point, the classification is generated in the backend.
-        reference_solution_id:
-          solution_ids_to_visualize[
-            selected_solutions[selected_solutions.length - 1]
-          ],
-        reference_solution: reference_solution, // The reference solution is needed to generate the classification.
-        num_solutions: numSolutions,
-      };
+      if (!is_classification_valid) {
+        const err = Error("`handle_iterate` called in wrong state.");
+        toastStore.trigger({
+          // prettier-ignore
+          message: "Oops! Something went wrong. Iteration called with invalid classification.",
+          background: "variant-filled-error",
+          timeout: 5000,
+        });
+        console.error(err);
+        throw err;
+      } else {
+        return {
+          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          method_id: 1,
+          preference: preference, // Technically sent as a reference point, the classification is generated in the backend.
+          reference_solution_id:
+            solution_ids_to_visualize[
+              selected_solutions[selected_solutions.length - 1]
+            ],
+          reference_solution: reference_solution, // The reference solution is needed to generate the classification.
+          num_solutions: numSolutions,
+        };
+      }
     } else if (request == "choose") {
       return {
         problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
@@ -398,10 +422,21 @@ A user interface for the NIMBUS method.
           ],
         reference_solution: reference_solution, // The reference solution is needed to generate the classification.
       };
+    } else if (request == "vote_as_final") {
+      return {
+        problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+        method_id: 1,
+        chosen: "chosen" in args ? args["chosen"] : false,
+        reference_solution_id:
+          solution_ids_to_visualize[
+            selected_solutions[selected_solutions.length - 1]
+          ],
+        reference_solution: reference_solution, // The reference solution is needed to generate the classification.
+      };
     }
   }
 
-  async function save_request(request: string) {
+  async function save_request(request: string, args: object) {
     try {
       let endpoint = API_URL + "/gmethod/save-request";
 
@@ -414,7 +449,7 @@ A user interface for the NIMBUS method.
         body: JSON.stringify({
           method: "nimbus",
           request_type: request,
-          ...form_request_params(request),
+          ...form_request_params(request, args),
         }),
       });
 
@@ -434,14 +469,27 @@ A user interface for the NIMBUS method.
       });
       console.error(err);
     }
+
+    return -1;
   }
 
-  async function handle_caller(action: string) {
-    let requestId = await save_request(action);
-    socketVal.emit("add-action", action, requestId);
+  socketVal.off("executing-action").on("executing-action", (action) => {
+    socketVal.off("execute-" + action);
+    console.log(`Socket: Executing ${action}`);
+  });
 
+  socketVal
+    .off("executed-action")
+    .on("executed-action", (action, requestIds) => {
+      socketVal.off("execute-" + action);
+
+      handle_functions[action](requestIds, true).then(() => {
+        console.log(`Socket: Done fetching cache for action ${action}`);
+      });
+    });
+
+  async function handle_caller(action: string, args = {}) {
     const executeAction = (requestIds: number[]) => {
-      socketVal.off("executing-" + action);
       handle_functions[action](requestIds).then((res: number) => {
         if (res) {
           socketVal.emit("finish-action", action);
@@ -453,17 +501,13 @@ A user interface for the NIMBUS method.
 
     socketVal.off("execute-" + action).once("execute-" + action, executeAction);
 
-    socketVal.off("executing-" + action).once("executing-" + action, () => {
-      socketVal.off("execute-" + action);
+    console.log("handle_caller", action);
+    let requestId = 0;
+    if (action !== "initialize") {
+      requestId = await save_request(action, args);
+    }
 
-      socketVal
-        .off("executed-" + action)
-        .once("executed-" + action, (requestIds) => {
-          handle_functions[action](requestIds, true).then(() => {
-            console.log("Done fetching cache");
-          });
-        });
-    });
+    socketVal.emit("add-action", action, requestId);
   }
 
   function press_final_button() {
@@ -492,12 +536,13 @@ A user interface for the NIMBUS method.
 
     voteChoiceState =
       Object.keys(problemInfo.chosen_solutions).length > 1 ||
+      problemInfo.to_vote ||
       Object.keys(problemInfo.current_solutions).length != 1;
 
     visualizationChoiceState =
       Object.keys(problemInfo.current_solutions).length >= 1
         ? VisualizationChoiceState.CurrentSolutions
-        : VisualizationChoiceState.NewSolutions;
+        : VisualizationChoiceState.AllSolutions;
 
     if (Object.keys(problemInfo.current_solutions).length == 1) {
       state = State.ClassifySelected;
@@ -512,6 +557,7 @@ A user interface for the NIMBUS method.
   // TODO: Handle errors bettter.
   //
   async function handle_initialize() {
+    console.log("handle_initialize");
     try {
       let endpoint = `${API_URL}/${API_ROUTER}/initialize`;
 
@@ -536,6 +582,8 @@ A user interface for the NIMBUS method.
         state = State.ClassifySelected;
 
         determineState();
+
+        return 1;
       } else {
         throw new Error("Failed to initialize GNIMBUS method.");
       }
@@ -578,7 +626,7 @@ A user interface for the NIMBUS method.
           [0.9, 5, 11],
         ],
         chosen_solutions: [],
-        new_solutions: [],
+        to_vote: false,
       };
 
       preference = problemInfo.previous_preference;
@@ -594,13 +642,15 @@ A user interface for the NIMBUS method.
             });
             console.error(err); */
     }
+
+    return 0;
   }
 
   //
   // TODO: Handle errors better.
   //
   onMount(async () => {
-    await handle_initialize();
+    await handle_caller("initialize");
   });
 
   async function handle_vote(requestIds: number[], cached = false) {
@@ -622,7 +672,52 @@ A user interface for the NIMBUS method.
       if (response.ok) {
         const data: voteType = await response.json();
         problemInfo = { ...problemInfo, ...data };
-        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
+        selected_solutions = [0];
+
+        determineState();
+        return 1;
+      } else {
+        throw new Error("Failed to vote GNIMBUS method.");
+      }
+    } catch (err) {
+      toastStore.trigger({
+        // prettier-ignore
+        message: "Oops! Something went wrong. Vote failed at the backend.",
+        background: "variant-filled-error",
+        timeout: 5000,
+      });
+      console.error(err);
+
+      //
+      // TODO: We really should do something better. The correct behaviour
+      // should depend on the reason for failing and should probably involve
+      // adding new states to the state machine. Now we can't really leave
+      // the method in the previous state because we don't know the reason
+      // for the failure.
+    }
+
+    return 0;
+  }
+
+  async function handle_final_vote(requestIds: number[], cached = false) {
+    try {
+      let endpoint = `${API_URL}/${API_ROUTER}/final-solution-vote`;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + AUTH_TOKEN,
+        },
+        body: JSON.stringify({
+          request_ids: requestIds,
+          cached: cached,
+        }),
+      });
+
+      if (response.ok) {
+        const data: voteType = await response.json();
+        problemInfo = { ...problemInfo, ...data };
         selected_solutions = [0];
 
         determineState();
@@ -651,16 +746,6 @@ A user interface for the NIMBUS method.
   }
 
   async function handle_iterate(requestIds: number[], cached = false) {
-    if (!is_classification_valid) {
-      const err = Error("`handle_iterate` called in wrong state.");
-      toastStore.trigger({
-        // prettier-ignore
-        message: "Oops! Something went wrong. Iteration called with invalid classification.",
-        background: "variant-filled-error",
-        timeout: 5000,
-      });
-      console.error(err);
-    }
     try {
       let endpoint = `${API_URL}/${API_ROUTER}/iterate`;
 
@@ -679,7 +764,6 @@ A user interface for the NIMBUS method.
       if (response.ok) {
         const data: iterateRequestResponse = await response.json();
         problemInfo = { ...problemInfo, ...data };
-        visualizationChoiceState = VisualizationChoiceState.NewSolutions;
         selected_solutions = [0];
         preference = problemInfo.previous_preference;
         determineState();
@@ -776,11 +860,8 @@ A user interface for the NIMBUS method.
       if (response.ok) {
         const data: saveRequestResponse = await response.json();
         problemInfo = { ...problemInfo, ...data };
-        preference = problemInfo.previous_preference;
-        state = State.ClassifySelected; // TODO: Should this be SaveSolutionsSelected? Or should we always return to ClassifySelected?
-        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
-        reference_solution = Object.values(problemInfo.current_solutions)[0];
         selected_solutions = [0];
+        determineState();
         return 1;
       } else {
         // Iteration failed somehow.
@@ -885,18 +966,16 @@ A user interface for the NIMBUS method.
           problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
           solution1: solutions_to_visualize[selected_solutions[0]],
           solution2: solutions_to_visualize[selected_solutions[1]],
-          numIntermediates: numIntermediates,
         }),
       });
 
       if (response.ok) {
-        const data: problemInfoType = await response.json();
-        problemInfo = data;
-        preference = problemInfo.previous_preference;
-        state = State.ClassifySelected; // TODO: Should this be IntermediateSelected? Or should we always return to ClassifySelected?
-        visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
-        reference_solution = Object.values(problemInfo.current_solutions)[0];
+        const data: intermediateRequestResponse = await response.json();
+        problemInfo = { ...problemInfo, ...data };
         selected_solutions = [0];
+
+        determineState();
+        return 1;
       } else {
         // Iteration failed somehow.
         throw new Error("Failed to generate intermediate solutions.");
@@ -910,9 +989,9 @@ A user interface for the NIMBUS method.
         timeout: 5000,
       });
       console.error(err);
-
-      //
     }
+
+    return 0;
   }
 </script>
 
@@ -1048,12 +1127,12 @@ A user interface for the NIMBUS method.
                     disabled={!is_classification_valid}>Iterate</button
                   >
                 {/if}
-                <button
+                <!--<button
                   class="btn variant-filled inline"
                   on:click={press_final_button}
                   disabled={!(state === State.ClassifySelected)}
                   >Finish with chosen solution</button
-                >
+                >-->
               </div>
               {#if !is_classification_valid}
                 <div class="text-error-500">
@@ -1101,12 +1180,6 @@ A user interface for the NIMBUS method.
               name="justify"
               value={VisualizationChoiceState.CurrentSolutions}
               >Current solutions</RadioItem
-            >
-            <RadioItem
-              bind:group={visualizationChoiceState}
-              name="justify"
-              value={VisualizationChoiceState.NewSolutions}
-              >New solutions</RadioItem
             >
             <RadioItem
               bind:group={visualizationChoiceState}
@@ -1211,19 +1284,32 @@ A user interface for the NIMBUS method.
               {/if}
             </div>
           </div>
-          {#if voteChoiceState}
-            <button
-              class="btn variant-filled inline"
-              on:click={() => {
-                handle_caller("vote");
-              }}
-            >
-              {#if finalChoiceState}
-                <span>Vote for final solution</span>
-              {:else}
-                <span>Vote</span>
-              {/if}
-            </button>
+          {#if voteChoiceState && (visualizationChoiceState === VisualizationChoiceState.CurrentSolutions || finalChoiceState)}
+            {#if solutions_to_visualize.length > 1}
+              <button
+                class="btn variant-filled inline"
+                on:click={() => {
+                  handle_caller("vote");
+                }}
+              >
+                Vote
+              </button>
+            {:else}
+              <button
+                class="btn variant-filled inline"
+                on:click={() => {
+                  handle_caller("vote_as_final", { chosen: true });
+                }}
+                >Vote as final solution
+              </button>
+              <button
+                class="btn variant-filled inline"
+                on:click={() => {
+                  handle_caller("vote_as_final", { chosen: false });
+                }}
+                >Vote as current solution
+              </button>
+            {/if}
           {/if}
         </Card>
       </div>
