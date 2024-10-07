@@ -113,6 +113,8 @@ A user interface for the NIMBUS method.
     three: Object,
   };
 
+  let yearlist: string[] = ["2025", "2030", "2035"];
+
   enum PeriodChoice {
     one = "one",
     two = "two",
@@ -464,7 +466,7 @@ A user interface for the NIMBUS method.
     }
   }
 
-  async function actually_get_maps(mapped_solution: number[], years: string[]) {
+  async function actually_get_maps(mapped_solution: number[]) {
     if (!(state === State.ClassifySelected)) {
       throw new Error("`get_maps` called in wrong state.");
     }
@@ -481,7 +483,6 @@ A user interface for the NIMBUS method.
         body: JSON.stringify({
           problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           solution: mapped_solution,
-          years: years,
         }),
       });
       if (response.ok) {
@@ -503,14 +504,11 @@ A user interface for the NIMBUS method.
   }
 
   async function get_maps(mapped_solution: number[]) {
-    const data = await actually_get_maps(mapped_solution, [
-      "2025",
-      "2030",
-      "2035",
-    ]);
-    mapOptions["one"] = data.options["2025"];
-    mapOptions["two"] = data.options["2030"];
-    mapOptions["three"] = data.options["2035"];
+    const data = await actually_get_maps(mapped_solution);
+    yearlist = data.years;
+    mapOptions["one"] = data.options[yearlist[0]];
+    mapOptions["two"] = data.options[yearlist[1]];
+    mapOptions["three"] = data.options[yearlist[2]];
     geoJSON = data.map_json;
     mapName = data.map_name;
     mapDescription = data.description;
@@ -981,17 +979,17 @@ A user interface for the NIMBUS method.
             <RadioItem
               bind:group={periodChoice}
               name="justify"
-              value={PeriodChoice.one}>2025</RadioItem
+              value={PeriodChoice.one}>{yearlist[0]}</RadioItem
             >
             <RadioItem
               bind:group={periodChoice}
               name="justify"
-              value={PeriodChoice.two}>2030</RadioItem
+              value={PeriodChoice.two}>{yearlist[1]}</RadioItem
             >
             <RadioItem
               bind:group={periodChoice}
               name="justify"
-              value={PeriodChoice.three}>2035</RadioItem
+              value={PeriodChoice.three}>{yearlist[2]}</RadioItem
             >
           </RadioGroup>
         </Card>
