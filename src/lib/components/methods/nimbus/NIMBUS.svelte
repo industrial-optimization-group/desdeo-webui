@@ -674,6 +674,10 @@ A user interface for the NIMBUS method.
 </script>
 
 <div class="flex flex-col gap-10">
+  <div class="flex flex-col items-start gap-4">
+    <h1 class="font-bold">NIMBUS method</h1>
+  </div>
+
   {#if state === State.InitialLoad}
     <div class="grid grid-cols-2 items-start gap-10">
       <!-- <ProblemDetails {problem} /> -->
@@ -687,33 +691,31 @@ A user interface for the NIMBUS method.
         {#if problemInfo !== undefined && reference_solution !== undefined}
           <Card>
             <svelte:fragment slot="header"
-              >Päätöksentekijän tavoitteet</svelte:fragment
+              >Preference information</svelte:fragment
             >
             <RadioGroup>
               <RadioItem
                 bind:group={state}
                 name="justify"
-                value={State.ClassifySelected}>Aseta tavoitteet</RadioItem
+                value={State.ClassifySelected}>Provide classification</RadioItem
               >
               <RadioItem
                 bind:group={state}
                 name="justify"
                 value={State.SaveSolutionsSelected}
-                >Tallenna ratkaisuita</RadioItem
+                >Save best candidate solutions</RadioItem
               >
             </RadioGroup>
             {#if state === State.ClassifySelected}
               <div>
-                Aseta tavoitteesi joko siirtäen palkkeja tai syöttämällä
-                lukuarvot. Sinun on annettava tavoitetaso jokaiselle
-                tavoitteelle. Menetelmä tuottaa ainoastaan ratkaisuita, joita ei
-                voi parantaa tinkimättä muista tavoitteista, joten jonkun
-                tavoitetason on laskettava, jos haluat nostaa jotain toista.
-                Voit myös valita näytettävien ratkaisuiden lukumäärän. Klikkaa
-                sitten "Etsi uusia ratkaisuita" -nappia.
+                Provide your preferences by classifying the objectives by either
+                clicking on the bars or using the input boxes. You must give a
+                preference for each objective. You must improve and impair at
+                least one objective. You can choose the maximum number of new
+                solutions to generate.
               </div>
               <Input
-                labelName="Kuinka monta ratkaisua NIMBUS tuottaa?"
+                labelName="Maximum number of solutions to generate using NIMBUS:"
                 bind:value={numSolutions}
                 onChange={() => {
                   if (numSolutions < MIN_NUM_SOLUTIONS) {
@@ -770,8 +772,8 @@ A user interface for the NIMBUS method.
               {/if}
             {:else if state === State.SaveSolutionsSelected}
               <div>
-                Valitse kaikki ratkaisut, jotka haluat tallentaa, ja klikkaa
-                Tallenna.
+                Select any number of solutions and then click "Save" to save
+                solutions of interest to the database.
               </div>
               {#if solutions_to_visualize !== undefined}
                 <ParallelCoordinatePlotBase
@@ -796,19 +798,18 @@ A user interface for the NIMBUS method.
                 <button
                   class="btn variant-filled inline"
                   on:click={handle_iterate}
-                  disabled={!is_classification_valid}
-                  >Etsi uusia ratkaisuita</button
+                  disabled={!is_classification_valid}>Iterate</button
                 >
                 <button
                   class="btn variant-filled inline"
                   on:click={press_final_button}
                   disabled={!(state === State.ClassifySelected)}
-                  >Päätä tarkastelu valittuun ratkaisuun</button
+                  >Finish with chosen solution</button
                 >
               </div>
               {#if !is_classification_valid}
                 <div class="text-error-500">
-                  Aseta tavoitetasot ohjeiden mukaan.
+                  Please give a valid classification for the objectives.
                 </div>
               {/if}
             {:else if state === State.IntermediateSelected}
@@ -816,7 +817,7 @@ A user interface for the NIMBUS method.
                 <button
                   class="btn variant-filled"
                   on:click={handle_intermediate}
-                  disabled={!is_intermediate_selection_valid}>Laske</button
+                  disabled={!is_intermediate_selection_valid}>Iterate</button
                 >
               </div>
               {#if !is_intermediate_selection_valid}
@@ -827,11 +828,13 @@ A user interface for the NIMBUS method.
                 <button
                   class="btn variant-filled"
                   on:click={handle_save_solutions}
-                  disabled={!is_save_solutions_valid}>Tallenna</button
+                  disabled={!is_save_solutions_valid}>Save</button
                 >
               </div>
               {#if !is_save_solutions_valid}
-                <div class="text-error-500">Valitse ainakin yksi ratkaisu.</div>
+                <div class="text-error-500">
+                  Please select at least one solution.
+                </div>
               {/if}
             {:else}
               <GeneralError />
@@ -842,52 +845,49 @@ A user interface for the NIMBUS method.
       <div slot="solutionSetChoice">
         <Card>
           <svelte:fragment slot="header"
-            >Valitse näytettävät ratkaisut</svelte:fragment
+            >Choose which solution set to visualize</svelte:fragment
           >
           <RadioGroup>
             <RadioItem
               bind:group={visualizationChoiceState}
               name="justify"
               value={VisualizationChoiceState.CurrentSolutions}
-              >Tämänhetkiset ratkaisut</RadioItem
+              >Current solutions</RadioItem
             >
             <RadioItem
               bind:group={visualizationChoiceState}
               name="justify"
               value={VisualizationChoiceState.SavedSolutions}
-              >Tallennetut ratkaisut</RadioItem
+              >Best candidate solutions</RadioItem
             >
             <RadioItem
               bind:group={visualizationChoiceState}
               name="justify"
               value={VisualizationChoiceState.AllSolutions}
-              >Kaikki ratkaisut</RadioItem
+              >All solutions</RadioItem
             >
           </RadioGroup>
 
           {#if visualizationChoiceState === VisualizationChoiceState.CurrentSolutions}
             <div>
-              Näytä NIMBUS-menetelmän ratkaisut viimeisimmältä laskentakerralta.
+              Visualize solutions generated by NIMBUS in the latest iteration.
             </div>
           {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions && problemInfo.saved_solutions.length}
-            <div>Näytä tallentamasi ratkaisut.</div>
+            <div>Visualize best candidate solutions saved by you.</div>
           {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions}
             <div>
-              Ei tallennettuja ratkaisuita. Näytetään tämänhetkiset ratkaisut.
-              Voit tallentaa ratkaisuita vasemmalta löytyvästä Tallenna
-              ratkaisuita -osiosta.
+              No saved solutions. Showing solutions from the latest iterations
+              instead.
             </div>
           {:else if visualizationChoiceState === VisualizationChoiceState.AllSolutions}
-            <div>Näytä kaikki NIMBUS-menetelmän tuottamat ratkaisut.</div>
+            <div>Visualize all solutions generated by NIMBUS.</div>
           {/if}
         </Card>
       </div>
       <div slot="visualizations">
         {#if state === State.ClassifySelected && !finalChoiceState}
           <Card>
-            <svelte:fragment slot="header"
-              >Ratkaisujen tarkastelu</svelte:fragment
-            >
+            <svelte:fragment slot="header">Solution Explorer</svelte:fragment>
 
             {#if problemInfo !== undefined && solutions_to_visualize !== undefined}
               <Visualizations
@@ -931,11 +931,11 @@ A user interface for the NIMBUS method.
       </div>
       <div slot="solutions">
         <Card>
-          <svelte:fragment slot="header">Ratkaisut taulukossa</svelte:fragment>
+          <svelte:fragment slot="header">Solutions</svelte:fragment>
           <div class="flex flex-col gap-4">
             <p>
-              Tavoitteiden arvot taulukossa. Klikkaa riviä valitaksesi
-              tarkasteltava suunnitelma.
+              Objective values of solutions generated by NIMBUS. Click on a row
+              to select a solution.
             </p>
             <p>
               Nettonykyarvon ja hakkuiden tuoton laskennassa on käytetty 3%
@@ -970,7 +970,7 @@ A user interface for the NIMBUS method.
       <div slot="Map">
         <Card>
           <svelte:fragment slot="header"
-            >Metsänhoitosuunnitelma kartalla</svelte:fragment
+            >Treatment options visualized on a map</svelte:fragment
           >
           {#if mapOptions[periodChoice] !== undefined && geoJSON !== undefined}
             <div style="white-space: pre-wrap;">{mapDescription}</div>
