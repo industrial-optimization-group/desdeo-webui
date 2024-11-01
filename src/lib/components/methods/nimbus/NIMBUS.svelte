@@ -909,8 +909,7 @@ A user interface for the NIMBUS method.
           </Card>
         {:else if finalChoiceState}
           <Card>
-            <svelte:fragment slot="header">Ratkaisun tarkastelu</svelte:fragment
-            >
+            <svelte:fragment slot="header">Solution Explorer</svelte:fragment>
 
             {#if problemInfo !== undefined && reference_solution !== undefined}
               <ParallelCoordinatePlotBase
