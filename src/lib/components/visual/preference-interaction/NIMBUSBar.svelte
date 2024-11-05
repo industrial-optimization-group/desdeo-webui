@@ -51,7 +51,7 @@
 
   let classificationValue: classification = classification.ChangeFreely;
 
-  const precision = 1e-3;
+  const precision = 1;
 
   $: {
     // Todo: This only works if lowerIsBetter is false, I think.

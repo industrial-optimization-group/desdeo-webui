@@ -38,7 +38,20 @@ type OAuth2Response = {
 //
 // TODO: Move this to a configuration file.
 //
-export const baseURL = "http://localhost:8000";
+
+let apiURL;
+
+if (typeof window !== "undefined") {
+  // Client-side
+  apiURL = import.meta.env.VITE_DESDEO_API_SERVER || "http://localhost:8000";
+  console.log(import.meta.env);
+} else {
+  // Server-side
+  apiURL = process.env.VITE_DESDEO_API_SERVER || "http://localhost:8000";
+}
+
+export const baseURL = apiURL;
+console.log("API Server:", baseURL);
 
 /** A missing token is represented by `undefined`. */
 export type Token = string | undefined;
@@ -186,21 +199,21 @@ export function login(
 /** Attempts to log in with the given invitation code. */
 
 export async function loginWithInvite(
-    code: string
+  code: string
 ): Promise<{ message: string }> {
   try {
     return await without_token()
-        .post("/login-with-invite", {
-          code,
-        })
-        .then((response) => {
-          set_access_token(response.data.access_token);
-          set_refresh_token(response.data.refresh_token);
-          set_username(response.data.username);
-          return {
-            message: <string>response.data.message,
-          };
-        });
+      .post("/login-with-invite", {
+        code,
+      })
+      .then((response) => {
+        set_access_token(response.data.access_token);
+        set_refresh_token(response.data.refresh_token);
+        set_username(response.data.username);
+        return {
+          message: <string>response.data.message,
+        };
+      });
   } catch (e) {
     console.log(e);
     return {
@@ -215,7 +228,7 @@ export async function loginOAuth2(
 ): Promise<{ message: string }> {
   // Note that the backend does not send a refresh token. The access token currently expires after 2 hours.
   try {
-    const response = await fetch("http://localhost:8000/token", {
+    const response = await fetch(baseURL + "/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

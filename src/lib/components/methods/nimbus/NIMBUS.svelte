@@ -12,7 +12,7 @@ A user interface for the NIMBUS method.
 
   import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
 
-  import type { Problem } from "$lib/api";
+  import type { Token } from "$lib/api";
   import { toastStore } from "@skeletonlabs/skeleton";
 
   import Visualizations from "$lib/components/util/undecorated/Visualizations.svelte";
@@ -30,11 +30,11 @@ A user interface for the NIMBUS method.
   import NimbusLayout from "$lib/components/util/undecorated/NIMBUSLayout.svelte";
 
   /** The problem to solve. */
-  export let problem: Problem;
+  export let problem_id: number;
   // Link to the backend.
   export let API_URL: string;
   // The authentication token.
-  export let AUTH_TOKEN: string;
+  export let AUTH_TOKEN: Token;
   // Flag to visualize the decision space. Useful for UTOPIA maybe? Unused for now.
   //export let visualize_decision_space: boolean = false;
 
@@ -113,6 +113,8 @@ A user interface for the NIMBUS method.
     three: Object,
   };
 
+  let yearlist: string[] = ["2025", "2030", "2035"];
+
   enum PeriodChoice {
     one = "one",
     two = "two",
@@ -122,6 +124,7 @@ A user interface for the NIMBUS method.
   let periodChoice: PeriodChoice = PeriodChoice.one;
   let geoJSON: object | undefined = undefined;
   let mapName: string | undefined = undefined;
+  let mapDescription: string | undefined = undefined;
 
   let finalChoiceState = false;
 
@@ -146,14 +149,16 @@ A user interface for the NIMBUS method.
     } else {
       const pref_less_ref = preference.some(
         (value, index) =>
-          value! * max_multiplier![index] <
+          value! * max_multiplier![index] * 1.001 ** max_multiplier![index] <
           reference_solution![index] * max_multiplier![index]
       );
 
       const pref_greater_ref = preference.some(
         (value, index) =>
           value! * max_multiplier![index] >
-          reference_solution![index] * max_multiplier![index]
+          reference_solution![index] *
+            max_multiplier![index] *
+            1.001 ** max_multiplier![index]
       );
 
       if (pref_less_ref && pref_greater_ref) {
@@ -252,6 +257,9 @@ A user interface for the NIMBUS method.
         visualizationChoiceState === VisualizationChoiceState.SavedSolutions
       ) {
         solutions_to_visualize = problemInfo.saved_solutions;
+        if (solutions_to_visualize.length === 0) {
+          solutions_to_visualize = problemInfo.current_solutions;
+        }
       } else if (
         visualizationChoiceState === VisualizationChoiceState.AllSolutions
       ) {
@@ -282,11 +290,12 @@ A user interface for the NIMBUS method.
   }
 
   $: if (reference_solution !== undefined && state === State.ClassifySelected) {
+    // we don't need maps for the base version of NIMBUS, but in Utopia we do
     get_maps(reference_solution);
   }
 
   /** The number of decimals to show for numeric values. */
-  const decimals = 3;
+  const decimals = 0;
 
   function press_final_button() {
     const modal: ModalSettings = {
@@ -324,7 +333,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id, // TODO: This should be the id in the database.
+          problem_id: problem_id, // TODO: This should be the id in the database.
           method_id: 1, // Backend technically supports this, but we need to add support for it in the UI.
         }),
       });
@@ -346,10 +355,6 @@ A user interface for the NIMBUS method.
     } catch (err) {
       // This is just a temporary solution to make it easier to test the UI
       // without having to run the backend. It should be removed later.
-
-      // TODO: REMOVE THIS WHEN THE BACKEND IS READY!!!
-      selected_solutions = [];
-      reference_solution = undefined;
 
       //
       // This handler can be used to restart the solution process. It is probably
@@ -386,13 +391,13 @@ A user interface for the NIMBUS method.
 
       // TODO: Uncomment this when the backend is ready.
       //
-      /* toastStore.trigger({
+      toastStore.trigger({
         // prettier-ignore
         message: "Oops! Something went wrong.",
         background: "variant-filled-error",
         timeout: 5000,
       });
-      console.error(err); */
+      console.error(err);
     }
   }
 
@@ -424,7 +429,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           method_id: 1,
           preference: preference, // Technically sent as a reference point, the classification is generated in the backend.
           reference_solution: reference_solution, // The reference solution is needed to generate the classification.
@@ -461,7 +466,7 @@ A user interface for the NIMBUS method.
     }
   }
 
-  async function actually_get_maps(mapped_solution: number[], year: string) {
+  async function actually_get_maps(mapped_solution: number[]) {
     if (!(state === State.ClassifySelected)) {
       throw new Error("`get_maps` called in wrong state.");
     }
@@ -476,9 +481,8 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           solution: mapped_solution,
-          Year: year,
         }),
       });
       if (response.ok) {
@@ -500,15 +504,26 @@ A user interface for the NIMBUS method.
   }
 
   async function get_maps(mapped_solution: number[]) {
-    const data = await actually_get_maps(mapped_solution, "2025");
-    mapOptions["one"] = data.option;
-    geoJSON = data.forestMap;
-    mapName = data.mapName;
-    const data2 = await actually_get_maps(mapped_solution, "2030");
-    mapOptions["two"] = data2.option;
-    const data3 = await actually_get_maps(mapped_solution, "2035");
-    mapOptions["three"] = data3.option;
+    const data = await actually_get_maps(mapped_solution);
+    yearlist = data.years;
+
+    for (let year of yearlist) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.options[year].tooltip.formatter = function (params: any) {
+        return `${params.name}`;
+      };
+    }
+    mapOptions["one"] = data.options[yearlist[0]];
+    mapOptions["two"] = data.options[yearlist[1]];
+    mapOptions["three"] = data.options[yearlist[2]];
+    geoJSON = data.map_json;
+    mapName = data.map_name;
+    mapDescription = data.description;
+    //console.log(mapOptions);
+    //console.log(geoJSON);
+    //console.log(mapName);
   }
+
   async function handle_intermediate() {
     if (
       !is_intermediate_selection_valid ||
@@ -532,7 +547,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problemID: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problemID: problem_id, // The problem is reconstructed from the database each time we iterate.
           solution1: solutions_to_visualize[selected_solutions[0]],
           solution2: solutions_to_visualize[selected_solutions[1]],
           numIntermediates: numIntermediates,
@@ -580,7 +595,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           method_id: 1,
           previousPreference: problemInfo.previous_preference,
           solutions: selected_solutions.map(
@@ -591,8 +606,8 @@ A user interface for the NIMBUS method.
 
       if (response.ok) {
         const data: problemInfoType = await response.json();
-        problemInfo = data;
-        preference = problemInfo.previous_preference;
+        problemInfo.saved_solutions = data.saved_solutions;
+        //preference = problemInfo.previous_preference;
         state = State.ClassifySelected; // TODO: Should this be SaveSolutionsSelected? Or should we always return to ClassifySelected?
         visualizationChoiceState = VisualizationChoiceState.CurrentSolutions;
         reference_solution = problemInfo.current_solutions[0];
@@ -636,7 +651,7 @@ A user interface for the NIMBUS method.
           Authorization: "Bearer " + AUTH_TOKEN,
         },
         body: JSON.stringify({
-          problem_id: problem.id, // The problem is reconstructed from the database each time we iterate.
+          problem_id: problem_id, // The problem is reconstructed from the database each time we iterate.
           method_id: 1,
           solution: reference_solution,
         }),
@@ -719,7 +734,7 @@ A user interface for the NIMBUS method.
                 solutionValue={reference_solution}
                 previousValue={problemInfo.previous_preference}
                 bind:preference
-                decimalPrecision={3}
+                decimalPrecision={0}
               />
             {:else if state === State.IntermediateSelected}
               <div>
@@ -857,8 +872,13 @@ A user interface for the NIMBUS method.
             <div>
               Visualize solutions generated by NIMBUS in the latest iteration.
             </div>
-          {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions}
+          {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions && problemInfo.saved_solutions.length}
             <div>Visualize best candidate solutions saved by you.</div>
+          {:else if visualizationChoiceState === VisualizationChoiceState.SavedSolutions}
+            <div>
+              No saved solutions. Showing solutions from the latest iterations
+              instead.
+            </div>
           {:else if visualizationChoiceState === VisualizationChoiceState.AllSolutions}
             <div>Visualize all solutions generated by NIMBUS.</div>
           {/if}
@@ -948,6 +968,7 @@ A user interface for the NIMBUS method.
             >Treatment options visualized on a map</svelte:fragment
           >
           {#if mapOptions[periodChoice] !== undefined && geoJSON !== undefined}
+            <div style="white-space: pre-wrap;">{mapDescription}</div>
             <EchartsComponent
               option={mapOptions[periodChoice]}
               {geoJSON}
@@ -959,17 +980,17 @@ A user interface for the NIMBUS method.
             <RadioItem
               bind:group={periodChoice}
               name="justify"
-              value={PeriodChoice.one}>2025</RadioItem
+              value={PeriodChoice.one}>{yearlist[0]}</RadioItem
             >
             <RadioItem
               bind:group={periodChoice}
               name="justify"
-              value={PeriodChoice.two}>2030</RadioItem
+              value={PeriodChoice.two}>{yearlist[1]}</RadioItem
             >
             <RadioItem
               bind:group={periodChoice}
               name="justify"
-              value={PeriodChoice.three}>2035</RadioItem
+              value={PeriodChoice.three}>{yearlist[2]}</RadioItem
             >
           </RadioGroup>
         </Card>

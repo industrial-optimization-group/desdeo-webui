@@ -23,6 +23,10 @@ export function handleClickSelection(
     // TODO: #32 This evaluates to the number of objectives. This is clearly not what we want. FIX THIS!
     maxSelections = params.data.value.length;
   }
+  if (maxSelections == 1) {
+    // If only one index can be selected, any click should be interpreted as selecting that index.
+    selectedIndices = [params.dataIndex];
+  }
   if (selectedIndices.length > maxSelections) {
     selectedIndices.splice(selectedIndices.indexOf(params.dataIndex), 1);
     // let chart = params.

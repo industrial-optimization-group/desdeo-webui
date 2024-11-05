@@ -1,20 +1,22 @@
 <script lang="ts">
-  import { methodHeaderText, username, selectedMethod } from "$lib/api";
-  import { onDestroy } from "svelte";
+  import { methodHeaderText, /*username,*/ selectedMethod } from "$lib/api";
+  //import { onDestroy } from "svelte";
 
   import { baseURL, get_access_token, selectedProblem } from "$lib/api";
   import NautilusNavigator from "$lib/components/methods/nautilus_navigator/NAUT_NAVI.svelte";
   import NautilusNavigatorGroup from "$lib/components/methods/nautilus_navigator/NAUT_NAVI_group.svelte";
-  import GNIMBUS from "$lib/components/methods/nimbus/NIMBUS_group.svelte";
+  import NIMBUS from "$lib/components/methods/nimbus/NIMBUS.svelte";
+  //import GNIMBUS from "$lib/components/methods/nimbus/NIMBUS_group.svelte";
   import GeneralError from "$lib/components/util/undecorated/GeneralError.svelte";
 
-  import { socket } from "$lib/stores";
-  import type { Socket } from "socket.io-client";
+  /* This god-awful thing shouldn't be around for all the problems
+  //import { socket } from "$lib/stores";
+  //import type { Socket } from "socket.io-client";
 
-  let socketVal: Socket = $socket as Socket;
-  socket.subscribe((value) => {
-    socketVal = value as Socket;
-  });
+  //let socketVal: Socket = $socket as Socket;
+  //socket.subscribe((value) => {
+  //  socketVal = value as Socket;
+  //});*/
 
   if ($methodHeaderText === "No method selected yet.") {
     throw new Error("No method selected yet.");
@@ -22,6 +24,7 @@
     throw new Error("No problem selected yet.");
   }
 
+  /*
   if ($selectedMethod && $selectedMethod.endsWith("_group")) {
     socketVal.emit("join-room", $username, "problem-" + $selectedProblem);
   }
@@ -29,7 +32,7 @@
   onDestroy(() => {
     console.log("Solve is being destroyed");
     socketVal.emit("leave-room", $username, "problem-" + $selectedProblem);
-  });
+  });*/
 </script>
 
 <div />
@@ -38,21 +41,15 @@
 {#if $selectedMethod === "reference_point_method"}
   <!-- <ReferencePointMethod {problem} /> -->
 {:else if $selectedMethod === "nimbus"}
-  <!-- <NIMBUS
-    {$selectedProblem}
+  <NIMBUS
+    problem_id={$selectedProblem}
     API_URL={baseURL}
     AUTH_TOKEN={get_access_token()}
-  /> -->
+  />
 {:else if $selectedMethod === "nautnavi"}
   <NautilusNavigator API_URL={baseURL} />
 {:else if $selectedMethod === "nautnavi_group"}
   <NautilusNavigatorGroup API_URL={baseURL} />
-{:else if $selectedMethod === "nimbus_group"}
-  <GNIMBUS
-    problem={{ id: $selectedProblem }}
-    API_URL={baseURL}
-    AUTH_TOKEN={get_access_token()}
-  />
 {:else}
   <GeneralError />
 {/if}
