@@ -29,6 +29,15 @@ input field to set the aspiration level.
   export let decimals = 3;
 
   export let onChangeFunc: () => void;
+
+  let step_size = 0.001;
+
+  // Check step size
+  if (+((upper_bound - lower_bound) / 1000).toFixed(decimals) < 0.001) {
+    step_size = 0.001;
+  } else {
+    step_size = +((upper_bound - lower_bound) / 1000).toFixed(decimals);
+  }
 </script>
 
 <!-- The way of round is correct, even if it looks weird. -->
@@ -39,7 +48,7 @@ input field to set the aspiration level.
       min={+lower_bound.toFixed(decimals)}
       max={+upper_bound.toFixed(decimals)}
       bind:value={preference}
-      step={+((upper_bound - lower_bound) / 1000).toFixed(decimals)}
+      step={step_size}
       style="accent-color: {bar_color};"
       on:change={onChangeFunc}
     />

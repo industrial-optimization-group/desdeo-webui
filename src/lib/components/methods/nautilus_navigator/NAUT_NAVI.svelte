@@ -421,7 +421,7 @@ A user interface for the NAUTILUS Navigator method.
       // Network error. Authentication error. Server error. etc.
       toastStore.trigger({
         // prettier-ignore
-        message: "Oops! Something went wrong while saving solutions.",
+        message: "This user account cannot save solutions.",
         background: "variant-filled-error",
         timeout: 5000,
       });
@@ -472,7 +472,9 @@ A user interface for the NAUTILUS Navigator method.
         take a step back by dragging the black circle on the charts to the left.
         Note that whenever you change your preferences, the method may take a
         few seconds to conduct calculations. You can also adjust the speed at
-        which the steps progress by using the slider below.
+        which the steps progress by using the slider below. To avoid errors, only
+        set bounds for a single objective at a time and run NAUTILUS Navigator for
+        atleast one step.
       </p>
       <div>
         {#if preference !== undefined && bounds !== undefined}
