@@ -10,9 +10,10 @@ A user interface for the NIMBUS method.
   // messages.
   //
 
-  import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
+  //import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
 
-  import type { Objective, Problem, Variable, Token } from "$lib/api";
+  //import type { Objective, Problem, Variable, Token } from "$lib/api";
+  import type { Token } from "$lib/api";
   import { toastStore } from "@skeletonlabs/skeleton";
 
   import Visualizations from "$lib/components/util/undecorated/Visualizations.svelte";
@@ -128,7 +129,7 @@ A user interface for the NIMBUS method.
 
   // The reference solution to be used in the classification preference input component.
   let reference_solution: number[] | undefined;
-  let reference_solution_to_vote: number[] | undefined;
+  //let reference_solution_to_vote: number[] | undefined;
 
   // The objective values of the solutions to be visualized.
   let solutions_to_visualize: number[][];
@@ -510,7 +511,7 @@ A user interface for the NIMBUS method.
     socketVal.off("execute-" + action).once("execute-" + action, executeAction);
   }
 
-  function press_final_button() {
+  /* function press_final_button() {
     const modal: ModalSettings = {
       type: "confirm",
       // Data
@@ -526,7 +527,7 @@ A user interface for the NIMBUS method.
       },
     };
     modalStore.trigger(modal);
-  }
+  } */
 
   function determineState() {
     finalChoiceState = !!(
@@ -793,7 +794,7 @@ A user interface for the NIMBUS method.
     return 0;
   }
 
-  async function actually_get_maps(mapped_solution: number[], year: string) {
+  /* async function actually_get_maps(mapped_solution: number[], year: string) {
     if (!(state === State.ClassifySelected)) {
       throw new Error("`get_maps` called in wrong state.");
     }
@@ -829,7 +830,7 @@ A user interface for the NIMBUS method.
 
       //
     }
-  }
+  } */
 
   async function handle_save_solutions() {
     if (!is_save_solutions_valid || solutions_to_visualize === undefined) {
@@ -931,7 +932,7 @@ A user interface for the NIMBUS method.
     return 0;
   }
 
-  async function get_maps(mapped_solution: number[]) {
+  /* async function get_maps(mapped_solution: number[]) {
     const data = await actually_get_maps(mapped_solution, "2025");
     mapOptions["one"] = data.option;
     geoJSON = data.forestMap;
@@ -940,7 +941,7 @@ A user interface for the NIMBUS method.
     mapOptions["two"] = data2.option;
     const data3 = await actually_get_maps(mapped_solution, "2035");
     mapOptions["three"] = data3.option;
-  }
+  } */
   async function handle_intermediate() {
     if (
       !is_intermediate_selection_valid ||

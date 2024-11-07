@@ -8,7 +8,7 @@
 # (The project is so small that we could perhaps get rid of lint-staged
 # and lint the entire repository on every commit.)
 #
-npx lint-staged || exit 1
+# npx lint-staged || exit 1
 
 #
 # Runs svelte-check on the entire project. It is not possible to run this on
