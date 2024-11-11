@@ -3,6 +3,7 @@
   export let finalChoice = false;
 
   export let voteChoice = false;
+  export let drawMap = true;
 </script>
 
 {#if classify && !finalChoice && !voteChoice}
@@ -14,7 +15,9 @@
     <div class="flex flex-col gap-10">
       <slot name="solutionSetChoice" />
       <slot name="visualizations" />
-      <slot name="Map" />
+      {#if drawMap}
+        <slot name="Map" />
+      {/if}
     </div>
   </div>
 {:else if !finalChoice && !voteChoice}
@@ -34,8 +37,10 @@
       <slot name="visualizations" />
       <slot name="solutions" />
     </div>
-    <div class="flex flex-col gap-10">
-      <slot name="Map" />
-    </div>
+    {#if drawMap}
+      <div class="flex flex-col gap-10">
+        <slot name="Map" />
+      </div>
+    {/if}
   </div>
 {/if}
