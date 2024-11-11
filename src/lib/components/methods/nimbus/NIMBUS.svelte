@@ -102,6 +102,8 @@ A user interface for the NIMBUS method.
   let max_multiplier: number[] | undefined = undefined;
   let classification_checker = false;
 
+  let draw_map = true;
+
   type mapOptionsType = {
     one: object;
     two: object;
@@ -289,7 +291,11 @@ A user interface for the NIMBUS method.
     gridded_visualizations = false;
   }
 
-  $: if (reference_solution !== undefined && state === State.ClassifySelected) {
+  $: if (
+    draw_map &&
+    reference_solution !== undefined &&
+    state === State.ClassifySelected
+  ) {
     // we don't need maps for the base version of NIMBUS, but in Utopia we do
     get_maps(reference_solution);
   }
@@ -505,23 +511,27 @@ A user interface for the NIMBUS method.
 
   async function get_maps(mapped_solution: number[]) {
     const data = await actually_get_maps(mapped_solution);
-    yearlist = data.years;
+    if (data.is_utopia) {
+      yearlist = data.years;
 
-    for (let year of yearlist) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data.options[year].tooltip.formatter = function (params: any) {
-        return `${params.name}`;
-      };
+      for (let year of yearlist) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.options[year].tooltip.formatter = function (params: any) {
+          return `${params.name}`;
+        };
+      }
+      mapOptions["one"] = data.options[yearlist[0]];
+      mapOptions["two"] = data.options[yearlist[1]];
+      mapOptions["three"] = data.options[yearlist[2]];
+      geoJSON = data.map_json;
+      mapName = data.map_name;
+      mapDescription = data.description;
+      //console.log(mapOptions);
+      //console.log(geoJSON);
+      //console.log(mapName);
+    } else {
+      draw_map = false;
     }
-    mapOptions["one"] = data.options[yearlist[0]];
-    mapOptions["two"] = data.options[yearlist[1]];
-    mapOptions["three"] = data.options[yearlist[2]];
-    geoJSON = data.map_json;
-    mapName = data.map_name;
-    mapDescription = data.description;
-    //console.log(mapOptions);
-    //console.log(geoJSON);
-    //console.log(mapName);
   }
 
   async function handle_intermediate() {
@@ -686,6 +696,7 @@ A user interface for the NIMBUS method.
     <NimbusLayout
       classify={state === State.ClassifySelected ? true : false}
       finalChoice={finalChoiceState}
+      drawMap={draw_map}
     >
       <div slot="preferences">
         {#if problemInfo !== undefined && reference_solution !== undefined}
