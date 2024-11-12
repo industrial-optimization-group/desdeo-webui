@@ -358,6 +358,18 @@ A user interface for the NIMBUS method.
         selected_solutions = [0];
 
         state = State.ClassifySelected;
+
+        const differences = data.upper_bounds.map(
+          (upper, index) => upper - data.lower_bounds[index]
+        );
+        const objective_magnitude = Math.floor(
+          Math.log10(Math.min(...differences))
+        );
+        if (objective_magnitude >= 3) {
+          decimals = 0;
+        } else if (objective_magnitude < 0) {
+          decimals = 2 - objective_magnitude;
+        }
       } else {
         throw new Error("Failed to initialize NIMBUS method.");
       }
