@@ -14,3 +14,7 @@ export function transform_bounds(
     max: upper_bounds[j],
   }));
 }
+
+export function round_to_decimal(value: number, decimals: number): number {
+  return Math.round(value * 10 ** decimals) / 10 ** decimals;
+}

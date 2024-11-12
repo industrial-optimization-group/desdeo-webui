@@ -28,6 +28,7 @@ A user interface for the NIMBUS method.
   import { onMount } from "svelte";
   import EchartsComponent from "$lib/components/visual/general/EchartsComponent.svelte";
   import NimbusLayout from "$lib/components/util/undecorated/NIMBUSLayout.svelte";
+  import { roundToDecimal } from "$lib/components/visual/helperFunctions";
 
   /** The problem to solve. */
   export let problem_id: number;
@@ -94,6 +95,9 @@ A user interface for the NIMBUS method.
   let MIN_NUM_SOLUTIONS = 1;
   let MAX_NUM_SOLUTIONS = 4;
 
+  // The number of decimals to show for numeric values.
+  let decimals = 2;
+
   // Flags to check if the classification/intermediate/save selection are valid.
   let is_classification_valid = false;
   let is_intermediate_selection_valid = false;
@@ -151,16 +155,20 @@ A user interface for the NIMBUS method.
     } else {
       const pref_less_ref = preference.some(
         (value, index) =>
-          value! * max_multiplier![index] * 1.001 ** max_multiplier![index] <
-          reference_solution![index] * max_multiplier![index]
+          roundToDecimal(value! * max_multiplier![index], decimals) <
+          roundToDecimal(
+            reference_solution![index] * max_multiplier![index],
+            decimals
+          )
       );
 
       const pref_greater_ref = preference.some(
         (value, index) =>
-          value! * max_multiplier![index] >
-          reference_solution![index] *
-            max_multiplier![index] *
-            1.001 ** max_multiplier![index]
+          roundToDecimal(value! * max_multiplier![index], decimals) >
+          roundToDecimal(
+            reference_solution![index] * max_multiplier![index],
+            decimals
+          )
       );
 
       if (pref_less_ref && pref_greater_ref) {
@@ -299,9 +307,6 @@ A user interface for the NIMBUS method.
     // we don't need maps for the base version of NIMBUS, but in Utopia we do
     get_maps(reference_solution);
   }
-
-  /** The number of decimals to show for numeric values. */
-  const decimals = 0;
 
   function press_final_button() {
     const modal: ModalSettings = {
@@ -526,6 +531,7 @@ A user interface for the NIMBUS method.
       geoJSON = data.map_json;
       mapName = data.map_name;
       mapDescription = data.description;
+      decimals = 0;
       //console.log(mapOptions);
       //console.log(geoJSON);
       //console.log(mapName);
@@ -745,7 +751,7 @@ A user interface for the NIMBUS method.
                 solutionValue={reference_solution}
                 previousValue={problemInfo.previous_preference}
                 bind:preference
-                decimalPrecision={0}
+                decimalPrecision={decimals}
               />
             {:else if state === State.IntermediateSelected}
               <div>
